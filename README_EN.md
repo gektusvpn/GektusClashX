@@ -4,13 +4,11 @@
 
 </div>
 
-## FlClashX
+## GektusClashX
 
-[![Downloads](https://img.shields.io/github/downloads/pluralplay/FlClashX/total?style=flat-square&logo=github)](https://github.com/pluralplay/FlClashX/releases/)
-[![Last Version](https://img.shields.io/github/release/pluralplay/FlClashX/all.svg?style=flat-square)](https://github.com/pluralplay/FlClashX/releases/)
-[![License](https://img.shields.io/github/license/pluralplay/FlClashX?style=flat-square)](LICENSE)
-
-[![Channel](https://img.shields.io/badge/Telegram-Chat-blue?style=flat-square&logo=telegram)](https://t.me/FlClashX)
+[![Downloads](https://img.shields.io/github/downloads/gektusvpn/GektusClashX/total?style=flat-square&logo=github)](https://github.com/gektusvpn/GektusClashX/releases/)
+[![Last Version](https://img.shields.io/github/release/gektusvpn/GektusClashX/all.svg?style=flat-square)](https://github.com/gektusvpn/GektusClashX/releases/)
+[![License](https://img.shields.io/github/license/gektusvpn/GektusClashX?style=flat-square)](LICENSE)
 
 A fork of the multi-platform proxy client FlClash based on ClashMeta, simple and easy to use, open source and ad-free.
 
@@ -38,7 +36,7 @@ on Mobile:
 
 ✈️ Transmit HWID to the panel (Works only with <a href="https://github.com/remnawave/panel">Remnawave</a>).
 
-💻 Added a new "Announcements" widget. It transmits announcements from the panel to the widget. (Works only with <a href="https://github.com/remnawave/panel">Remnawave</a>).
+💻 Home displays announcements, subscription details, and support contacts supplied by the provider through HTTP headers.
 
 📺 Optimized controls for Android TV:
 
@@ -46,46 +44,19 @@ on Mobile:
 - Added a profile selection button.
 - Added the ability to transfer a profile from the mobile app via a QR code.
 
-🪪 Redesigned the profile card:
+🪪 Redesigned the profile card and the Home subscription section:
 
 - Uses a traffic volume indicator with color change (not displayed if traffic is unlimited).
 - Displays subscription expiration date (if the year is 2099, it displays "Your subscription is permanent").
-- Added a new "Support" button in the profile, which pulls the supportUrl from the panel.
+- Support contacts and the Home support image can be supplied by the provider.
 - The autoupdateinterval parameter for the profile is now correctly transmitted from the panel.
-
-🪪
-- Added "Meta-Info" widget. Transmits subscription parameters to the widget: remaining traffic, subscription expiration date, profile name, and prominently displays days remaining until subscription expires (3 days before expiration).
-- Added "serviceInfo" widget. Displays your service name. You can additionally pass the `flclashx-servicelogo` header for a custom logo (supports svg/png links), and clicking opens the support link (supportURL).
-- Added "changeServerButton" widget. Clicking redirects to the proxy page.
 
 🌐 Added parsing of custom headers from the subscription page:
 
-- flclashx-widgets: arranges widgets in the order received from the subscription.
+- `gektusclashx-announce-show`: controls the announcement on Home. `false`
+  hides it; `true` or an omitted header shows it.
 
-  |        Value         | Name widget                                                 |
-  | :------------------: | ----------------------------------------------------------- |
-  |      `announce`      | Announce Badge                                              |
-  |    `networkSpeed`    | Network speed                                               |
-  |   `outboundModeV2`   | Proxy mode (new type)                                       |
-  |    `outboundMode`    | Proxy mode (old type)                                       |
-  |    `trafficUsage`    | Traffic usage                                               |
-  |  `networkDetection`  | Determining location and IP                                 |
-  |     `tunButton`      | TUN button (Desktop only)                                   |
-  |     `vpnButton`      | VPN button (Android only)                                   |
-  | `systemProxyButton`  | System Proxy Button (Desktop only)                          |
-  |     `intranetIp`     | Local IP-Address                                            |
-  |     `memoryInfo`     | Memory usage                                                |
-  |      `metainfo`      | Profile information                                         |
-  | `changeServerButton` | Change server button                                        |
-  |    `serviceInfo`     | Service information (only with header flclashx-servicename) |
-
-Usage:
-
-```bash
-    flclashx-widgets: announce,metainfo,outboundModeV2,networkDetection
-```
-
-- flclashx-view: Configures the appearance of the proxy page obtained from the subscription.
+- gektusclashx-view: Configures the appearance of the proxy page obtained from the subscription.
 
 |  Value   | Description                   | Possible values                   |
 | :------: | ----------------------------- | --------------------------------- |
@@ -98,61 +69,39 @@ Usage:
 Usage:
 
 ```bash
-    flclashx-view: type:list; sort:delay; layout:tight; icon:icon; card:shrink
+    gektusclashx-view: type:list; sort:delay; layout:tight; icon:icon; card:shrink
 ```
 
-- flclashx-custom: Controls the application of styles for Dashboard and ProxyView.
+- gektusclashx-custom: Controls when Locations view settings are applied.
 
 |  Value   | Description                                                  |
 | :------: | ------------------------------------------------------------ |
-|  `add`   | Styles are applied only when the subscription is first added |
-| `update` | Styles are applied every time the subscription is updated    |
+|  `add`   | View settings are applied only when the subscription is first added |
+| `update` | View settings are applied every time the subscription is updated    |
 
 Usage:
 
 ```bash
-    flclashx-custom: update
+    gektusclashx-custom: update
 ```
 
-- flclashx-denywidgets: When set to true, editing the Dashboard page is disabled. Accepts true/false.
+- gektusclashx-servicename: Service name displayed at the top of the Home page.
 
 Usage:
 
 ```bash
-    flclashx-denywidgets: true
+    gektusclashx-servicename: GektusClashX
 ```
 
-- flclashx-servicename: Your service name displayed in the ServiceInfo widget.
+- gektusclashx-servicelogo: Service logo displayed at the top of the Home page. Direct PNG and SVG links are supported.
 
 Usage:
 
 ```bash
-    flclashx-servicename: FlClashX
+    gektusclashx-servicelogo: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/remnawave.svg
 ```
 
-- flclashx-servicelogo: Your logo used in the ServiceInfo widget (works only with active flclashx-servicename header). Supports png/svg.
-
-Usage:
-
-```bash
-    flclashx-servicelogo: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/remnawave.svg
-```
-
-- flclashx-serverinfo: Proxy group name to display in the ChangeServerButton widget. The widget shows the active server from the specified group with country flag, ping, and a quick switch button.
-
-**Displayed elements:**
-  - Country flag (automatically extracted from serverDescription or proxy name)
-  - Active server name
-  - Current ping with color indication (green < 600ms, orange >= 600ms, red - timeout)
-  - Quick navigation button to proxy page
-
-Usage:
-
-```bash
-    flclashx-serverinfo: Proxy
-```
-
-- flclashx-background: Sets a custom background image for the application. Provide a direct link to an image. Optionally append a comma and a transparency (visibility) value from 1 to 100 (higher = more visible image; omit it for the default dimmed look).
+- gektusclashx-background: Sets a custom background image for the application. Provide a direct link to an image. Optionally append a comma and a transparency (visibility) value from 1 to 100 (higher = more visible image; omit it for the default dimmed look).
 
 **Image Recommendations:**
   - Format: PNG, JPG, or WebP
@@ -164,12 +113,12 @@ Usage:
 Usage:
 
 ```bash
-    flclashx-background: https://example.com/background.jpg
+    gektusclashx-background: https://example.com/background.jpg
     # with transparency (1-100, higher = more visible background):
-    flclashx-background: https://example.com/background.jpg,30
+    gektusclashx-background: https://example.com/background.jpg,30
 ```
 
-- flclashx-settings: Manage application settings via header (with client-side override option). By default, all parameters are **disabled**. If you pass a parameter, it will be **enabled**. If you don't pass it - it stays **disabled**.
+- gektusclashx-settings: Manage application settings via header (with client-side override option). By default, all parameters are **disabled**. If you pass a parameter, it will be **enabled**. If you don't pass it - it stays **disabled**.
 
 |   Parameter   | Description                                      | Default      |
 | :-----------: | ------------------------------------------------ | :----------: |
@@ -181,94 +130,98 @@ Usage:
 |  `openlogs`   | Enable logging (the "Logs" tab and core log stream) | ❌ Disabled |
 |`closeconnections`| Drop active connections when switching proxy/mode | ❌ Disabled |
 
-> Note: `closeconnections` is enabled by default in the app itself, but when `flclashx-settings` is used the state is set explicitly — if you don't pass the token, the option will be disabled.
+> Note: `closeconnections` is enabled by default in the app itself, but when `gektusclashx-settings` is used the state is set explicitly — if you don't pass the token, the option will be disabled.
+
+On Android, automatic update checks are enabled by default unless the provider manages this setting. An available update is downloaded from GitHub Releases inside the app. The client verifies its SHA-256, package version, and signing certificate before opening the Android system installer.
+
+On Windows and Linux, the update prompt downloads the matching GitHub Release asset for the current operating system and CPU architecture. On Linux it also distinguishes between AppImage, DEB, and RPM packages.
 
 **Client-side override:** Users can enable "Override provider settings" in Application Settings to apply their local configuration instead of subscription settings. The matching toggles in settings (including "Logs" and "Close connections") are editable only when "Override provider settings" is enabled.
 
 Usage:
 
 ```bash
-    flclashx-settings: minimize, autorun, shadowstart, autostart, autoupdate, openlogs, closeconnections
+    gektusclashx-settings: minimize, autorun, shadowstart, autostart, autoupdate, openlogs, closeconnections
 ```
 
-- flclashx-globalmode: When set to `false`, hides all proxy-mode controls from the client (tray, proxies page, mode-switch widgets).
+- `gektusclashx-gh-proxy`: Base HTTPS proxy URL for GitHub access. The client appends the complete source URL in the format used by `gh-proxy`. It applies to the app's own update checks and downloads, APKs, checksums, and Zashboard. URLs inside the YAML configuration are left unchanged.
 
 Usage:
 
 ```bash
-    flclashx-globalmode: false
+    gektusclashx-gh-proxy: https://proxy.example.com/gh-proxy/TOKEN
 ```
 
-- flclashx-hex: Configures the app theme — primary color, scheme variant, and an optional "pure black" mode via `pureblack`. Variants: `tonalSpot`, `fidelity`, `monochrome`, `neutral`, `vibrant`, `expressive`, `content`, `rainbow`, `fruitSalad`.
+- gektusclashx-globalmode: When set to `false`, hides all proxy-mode controls from the client (tray, proxies page, mode-switch widgets).
 
 Usage:
 
 ```bash
-    flclashx-hex: FF5733
-    flclashx-hex: FF5733:vibrant
-    flclashx-hex: FF5733:vibrant:pureblack
+    gektusclashx-globalmode: false
+```
+
+- gektusclashx-hex: Configures the app theme — primary color, scheme variant, and an optional "pure black" mode via `pureblack`. Variants: `tonalSpot`, `fidelity`, `monochrome`, `neutral`, `vibrant`, `expressive`, `content`, `rainbow`, `fruitSalad`.
+
+Usage:
+
+```bash
+    gektusclashx-hex: FF5733
+    gektusclashx-hex: FF5733:vibrant
+    gektusclashx-hex: FF5733:vibrant:pureblack
 ```
 
 Parameters can also be used separately:
 
 ```bash
-    flclashx-hex: FF5733
-    flclashx-hex: vibrant
-    flclashx-hex: pureblack
+    gektusclashx-hex: FF5733
+    gektusclashx-hex: vibrant
+    gektusclashx-hex: pureblack
 ```
 
-- flclashx-androidsecure: Forces `mixed-port: 0` on Android devices only, even when a port (e.g. 7890) is active in the config.
+- gektusclashx-androidsecure: Forces `mixed-port: 0` on Android devices only, even when a port (e.g. 7890) is active in the config.
 
 Usage:
 
 ```bash
-    flclashx-androidsecure: true
+    gektusclashx-androidsecure: true
 ```
 
-- flclashx-newboard: When `true`, enables the new home screen instead of the widget grid: a large logo and service name, a traffic/expiry card, an active-server panel (flag, IP, ping) with a fan of available locations, a connect button, and the bottom navigation. Widget editing is hidden in this mode. Users can enable the same look locally via the "New look" setting.
+- gektusclashx-newdomain: Subscription domain migration. If the value differs from the current host of the profile link, on the next update the client automatically replaces the host in the subscription URL with the given one (path and query are preserved). Useful for moving the subscription page to a new domain without users reinstalling the profile.
 
 Usage:
 
 ```bash
-    flclashx-newboard: true
+    gektusclashx-newdomain: new.example.com
 ```
 
-- flclashx-newdomain: Subscription domain migration. If the value differs from the current host of the profile link, on the next update the client automatically replaces the host in the subscription URL with the given one (path and query are preserved). Useful for moving the subscription page to a new domain without users reinstalling the profile.
+- gektusclashx-buyplan: Direct subscription purchase/renewal link. The "Renew" button is always displayed in the subscription card on Home. Tapping it opens the given link.
 
 Usage:
 
 ```bash
-    flclashx-newdomain: new.example.com
+    gektusclashx-buyplan: https://example.com/pay
 ```
 
-- flclashx-buyplan: Direct subscription purchase/renewal link. The "Renew subscription" button appears under the traffic card on the new dashboard (`flclashx-newboard`) only when less than 3 days remain until expiry (including already-expired subscriptions). Tapping it opens the given link.
+- gektusclashx-buytraffic: Direct extra-traffic purchase link. The "Buy more traffic" button appears on Home when less than 10% of the traffic limit remains.
 
 Usage:
 
 ```bash
-    flclashx-buyplan: https://example.com/pay
-```
-
-- flclashx-buytraffic: Direct extra-traffic purchase link. The "Buy traffic" button appears under the traffic card on the new dashboard (`flclashx-newboard`) only when less than 10% of the traffic limit remains. When both triggers fire (`flclashx-buyplan` and `flclashx-buytraffic`), the buttons are shown in one row.
-
-Usage:
-
-```bash
-    flclashx-buytraffic: https://example.com/buy-traffic
+    gektusclashx-buytraffic: https://example.com/buy-traffic
 ```
 
 ### YAML keys in the config
 
 These keys are set directly in the subscription's YAML config (in the `proxy-groups` section), not in HTTP response headers.
 
-- flclashx-override (inside the GLOBAL group): Set inside the `GLOBAL` proxy-group. With `flclashx-override: true` the client uses this group's proxy list and order as a "curated GLOBAL": in Global mode the Proxies screen shows only the `GLOBAL` group with exactly these entries in this order, and the service groups (used by rule mode) are hidden. Without the flag the behavior is unchanged — `GLOBAL` is auto-built by the core from all groups.
+- gektusclashx-override (inside the GLOBAL group): Set inside the `GLOBAL` proxy-group. With `gektusclashx-override: true` the client uses this group's proxy list and order as a "curated GLOBAL": in Global mode the Proxies screen shows only the `GLOBAL` group with exactly these entries in this order, and the service groups (used by rule mode) are hidden. Without the flag the behavior is unchanged — `GLOBAL` is auto-built by the core from all groups.
 
 Usage:
 
 ```yaml
 proxy-groups:
   - name: GLOBAL
-    flclashx-override: true
+    gektusclashx-override: true
     type: select
     proxies:
       - 🎲 Any available
@@ -320,17 +273,17 @@ By default, the following configuration parameters received from the subscriptio
 The following actions are supported:
 
 ```bash
- com.follow.clashx.action.START
+ com.gektus.clashx.action.START
 
- com.follow.clashx.action.STOP
+ com.gektus.clashx.action.STOP
 
- com.follow.clashx.action.CHANGE
+ com.gektus.clashx.action.CHANGE
 ```
 
 ## Download
 
-<a href="https://github.com/pluralplay/FlClashX/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
-<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.follow.clashx%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Fpluralplay%2FFlClashX%22%2C%22author%22%3A%22pluralplay%22%2C%22name%22%3A%22FlClashX%22%2C%22preferredApkIndex%22%3A0%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22fallbackToOlderReleases%5C%22%3Afalse%2C%5C%22filterReleaseTitlesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22filterReleaseNotesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22verifyLatestTag%5C%22%3Atrue%2C%5C%22sortMethodChoice%5C%22%3A%5C%22date%5C%22%2C%5C%22useLatestAssetDateAsReleaseDate%5C%22%3Afalse%2C%5C%22releaseTitleAsVersion%5C%22%3Afalse%2C%5C%22trackOnly%5C%22%3Afalse%2C%5C%22versionExtractionRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22matchGroupToUse%5C%22%3A%5C%22%5C%22%2C%5C%22versionDetection%5C%22%3Atrue%2C%5C%22releaseDateAsVersion%5C%22%3Afalse%2C%5C%22useVersionCodeAsOSVersion%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22invertAPKFilter%5C%22%3Afalse%2C%5C%22autoApkFilterByArch%5C%22%3Atrue%2C%5C%22appName%5C%22%3A%5C%22%5C%22%2C%5C%22appAuthor%5C%22%3A%5C%22%5C%22%2C%5C%22shizukuPretendToBeGooglePlay%5C%22%3Afalse%2C%5C%22allowInsecure%5C%22%3Afalse%2C%5C%22exemptFromBackgroundUpdates%5C%22%3Afalse%2C%5C%22skipUpdateNotifications%5C%22%3Afalse%2C%5C%22about%5C%22%3A%5C%22%5C%22%2C%5C%22refreshBeforeDownload%5C%22%3Afalse%2C%5C%22includeZips%5C%22%3Afalse%2C%5C%22zippedApkFilterRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22includeTarballs%5C%22%3Afalse%2C%5C%22tarballedApkFilterRegEx%5C%22%3A%5C%22%5C%22%7D%22%2C%22overrideSource%22%3Anull%7D
+<a href="https://github.com/gektusvpn/GektusClashX/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.gektus.clashx%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Fgektusvpn%2FGektusClashX%22%2C%22author%22%3A%22gektusvpn%22%2C%22name%22%3A%22GektusClashX%22%2C%22preferredApkIndex%22%3A0%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22fallbackToOlderReleases%5C%22%3Afalse%2C%5C%22filterReleaseTitlesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22filterReleaseNotesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22verifyLatestTag%5C%22%3Atrue%2C%5C%22sortMethodChoice%5C%22%3A%5C%22date%5C%22%2C%5C%22useLatestAssetDateAsReleaseDate%5C%22%3Afalse%2C%5C%22releaseTitleAsVersion%5C%22%3Afalse%2C%5C%22trackOnly%5C%22%3Afalse%2C%5C%22versionExtractionRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22matchGroupToUse%5C%22%3A%5C%22%5C%22%2C%5C%22versionDetection%5C%22%3Atrue%2C%5C%22releaseDateAsVersion%5C%22%3Afalse%2C%5C%22useVersionCodeAsOSVersion%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22invertAPKFilter%5C%22%3Afalse%2C%5C%22autoApkFilterByArch%5C%22%3Atrue%2C%5C%22appName%5C%22%3A%5C%22%5C%22%2C%5C%22appAuthor%5C%22%3A%5C%22%5C%22%2C%5C%22shizukuPretendToBeGooglePlay%5C%22%3Afalse%2C%5C%22allowInsecure%5C%22%3Afalse%2C%5C%22exemptFromBackgroundUpdates%5C%22%3Afalse%2C%5C%22skipUpdateNotifications%5C%22%3Afalse%2C%5C%22about%5C%22%3A%5C%22%5C%22%2C%5C%22refreshBeforeDownload%5C%22%3Afalse%2C%5C%22includeZips%5C%22%3Afalse%2C%5C%22zippedApkFilterRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22includeTarballs%5C%22%3Afalse%2C%5C%22tarballedApkFilterRegEx%5C%22%3A%5C%22%5C%22%7D%22%2C%22overrideSource%22%3Anull%7D
 "><img alt="Get it on Obtanium" src="snapshots/get-it-on-obtanium.svg" width="200px"/></a>
 
 ## Star

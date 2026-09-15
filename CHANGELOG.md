@@ -1,3 +1,73 @@
+## v0.5.0
+
+- Core updated to mihomo 1.19.30.
+
+- Rebranded the application and platform identifiers as GektusClashX.
+
+- Changed the default theme to `#AECC8B` with the `tonalSpot` scheme.
+
+- Updated application, launcher, tray, widget, and notification icons.
+
+- Preserved support for legacy FlClashX subscription headers after the rebrand.
+
+- Restored green and red tray icons for connected and disconnected states.
+
+- Made the hero dashboard permanent, restored the classic navigation bar, moved
+  settings to the Home app bar, renamed Proxies to Locations, and removed search
+  from Locations.
+
+- Aligned the Home content spacing with Locations and balanced the connect
+  button's top and bottom margins.
+
+- Removed the current-location card from the Home screen.
+
+- Added a compact subscription summary to Home with status, expiry, localized
+  traffic usage, and profile refresh.
+
+- Made subscription renewal always available from its Home card and removed
+  the outbound-mode control from Home.
+
+- Added a provider-configurable support card to Home and migrated its actions,
+  subscription controls, and connect control to Material 3 buttons.
+
+- Added provider control over the Home announcement, aligned Home scrolling
+  with Locations, and added explicit enable/disable labels to Home and tray.
+
+- Added in-app Android updates from GitHub Releases using a single universal APK,
+  with download progress, SHA-256 verification, signing-certificate validation,
+  and automatic update checks enabled by default when the provider does not
+  manage this setting.
+
+- Linked desktop update prompts directly to the matching GitHub Release asset
+  for the operating system, CPU architecture, and Linux package family.
+
+- Added the `gektusclashx-gh-proxy` subscription header for routing GitHub
+  release downloads and other app-managed GitHub requests through a provider
+  proxy without modifying URLs inside the YAML configuration.
+
+- Removed navigation tooltips, simplified the tray menu, and removed
+  contributor and acknowledgement sections from About.
+
+- Fixed KDE tray initialization and Linux builds with recent Clang versions.
+
+- Fixed stale subscription metadata after a provider removes an HTTP header,
+  prevented duplicate VPN state changes, and stopped unused public-IP lookups.
+
+- Added SHA-256 verification for standalone core updates and restricted app
+  update assets to this repository's trusted GitHub Release URLs.
+
+- Completed dashboard localization and synchronized the provider-header
+  documentation with the permanent Home layout.
+
+- Limited automated application releases to Android, Windows, and Linux until
+  signed macOS distribution is configured, and made AUR and Telegram publishing
+  opt-in release steps.
+
+- Required a persistent release signing key for Android release builds.
+
+- Hardened Zashboard archive extraction against path traversal and oversized
+  archives.
+
 ## v0.4.2
 
 - release 0.4.2
@@ -102,7 +172,7 @@
 
 - Automatic subscription migration to a new domain — no profile reinstall needed.
 
-- More customization via subscription headers: logo, service name, theme, background, payment buttons and more — full list at https://flclashx.app
+- More customization via subscription headers: logo, service name, theme, background, payment buttons and more — full list at https://github.com/gektusvpn/GektusClashX
 
 ## v0.8.86
 

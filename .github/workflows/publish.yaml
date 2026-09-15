@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v0.4.2)"
+        description: "Release tag (e.g. v0.5.0)"
         required: true
         type: string
       aur:
@@ -51,11 +51,11 @@ jobs:
           if [[ "$VERSION" =~ ^([0-9.]+)-pre\.([0-9]+)$ ]]; then
             echo "pkgver=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
             echo "pkgrel=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
-            echo "aur_pkg=flclashx-git" >> "$GITHUB_OUTPUT"
+            echo "aur_pkg=gektusclashx-git" >> "$GITHUB_OUTPUT"
           else
             echo "pkgver=$VERSION" >> "$GITHUB_OUTPUT"
             echo "pkgrel=1" >> "$GITHUB_OUTPUT"
-            echo "aur_pkg=flclashx-bin" >> "$GITHUB_OUTPUT"
+            echo "aur_pkg=gektusclashx-bin" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Clone AUR repository
@@ -70,16 +70,16 @@ jobs:
           mkdir -p /tmp/aur-assets
 
           gh release download "$TAG" \
-            -p "FlClashX-linux-amd64.deb" \
+            -p "GektusClashX-linux-amd64.deb" \
             -D /tmp/aur-assets \
             -R "$GITHUB_REPOSITORY"
-          echo "sha_x86=$(sha256sum /tmp/aur-assets/FlClashX-linux-amd64.deb | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "sha_x86=$(sha256sum /tmp/aur-assets/GektusClashX-linux-amd64.deb | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
           if gh release download "$TAG" \
-            -p "FlClashX-linux-arm64.deb" \
+            -p "GektusClashX-linux-arm64.deb" \
             -D /tmp/aur-assets \
             -R "$GITHUB_REPOSITORY" 2>/dev/null; then
-            echo "sha_arm=$(sha256sum /tmp/aur-assets/FlClashX-linux-arm64.deb | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+            echo "sha_arm=$(sha256sum /tmp/aur-assets/GektusClashX-linux-arm64.deb | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
             echo "has_arm=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_arm=false" >> "$GITHUB_OUTPUT"
@@ -120,7 +120,7 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "Github Actions (pluralplay)"
+          git config user.name "GitHub Actions (GektusVPN)"
           git add PKGBUILD .SRCINFO
           if ! git diff --cached --quiet; then
             git commit -m "Update to $TAG"
