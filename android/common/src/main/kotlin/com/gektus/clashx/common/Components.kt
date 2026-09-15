@@ -1,5 +1,5 @@
 package com.gektus.clashx.common
 
 object Components {
-    const val PACKAGE_NAME = "com.gektus.clashx"
+    const val CHANNEL_PREFIX = "com.gektus.clashx"
 }

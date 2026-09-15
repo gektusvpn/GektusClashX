@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 
 
 val KClass<*>.intent: Intent
-    get() = Intent().setClassName(Components.PACKAGE_NAME, java.name)
+    get() = Intent().setClassName(GlobalState.application.packageName, java.name)
 
 
 fun Context.registerReceiverCompat(

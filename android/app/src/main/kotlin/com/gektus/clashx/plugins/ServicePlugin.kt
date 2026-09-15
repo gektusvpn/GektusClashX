@@ -46,7 +46,7 @@ class ServicePlugin :
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         job = SupervisorJob()
-        channel = MethodChannel(binding.binaryMessenger, "${Components.PACKAGE_NAME}/service")
+        channel = MethodChannel(binding.binaryMessenger, "${Components.CHANNEL_PREFIX}/service")
         channel.setMethodCallHandler(this)
         attached = true
         // Single FIFO consumer so events (logs/traffic/state) reach Flutter strictly in

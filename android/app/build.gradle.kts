@@ -46,6 +46,7 @@ android {
 
     defaultConfig {
         applicationId = "com.gektus.clashx"
+        manifestPlaceholders["appLabel"] = "GektusClashX"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -71,6 +72,9 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            manifestPlaceholders["appLabel"] = "GektusClashX Debug"
             isMinifyEnabled = false
         }
 

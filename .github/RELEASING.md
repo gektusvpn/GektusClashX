@@ -52,3 +52,20 @@ git push origin v0.5.0
 Публикация в AUR и уведомление Telegram выключены по умолчанию. Для их включения
 создайте Actions variables `PUBLISH_AUR=true` и `SEND_TELEGRAM=true`, затем
 добавьте соответствующие secrets, используемые в `build.yaml`.
+
+## Отладка на Android
+
+Debug-вариант использует application ID `com.gektus.clashx.debug` и отображается
+как `GektusClashX Debug`, поэтому его можно установить рядом с релизной версией.
+После установки Android SDK, включения USB debugging и подключения устройства:
+
+```bash
+flutter devices
+flutter run -d <device-id>
+```
+
+Если Flutter не нашёл SDK автоматически, укажите его каталог один раз:
+
+```bash
+flutter config --android-sdk "$HOME/Android/Sdk"
+```
