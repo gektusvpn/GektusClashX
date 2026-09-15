@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flclashx/clash/core.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/utils/device_info_service.dart';
+import 'package:gektusclashx/clash/core.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/utils/device_info_service.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'clash_config.dart';
@@ -72,12 +72,13 @@ class Profile with _$Profile {
   factory Profile.normal({
     String? label,
     String url = '',
-  }) => Profile(
-      label: label,
-      url: url,
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      autoUpdateDuration: defaultUpdateDuration,
-    );
+  }) =>
+      Profile(
+        label: label,
+        url: url,
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        autoUpdateDuration: defaultUpdateDuration,
+      );
 }
 
 @freezed
@@ -184,39 +185,51 @@ extension ProfileExtension on Profile {
     final response = await request.getFileResponseForUrl(
       url,
       headers: headers.isNotEmpty ? headers : null,
+      githubProxyBase: this.providerHeaders['gektusclashx-gh-proxy'] ?? '',
     );
 
     final disposition = response.headers.value("content-disposition");
     final userinfo = response.headers.value('subscription-userinfo');
-    
+
     final responseData = response.data;
     if (responseData == null) {
       throw Exception("Failed to get profile data from response.");
     }
 
     final providerHeaders = <String, String>{};
-    
+
     final headersToCollect = [
       'announce',
-      'support-url', 
+      'support-email',
+      'support-url',
       'profile-update-interval',
       'x-hwid-max-devices-reached',
       'x-hwid-not-supported',
     ];
-    
+
     for (final headerName in headersToCollect) {
       final value = response.headers.value(headerName);
       if (value != null && value.isNotEmpty) {
         providerHeaders[headerName] = value;
       }
     }
-    
-    response.headers.forEach((name, values) {
-      if (name.toLowerCase().startsWith('flclashx-') && values.isNotEmpty) {
-        providerHeaders[name.toLowerCase()] = values.first;
-      }
-    });
-    
+
+    void collectProviderHeaders(String prefix) {
+      response.headers.forEach((name, values) {
+        final normalizedName = name.toLowerCase();
+        if (!normalizedName.startsWith(prefix) || values.isEmpty) {
+          return;
+        }
+        final suffix = normalizedName.substring(prefix.length);
+        providerHeaders['gektusclashx-$suffix'] = values.first;
+      });
+    }
+
+    // Keep subscriptions made for FlClashX working after the rebrand. Collect
+    // the current prefix last so it wins when a provider sends both variants.
+    collectProviderHeaders('flclashx-');
+    collectProviderHeaders('gektusclashx-');
+
     Duration? durationFromHeader;
     final updateIntervalHeader = providerHeaders['profile-update-interval'];
     if (updateIntervalHeader != null) {
@@ -227,7 +240,7 @@ extension ProfileExtension on Profile {
     }
 
     String updatedUrl = url;
-    final newDomain = providerHeaders['flclashx-newdomain'];
+    final newDomain = providerHeaders['gektusclashx-newdomain'];
     if (newDomain != null && newDomain.isNotEmpty) {
       final currentUri = Uri.tryParse(url);
       if (currentUri != null && currentUri.host != newDomain) {
