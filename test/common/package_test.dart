@@ -13,7 +13,7 @@ void main() {
       buildNumber: '1',
     );
     final expected =
-        'clash.meta/1.19.30 GektusClashX/v0.4.2 Platform/${Platform.operatingSystem}';
+        'GektusClashX/v0.4.2 core/v1.19.30 Platform/${Platform.operatingSystem}';
 
     expect(
       packageInfo.ua(appVersion: '0.4.2', coreVersion: 'v1.19.30'),
@@ -22,6 +22,10 @@ void main() {
     expect(
       packageInfo.ua(appVersion: 'v0.4.2', coreVersion: 'v1.19.30'),
       expected,
+    );
+    expect(
+      packageInfo.ua(appVersion: 'v0.4.2'),
+      'GektusClashX/v0.4.2 Platform/${Platform.operatingSystem}',
     );
   });
 }
