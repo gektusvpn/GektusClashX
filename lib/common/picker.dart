@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 

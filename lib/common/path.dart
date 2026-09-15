@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
+import 'package:gektusclashx/common/common.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppPath {
-
   factory AppPath() {
     _instance ??= AppPath._internal();
     return _instance!;
@@ -45,12 +44,12 @@ class AppPath {
 
   String get corePath {
     if (Platform.isMacOS) {
-      // Core is stored in Application Support/com.follow.clash/cores/ (copied by Swift code on launch)
+      // Core is stored in Application Support/com.gektus.clashx/cores/ (copied by Swift code on launch)
       // Permissions are set automatically in Swift
       final home = Platform.environment['HOME'] ?? '';
-      return '$home/Library/Application Support/com.follow.clash/cores/FlClashCore';
+      return '$home/Library/Application Support/com.gektus.clashx/cores/GektusClashCore';
     }
-    return join(executableDirPath, "FlClashCore$executableExtension");
+    return join(executableDirPath, "GektusClashCore$executableExtension");
   }
 
   String get corePendingPath => '$corePath.pending';
@@ -60,7 +59,8 @@ class AppPath {
   String get allowedCoreHashPath =>
       join(executableDirPath, "allowed_core.sha256");
 
-  String get helperPath => join(executableDirPath, "$appHelperService$executableExtension");
+  String get helperPath =>
+      join(executableDirPath, "$appHelperService$executableExtension");
 
   Future<String> get downloadDirPath async {
     final directory = await downloadDir.future;
@@ -74,7 +74,7 @@ class AppPath {
 
   Future<String> get lockFilePath async {
     final directory = await dataDir.future;
-    return join(directory.path, "FlClashX.lock");
+    return join(directory.path, "GektusClashX.lock");
   }
 
   Future<String> get sharedPreferencesPath async {

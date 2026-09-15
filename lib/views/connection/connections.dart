@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/views/zashboard.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/clash/clash.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/views/zashboard.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -224,7 +224,8 @@ class _ActiveConnectionsBodyState extends ConsumerState<ActiveConnectionsBody>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.query != widget.query ||
         !listEquals(oldWidget.keywords, widget.keywords)) {
-      _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
+      _connectionsStateNotifier.value =
+          _connectionsStateNotifier.value.copyWith(
         query: widget.query,
         keywords: widget.keywords,
       );
@@ -294,8 +295,8 @@ class _ActiveConnectionsBodyState extends ConsumerState<ActiveConnectionsBody>
           final connections = state.list;
           if (connections.isEmpty) {
             return NullStatus(
-              label: appLocalizations
-                  .nullTip(appLocalizations.connectionsActive),
+              label:
+                  appLocalizations.nullTip(appLocalizations.connectionsActive),
             );
           }
           return CommonScrollBar(

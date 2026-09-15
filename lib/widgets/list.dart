@@ -1,8 +1,8 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/open_container.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/open_container.dart';
 import 'package:flutter/material.dart';
 
 import 'card.dart';
@@ -15,7 +15,6 @@ class Delegate {
 }
 
 class RadioDelegate<T> extends Delegate {
-
   const RadioDelegate({
     required this.value,
     required this.groupValue,
@@ -27,7 +26,6 @@ class RadioDelegate<T> extends Delegate {
 }
 
 class SwitchDelegate<T> extends Delegate {
-
   const SwitchDelegate({
     required this.value,
     this.onChanged,
@@ -37,7 +35,6 @@ class SwitchDelegate<T> extends Delegate {
 }
 
 class CheckboxDelegate<T> extends Delegate {
-
   const CheckboxDelegate({
     this.value = false,
     this.onChanged,
@@ -47,7 +44,6 @@ class CheckboxDelegate<T> extends Delegate {
 }
 
 class OpenDelegate extends Delegate {
-
   const OpenDelegate({
     required this.title,
     required this.widget,
@@ -63,7 +59,6 @@ class OpenDelegate extends Delegate {
 }
 
 class NextDelegate extends Delegate {
-
   const NextDelegate({
     required this.title,
     required this.widget,
@@ -79,7 +74,6 @@ class NextDelegate extends Delegate {
 }
 
 class OptionsDelegate<T> extends Delegate {
-
   const OptionsDelegate({
     required this.title,
     required this.options,
@@ -95,7 +89,6 @@ class OptionsDelegate<T> extends Delegate {
 }
 
 class InputDelegate extends Delegate {
-
   const InputDelegate({
     required this.title,
     required this.value,
@@ -114,7 +107,6 @@ class InputDelegate extends Delegate {
 }
 
 class ListItem<T> extends StatelessWidget {
-
   const ListItem({
     super.key,
     required this.title,
@@ -251,21 +243,22 @@ class ListItem<T> extends StatelessWidget {
     void Function()? onTap,
     Widget? trailing,
     Widget? leading,
-  }) => ListTile(
-      key: key,
-      dense: dense,
-      titleTextStyle: titleTextStyle,
-      subtitleTextStyle: subtitleTextStyle,
-      leading: leading ?? this.leading,
-      horizontalTitleGap: horizontalTitleGap,
-      title: title,
-      minVerticalPadding: 12,
-      subtitle: subtitle,
-      titleAlignment: tileTitleAlignment,
-      onTap: onTap,
-      trailing: trailing ?? this.trailing,
-      contentPadding: padding,
-    );
+  }) =>
+      ListTile(
+        key: key,
+        dense: dense,
+        titleTextStyle: titleTextStyle,
+        subtitleTextStyle: subtitleTextStyle,
+        leading: leading ?? this.leading,
+        horizontalTitleGap: horizontalTitleGap,
+        title: title,
+        minVerticalPadding: 12,
+        subtitle: subtitle,
+        titleAlignment: tileTitleAlignment,
+        onTap: onTap,
+        trailing: trailing ?? this.trailing,
+        contentPadding: padding,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -286,13 +279,13 @@ class ListItem<T> extends StatelessWidget {
                   maxWidth: openDelegate.maxWidth,
                 ),
                 builder: (_, type) => AdaptiveSheetScaffold(
-                    actions: [
-                      if (openDelegate.action != null) openDelegate.action!,
-                    ],
-                    type: type,
-                    body: child,
-                    title: openDelegate.title,
-                  ),
+                  actions: [
+                    if (openDelegate.action != null) openDelegate.action!,
+                  ],
+                  type: type,
+                  body: child,
+                  title: openDelegate.title,
+                ),
               );
               return;
             }
@@ -304,15 +297,15 @@ class ListItem<T> extends StatelessWidget {
           );
         },
         openBuilder: (_, action) => CommonScaffold.open(
-            key: Key(openDelegate.title),
-            onBack: action,
-            title: openDelegate.title,
-            body: child,
-            disableBackground: true,
-            actions: [
-              if (openDelegate.action != null) openDelegate.action!,
-            ],
-          ),
+          key: Key(openDelegate.title),
+          onBack: action,
+          title: openDelegate.title,
+          body: child,
+          disableBackground: true,
+          actions: [
+            if (openDelegate.action != null) openDelegate.action!,
+          ],
+        ),
       );
     }
     if (delegate is NextDelegate) {
@@ -330,13 +323,13 @@ class ListItem<T> extends StatelessWidget {
               maxWidth: nextDelegate.maxWidth,
             ),
             builder: (_, type) => AdaptiveSheetScaffold(
-                actions: [
-                  if (nextDelegate.action != null) nextDelegate.action!,
-                ],
-                type: type,
-                body: child,
-                title: nextDelegate.title,
-              ),
+              actions: [
+                if (nextDelegate.action != null) nextDelegate.action!,
+              ],
+              type: type,
+              body: child,
+              title: nextDelegate.title,
+            ),
           );
         },
       );
@@ -428,7 +421,6 @@ class ListItem<T> extends StatelessWidget {
 }
 
 class ListHeader extends StatelessWidget {
-
   const ListHeader({
     super.key,
     required this.title,
@@ -445,55 +437,55 @@ class ListHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      alignment: Alignment.centerLeft,
-      padding: padding ??
-          const EdgeInsets.only(
-            left: 16,
-            right: 8,
-            top: 24,
-            bottom: 8,
-          ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurfaceVariant
-                            .opacity80,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                if (subTitle != null)
+        alignment: Alignment.centerLeft,
+        padding: padding ??
+            const EdgeInsets.only(
+              left: 16,
+              right: 8,
+              top: 24,
+              bottom: 8,
+            ),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subTitle!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
+                    title,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .opacity80,
+                          fontWeight: FontWeight.w600,
                         ),
                   ),
+                  if (subTitle != null)
+                    Text(
+                      subTitle!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                    ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ...genActions(
+                  actions,
+                  space: space,
+                ),
               ],
             ),
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ...genActions(
-                actions,
-                space: space,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 List<Widget> generateSection({
@@ -524,24 +516,25 @@ Widget generateSectionV2({
   required Iterable<Widget> items,
   List<Widget>? actions,
   bool separated = true,
-}) => Column(
-    children: [
-      if (items.isNotEmpty && title != null)
-        ListHeader(
-          title: title,
-          actions: actions,
-        ),
-      CommonCard(
-        radius: 18,
-        type: CommonCardType.filled,
-        child: Column(
-          children: [
-            ...items,
-          ],
-        ),
-      )
-    ],
-  );
+}) =>
+    Column(
+      children: [
+        if (items.isNotEmpty && title != null)
+          ListHeader(
+            title: title,
+            actions: actions,
+          ),
+        CommonCard(
+          radius: 18,
+          type: CommonCardType.filled,
+          child: Column(
+            children: [
+              ...items,
+            ],
+          ),
+        )
+      ],
+    );
 
 List<Widget> generateInfoSection({
   required Info info,
@@ -567,9 +560,9 @@ List<Widget> generateInfoSection({
 }
 
 Widget generateListView(List<Widget> items) => ListView.builder(
-    itemCount: items.length,
-    itemBuilder: (_, index) => items[index],
-    padding: const EdgeInsets.only(
-      bottom: 16,
-    ),
-  );
+      itemCount: items.length,
+      itemBuilder: (_, index) => items[index],
+      padding: const EdgeInsets.only(
+        bottom: 16,
+      ),
+    );

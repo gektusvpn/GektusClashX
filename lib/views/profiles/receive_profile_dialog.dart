@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -201,8 +201,7 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
       case _SyncStatus.error:
         return _buildStatus(
           context,
-          Icon(Icons.error_outline,
-              size: 56, color: context.colorScheme.error),
+          Icon(Icons.error_outline, size: 56, color: context.colorScheme.error),
           'Не удалось добавить профиль',
           detail: _statusMessage,
         );
@@ -284,7 +283,7 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FlClashX — подписка на ТВ</title>
+<title>GektusClashX — подписка на ТВ</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }

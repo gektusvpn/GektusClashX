@@ -1,9 +1,9 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/common.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/common.dart';
+import 'package:gektusclashx/providers/app.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -526,23 +526,27 @@ class ContextMenuControllerImpl implements SelectionToolbarController {
             return TextSelectionToolbar(
               anchorAbove: anchors.primaryAnchor,
               anchorBelow: anchors.secondaryAnchor ?? Offset.zero,
-              children: menus.asMap().entries.map(
-                (entry) => TextSelectionToolbarTextButton(
-                  padding: TextSelectionToolbarTextButton.getPadding(
-                    entry.key,
-                    menus.length,
-                  ),
-                  alignment: AlignmentDirectional.centerStart,
-                  onPressed: () {
-                    if (entry.value.onPressed == null) {
-                      return;
-                    }
-                    entry.value.onPressed!();
-                    _removeOverLayEntry();
-                  },
-                  child: Text(entry.value.label),
-                ),
-              ).toList(),
+              children: menus
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) => TextSelectionToolbarTextButton(
+                      padding: TextSelectionToolbarTextButton.getPadding(
+                        entry.key,
+                        menus.length,
+                      ),
+                      alignment: AlignmentDirectional.centerStart,
+                      onPressed: () {
+                        if (entry.value.onPressed == null) {
+                          return;
+                        }
+                        entry.value.onPressed!();
+                        _removeOverLayEntry();
+                      },
+                      child: Text(entry.value.label),
+                    ),
+                  )
+                  .toList(),
             );
           },
         ),

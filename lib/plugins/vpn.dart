@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/common.dart';
+import 'package:gektusclashx/clash/clash.dart';
+import 'package:gektusclashx/common/common.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +15,7 @@ abstract mixin class VpnListener {
 
 /// Compatibility shim for UI code that still reads/writes notification state
 /// through the old `vpn` singleton. All transport now goes through [ClashLib]
-/// on the `com.follow.clashx/service` channel; this class keeps the caches
+/// on the `com.gektus.clashx/service` channel; this class keeps the caches
 /// needed to render the sticky notification title via
 /// [ClashLib.updateNotificationParams].
 class Vpn {
@@ -24,7 +24,7 @@ class Vpn {
 
   Vpn._();
 
-  String _cachedProfileName = 'FlClashX';
+  String _cachedProfileName = 'GektusClashX';
   String _cachedServiceName = '';
 
   String get cachedProfileName => _cachedProfileName;
@@ -44,7 +44,8 @@ class Vpn {
       final title = _cachedServiceName.isNotEmpty
           ? _cachedServiceName
           : _cachedProfileName;
-      commonPrint.log('[Vpn] pushNotification: title="$title" clashLib=${clashLib != null}');
+      commonPrint.log(
+          '[Vpn] pushNotification: title="$title" clashLib=${clashLib != null}');
       // Leave the stop-button label to its localized default ("Остановить" / "Stop");
       // the service name already lives in the notification title above.
       await clashLib?.updateNotificationParams(
@@ -101,7 +102,7 @@ class Vpn {
 class MethodChannelShim {
   const MethodChannelShim();
   Future<T?> invoke<T>(String method, dynamic arguments) async {
-    const channel = MethodChannel('com.follow.clashx/service');
+    const channel = MethodChannel('com.gektus.clashx/service');
     return channel.invokeMethod<T>(method, arguments);
   }
 }

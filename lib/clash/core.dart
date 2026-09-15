@@ -3,18 +3,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/clash/interface.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/common/process_icon.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/clash/clash.dart';
+import 'package:gektusclashx/clash/interface.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/common/process_icon.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 
 class ClashCore {
-
   factory ClashCore() {
     _instance ??= ClashCore._internal();
     return _instance!;
@@ -89,11 +88,14 @@ class ClashCore {
 
   FutureOr<bool> get isInit => clashInterface.isInit;
 
-  FutureOr<String> validateConfig(String data) => clashInterface.validateConfig(data);
+  FutureOr<String> validateConfig(String data) =>
+      clashInterface.validateConfig(data);
 
-  Future<String> updateConfig(UpdateParams updateParams) => clashInterface.updateConfig(updateParams);
+  Future<String> updateConfig(UpdateParams updateParams) =>
+      clashInterface.updateConfig(updateParams);
 
-  Future<String> setupConfig(SetupParams setupParams) => clashInterface.setupConfig(setupParams);
+  Future<String> setupConfig(SetupParams setupParams) =>
+      clashInterface.setupConfig(setupParams);
 
   Future<List<Group>> getProxiesGroups() async {
     final proxies = await clashInterface.getProxies();
@@ -106,7 +108,7 @@ class ClashCore {
             .where(isGroup)
             .toList();
     final groupNames = [UsedProxy.GLOBAL.name, ...fromGlobal];
-    // Only when GLOBAL opts in via `flclashx-override`: a curated GLOBAL lists
+    // Only when GLOBAL opts in via `gektusclashx-override`: a curated GLOBAL lists
     // just a subset, so the service groups used by rules (YouTube, Telegram, …)
     // wouldn't otherwise surface. Enumerate them from the full proxy map so
     // every defined group is available (the hidden flag still controls display).
@@ -144,7 +146,8 @@ class ClashCore {
         .toList();
   }
 
-  FutureOr<String> changeProxy(ChangeProxyParams changeProxyParams) async => await clashInterface.changeProxy(changeProxyParams);
+  FutureOr<String> changeProxy(ChangeProxyParams changeProxyParams) async =>
+      await clashInterface.changeProxy(changeProxyParams);
 
   Future<List<Connection>> getConnections() async {
     final res = await clashInterface.getConnections();
@@ -212,17 +215,20 @@ class ClashCore {
     return ExternalProvider.fromJson(json.decode(externalProvidersRawString));
   }
 
-  Future<String> updateGeoData(UpdateGeoDataParams params) => clashInterface.updateGeoData(params);
+  Future<String> updateGeoData(UpdateGeoDataParams params) =>
+      clashInterface.updateGeoData(params);
 
   Future<String> sideLoadExternalProvider({
     required String providerName,
     required String data,
-  }) => clashInterface.sideLoadExternalProvider(
-        providerName: providerName, data: data);
+  }) =>
+      clashInterface.sideLoadExternalProvider(
+          providerName: providerName, data: data);
 
   Future<String> updateExternalProvider({
     required String providerName,
-  }) async => clashInterface.updateExternalProvider(providerName);
+  }) async =>
+      clashInterface.updateExternalProvider(providerName);
 
   Future<void> startListener() async {
     await clashInterface.startListener();
@@ -232,7 +238,8 @@ class ClashCore {
     await clashInterface.stopListener();
   }
 
-  Future<void> healthCheck([String groupName = '']) => clashInterface.healthCheck(groupName);
+  Future<void> healthCheck([String groupName = '']) =>
+      clashInterface.healthCheck(groupName);
 
   Future<Delay> getDelay(String url, String proxyName) async {
     final data = await clashInterface.asyncTestDelay(url, proxyName);

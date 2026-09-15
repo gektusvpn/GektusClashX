@@ -1,11 +1,10 @@
 import 'dart:math';
 
-import 'package:flclashx/common/common.dart';
+import 'package:gektusclashx/common/common.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class DonutChartData {
-
   const DonutChartData({
     required double value,
     required this.color,
@@ -31,7 +30,6 @@ class DonutChartData {
 }
 
 class DonutChart extends StatefulWidget {
-
   const DonutChart({
     super.key,
     required this.data,
@@ -76,19 +74,18 @@ class _DonutChartState extends State<DonutChart>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) => CustomPaint(
+        animation: _animationController,
+        builder: (context, child) => CustomPaint(
           painter: DonutChartPainter(
             _oldData,
             widget.data,
             _animationController.value,
           ),
         ),
-    );
+      );
 }
 
 class DonutChartPainter extends CustomPainter {
-
   DonutChartPainter(this.oldData, this.newData, this.progress);
   final List<DonutChartData> oldData;
   final List<DonutChartData> newData;
@@ -171,7 +168,8 @@ class DonutChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(DonutChartPainter oldDelegate) => oldDelegate.progress != progress ||
-        oldDelegate.oldData != oldData ||
-        oldDelegate.newData != newData;
+  bool shouldRepaint(DonutChartPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.oldData != oldData ||
+      oldDelegate.newData != newData;
 }

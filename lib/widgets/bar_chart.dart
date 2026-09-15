@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flclashx/common/constant.dart';
+import 'package:gektusclashx/common/constant.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class BarChartData {
-
   const BarChartData({
     required this.value,
     required this.label,
@@ -16,7 +15,6 @@ class BarChartData {
 }
 
 class BarChart extends StatefulWidget {
-
   const BarChart({
     super.key,
     required this.data,
@@ -61,21 +59,21 @@ class _BarChartState extends State<BarChart>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: (_, container) => AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) => CustomPaint(
-            painter: BarChartPainter(
-              _oldData,
-              widget.data,
-              _animationController.value,
+  Widget build(BuildContext context) => LayoutBuilder(
+      builder: (_, container) => AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) => CustomPaint(
+              painter: BarChartPainter(
+                _oldData,
+                widget.data,
+                _animationController.value,
+              ),
+              size: Size(container.maxWidth, container.maxHeight),
             ),
-            size: Size(container.maxWidth, container.maxHeight),
-          ),
-      ));
+          ));
 }
 
 class BarChartPainter extends CustomPainter {
-
   BarChartPainter(this.oldData, this.newData, this.progress);
   final List<BarChartData> oldData;
   final List<BarChartData> newData;
@@ -134,7 +132,8 @@ class BarChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(BarChartPainter oldDelegate) => oldDelegate.progress != progress ||
-        oldDelegate.oldData != oldData ||
-        oldDelegate.newData != newData;
+  bool shouldRepaint(BarChartPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.oldData != oldData ||
+      oldDelegate.newData != newData;
 }

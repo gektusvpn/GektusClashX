@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flclashx/common/common.dart';
+import 'package:gektusclashx/common/common.dart';
 
 extension CompleterExt<T> on Completer<T> {
   Future<Object?> safeFuture({
@@ -29,14 +29,15 @@ extension FutureExt<T> on Future<T> {
     required Duration timeout,
     required String functionName,
     FutureOr<T> Function()? onTimeout,
-  }) => this.timeout(
-      timeout,
-      onTimeout: () async {
-        if (onTimeout != null) {
-          return onTimeout();
-        } else {
-          throw TimeoutException('$functionName timeout');
-        }
-      },
-    );
+  }) =>
+      this.timeout(
+        timeout,
+        onTimeout: () async {
+          if (onTimeout != null) {
+            return onTimeout();
+          } else {
+            throw TimeoutException('$functionName timeout');
+          }
+        },
+      );
 }

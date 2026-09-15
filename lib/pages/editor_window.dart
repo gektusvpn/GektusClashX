@@ -24,8 +24,8 @@ import 'package:window_manager/window_manager.dart';
 /// Cross-engine channel the editor window uses to reach the main engine.
 /// Unidirectional: the main engine registers the handler, the sub-window
 /// invokes it.
-const _editorChannel =
-    WindowMethodChannel('flclashx_editor', mode: ChannelMode.unidirectional);
+const _editorChannel = WindowMethodChannel('gektusclashx_editor',
+    mode: ChannelMode.unidirectional);
 
 // ---------------------------------------------------------------------------
 // Sub-window side — runs in its own engine/isolate.

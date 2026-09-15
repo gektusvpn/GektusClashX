@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flclashx/common/common.dart';
+import 'package:gektusclashx/common/common.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:win32_registry/win32_registry.dart';
@@ -31,7 +31,7 @@ class DeviceInfoService {
   // recomputing yields the same value, and nothing stale can get stuck there.
   static String? _cachedHwid;
   static const MethodChannel _channel =
-      MethodChannel('com.follow.clashx/device_id');
+      MethodChannel('com.gektus.clashx/device_id');
 
   String _generateCompact16CharId(String fullId) {
     final bytes = utf8.encode(fullId);

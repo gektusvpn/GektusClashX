@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/providers/config.dart';
+import 'package:gektusclashx/providers/app.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_ext/window_ext.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WindowManager extends ConsumerStatefulWidget {
-
   const WindowManager({
     super.key,
     required this.child,
@@ -120,7 +119,6 @@ class _WindowContainerState extends ConsumerState<WindowManager>
 }
 
 class WindowHeaderContainer extends StatelessWidget {
-
   const WindowHeaderContainer({
     super.key,
     required this.child,
@@ -135,21 +133,21 @@ class WindowHeaderContainer extends StatelessWidget {
 
     return Consumer(
       builder: (_, ref, child) => Stack(
-          children: [
-            Column(
-              children: [
-                SizedBox(
-                  height: kHeaderHeight,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: child!,
-                ),
-              ],
-            ),
-            const WindowHeader(),
-          ],
-        ),
+        children: [
+          Column(
+            children: [
+              SizedBox(
+                height: kHeaderHeight,
+              ),
+              Expanded(
+                flex: 1,
+                child: child!,
+              ),
+            ],
+          ),
+          const WindowHeader(),
+        ],
+      ),
       child: child,
     );
   }
@@ -281,7 +279,7 @@ class _WindowHeaderState extends State<WindowHeader> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
-    
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -322,7 +320,8 @@ class _WindowHeaderState extends State<WindowHeader> {
                 cursor: SystemMouseCursors.resizeUpDown,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onPanStart: (_) => windowManager.startResizing(ResizeEdge.top),
+                  onPanStart: (_) =>
+                      windowManager.startResizing(ResizeEdge.top),
                 ),
               ),
             ),
@@ -372,7 +371,7 @@ class _WindowControlButtonState extends State<_WindowControlButton> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final defaultHoverColor = colorScheme.onSurface.withValues(alpha: 0.08);
-    
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -383,7 +382,7 @@ class _WindowControlButtonState extends State<_WindowControlButton> {
           width: 46,
           height: kHeaderHeight,
           decoration: BoxDecoration(
-            color: _isHovered 
+            color: _isHovered
                 ? (widget.hoverColor ?? defaultHoverColor)
                 : Colors.transparent,
           ),
@@ -408,18 +407,18 @@ class _ConnectionStatusIndicator extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = context.colorScheme;
-    
+
     // Watch VPN/TUN status via runTimeProvider
     final isStart = ref.watch(runTimeProvider.select((state) => state != null));
-    
-    final statusColor = isStart 
+
+    final statusColor = isStart
         ? const Color(0xFF4CAF50) // Green when connected
-        : colorScheme.onSurface.withValues(alpha: 0.3); // Gray when disconnected
-    
-    final statusText = isStart 
-        ? appLocalizations.running 
-        : appLocalizations.stopped;
-    
+        : colorScheme.onSurface
+            .withValues(alpha: 0.3); // Gray when disconnected
+
+    final statusText =
+        isStart ? appLocalizations.running : appLocalizations.stopped;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -458,24 +457,24 @@ class AppIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      margin: const EdgeInsets.only(left: 8),
-      child: const Row(
-        children: [
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: CircleAvatar(
-              foregroundImage: AssetImage("assets/images/icon.png"),
-              backgroundColor: Colors.transparent,
+        margin: const EdgeInsets.only(left: 8),
+        child: const Row(
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: CircleAvatar(
+                foregroundImage: AssetImage("assets/images/icon.png"),
+                backgroundColor: Colors.transparent,
+              ),
             ),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Text(
-            appName,
-          ),
-        ],
-      ),
-    );
+            SizedBox(
+              width: 8,
+            ),
+            Text(
+              appName,
+            ),
+          ],
+        ),
+      );
 }

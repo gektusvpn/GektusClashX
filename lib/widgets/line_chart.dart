@@ -1,16 +1,14 @@
 import 'dart:ui';
-import 'package:flclashx/common/color.dart';
+import 'package:gektusclashx/common/color.dart';
 import 'package:flutter/material.dart';
 
 class Point {
-
   const Point(this.x, this.y);
   final double x;
   final double y;
 }
 
 class LineChart extends StatefulWidget {
-
   const LineChart({
     super.key,
     this.gradient = false,
@@ -61,26 +59,26 @@ class _LineChartState extends State<LineChart>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: (_, container) => AnimatedBuilder(
-        animation: _controller.view,
-        builder: (_, __) => CustomPaint(
-            painter: LineChartPainter(
-              prevPoints: prevPoints,
-              points: points,
-              progress: _controller.value,
-              gradient: widget.gradient,
-              color: widget.color,
+  Widget build(BuildContext context) => LayoutBuilder(
+      builder: (_, container) => AnimatedBuilder(
+            animation: _controller.view,
+            builder: (_, __) => CustomPaint(
+              painter: LineChartPainter(
+                prevPoints: prevPoints,
+                points: points,
+                progress: _controller.value,
+                gradient: widget.gradient,
+                color: widget.color,
+              ),
+              child: SizedBox(
+                height: container.maxHeight,
+                width: container.maxWidth,
+              ),
             ),
-            child: SizedBox(
-              height: container.maxHeight,
-              width: container.maxWidth,
-            ),
-          ),
-      ));
+          ));
 }
 
 class LineChartPainter extends CustomPainter {
-
   LineChartPainter({
     required this.prevPoints,
     required this.points,
@@ -211,9 +209,10 @@ class LineChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant LineChartPainter oldDelegate) => oldDelegate.progress != progress ||
-        oldDelegate.prevPoints != prevPoints ||
-        oldDelegate.points != points ||
-        oldDelegate.color != color ||
-        oldDelegate.gradient != gradient;
+  bool shouldRepaint(covariant LineChartPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.prevPoints != prevPoints ||
+      oldDelegate.points != points ||
+      oldDelegate.color != color ||
+      oldDelegate.gradient != gradient;
 }

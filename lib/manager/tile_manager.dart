@@ -1,10 +1,9 @@
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/plugins/tile.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/plugins/tile.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 
 class TileManager extends StatefulWidget {
-
   const TileManager({
     super.key,
     required this.child,

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/state.dart';
 
 class FlClashHttpOverrides extends HttpOverrides {
   static String handleFindProxy(Uri url) {
@@ -9,7 +9,7 @@ class FlClashHttpOverrides extends HttpOverrides {
       return "DIRECT";
     }
     final isStart = globalState.appState.runTime != null;
-    commonPrint.log("find $url proxy:$isStart");
+    commonPrint.log("find ${url.scheme}://${url.host} proxy:$isStart");
     if (!isStart) return "DIRECT";
     // When TUN is handling traffic, let the OS network stack send the request
     // so it gets captured by TUN and processed by the core via rules. This

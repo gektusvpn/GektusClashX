@@ -1,16 +1,16 @@
 import 'dart:typed_data';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/common/dav_client.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/dialog.dart';
-import 'package:flclashx/widgets/fade_box.dart';
-import 'package:flclashx/widgets/input.dart';
-import 'package:flclashx/widgets/list.dart';
-import 'package:flclashx/widgets/text.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/common/dav_client.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/config.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/dialog.dart';
+import 'package:gektusclashx/widgets/fade_box.dart';
+import 'package:gektusclashx/widgets/input.dart';
+import 'package:gektusclashx/widgets/list.dart';
+import 'package:gektusclashx/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -63,7 +63,8 @@ class BackupAndRecovery extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleRecoveryOnWebDAV(BuildContext context, DAVClient client) async {
+  Future<void> _handleRecoveryOnWebDAV(
+      BuildContext context, DAVClient client) async {
     final recoveryOption = await globalState.showCommonDialog<RecoveryOption>(
       child: const RecoveryOptionsDialog(),
     );
@@ -200,28 +201,27 @@ class BackupAndRecovery extends ConsumerWidget {
                   FutureBuilder<bool>(
                     future: client!.pingCompleter.future,
                     builder: (_, snapshot) => Center(
-                        child: FadeThroughBox(
-                          child:
-                              snapshot.connectionState != ConnectionState.done
-                                  ? const SizedBox(
-                                      width: 12,
-                                      height: 12,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 1,
-                                      ),
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: snapshot.data == true
-                                            ? Colors.green
-                                            : Colors.red,
-                                      ),
-                                      width: 12,
-                                      height: 12,
-                                    ),
-                        ),
+                      child: FadeThroughBox(
+                        child: snapshot.connectionState != ConnectionState.done
+                            ? const SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1,
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: snapshot.data == true
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                                width: 12,
+                                height: 12,
+                              ),
                       ),
+                    ),
                   ),
                 ],
               ),
@@ -320,32 +320,31 @@ class _RecoveryOptionsDialogState extends State<RecoveryOptionsDialog> {
 
   @override
   Widget build(BuildContext context) => CommonDialog(
-      title: appLocalizations.recovery,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 16,
-      ),
-      child: Wrap(
-        children: [
-          ListItem(
-            onTap: () {
-              _handleOnTab(RecoveryOption.onlyProfiles);
-            },
-            title: Text(appLocalizations.recoveryProfiles),
-          ),
-          ListItem(
-            onTap: () {
-              _handleOnTab(RecoveryOption.all);
-            },
-            title: Text(appLocalizations.recoveryAll),
-          )
-        ],
-      ),
-    );
+        title: appLocalizations.recovery,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 16,
+        ),
+        child: Wrap(
+          children: [
+            ListItem(
+              onTap: () {
+                _handleOnTab(RecoveryOption.onlyProfiles);
+              },
+              title: Text(appLocalizations.recoveryProfiles),
+            ),
+            ListItem(
+              onTap: () {
+                _handleOnTab(RecoveryOption.all);
+              },
+              title: Text(appLocalizations.recoveryAll),
+            )
+          ],
+        ),
+      );
 }
 
 class WebDAVFormDialog extends ConsumerStatefulWidget {
-
   const WebDAVFormDialog({super.key, this.dav});
   final DAV? dav;
 
@@ -391,57 +390,57 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
 
   @override
   Widget build(BuildContext context) => CommonDialog(
-      title: appLocalizations.webDAVConfiguration,
-      actions: [
-        if (widget.dav != null)
+        title: appLocalizations.webDAVConfiguration,
+        actions: [
+          if (widget.dav != null)
+            TextButton(
+              onPressed: _delete,
+              child: Text(appLocalizations.delete),
+            ),
           TextButton(
-            onPressed: _delete,
-            child: Text(appLocalizations.delete),
-          ),
-        TextButton(
-          onPressed: _submit,
-          child: Text(appLocalizations.save),
-        )
-      ],
-      child: Form(
-        key: _formKey,
-        child: Wrap(
-          runSpacing: 16,
-          children: [
-            TextFormField(
-              controller: uriController,
-              maxLines: 5,
-              minLines: 1,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.link),
-                border: const OutlineInputBorder(),
-                labelText: appLocalizations.address,
-                helperText: appLocalizations.addressHelp,
+            onPressed: _submit,
+            child: Text(appLocalizations.save),
+          )
+        ],
+        child: Form(
+          key: _formKey,
+          child: Wrap(
+            runSpacing: 16,
+            children: [
+              TextFormField(
+                controller: uriController,
+                maxLines: 5,
+                minLines: 1,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.link),
+                  border: const OutlineInputBorder(),
+                  labelText: appLocalizations.address,
+                  helperText: appLocalizations.addressHelp,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty || !value.isUrl) {
+                    return appLocalizations.addressTip;
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty || !value.isUrl) {
-                  return appLocalizations.addressTip;
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: userController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.account_circle),
-                border: const OutlineInputBorder(),
-                labelText: appLocalizations.account,
+              TextFormField(
+                controller: userController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.account_circle),
+                  border: const OutlineInputBorder(),
+                  labelText: appLocalizations.account,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return appLocalizations.emptyTip(appLocalizations.account);
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return appLocalizations.emptyTip(appLocalizations.account);
-                }
-                return null;
-              },
-            ),
-            ValueListenableBuilder(
-              valueListenable: _obscureController,
-              builder: (_, obscure, __) => TextFormField(
+              ValueListenableBuilder(
+                valueListenable: _obscureController,
+                builder: (_, obscure, __) => TextFormField(
                   controller: passwordController,
                   obscureText: obscure,
                   decoration: InputDecoration(
@@ -465,9 +464,9 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
                     return null;
                   },
                 ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }

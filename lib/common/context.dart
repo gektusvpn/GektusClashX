@@ -1,11 +1,13 @@
-import 'package:flclashx/manager/message_manager.dart';
-import 'package:flclashx/widgets/scaffold.dart';
+import 'package:gektusclashx/manager/message_manager.dart';
+import 'package:gektusclashx/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 
 extension BuildContextExtension on BuildContext {
-  CommonScaffoldState? get commonScaffoldState => findAncestorStateOfType<CommonScaffoldState>();
+  CommonScaffoldState? get commonScaffoldState =>
+      findAncestorStateOfType<CommonScaffoldState>();
 
-  Future<void>? showNotifier(String text) => findAncestorStateOfType<MessageManagerState>()?.message(text);
+  Future<void>? showNotifier(String text) =>
+      findAncestorStateOfType<MessageManagerState>()?.message(text);
 
   void showSnackBar(
     String message, {

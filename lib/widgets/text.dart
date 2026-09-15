@@ -1,11 +1,10 @@
 import 'package:emoji_regex/emoji_regex.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:gektusclashx/enum/enum.dart';
 import 'package:flutter/material.dart';
 
 import '../state.dart';
 
 class TooltipText extends StatelessWidget {
-
   const TooltipText({
     super.key,
     required this.text,
@@ -14,25 +13,24 @@ class TooltipText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-      builder: (context, container) {
-        final maxWidth = container.maxWidth;
-        final size = globalState.measure.computeTextSize(
-          text,
-        );
-        if (maxWidth < size.width) {
-          return Tooltip(
-            preferBelow: false,
-            message: text.data,
-            child: text,
+        builder: (context, container) {
+          final maxWidth = container.maxWidth;
+          final size = globalState.measure.computeTextSize(
+            text,
           );
-        }
-        return text;
-      },
-    );
+          if (maxWidth < size.width) {
+            return Tooltip(
+              preferBelow: false,
+              message: text.data,
+              child: text,
+            );
+          }
+          return text;
+        },
+      );
 }
 
 class EmojiText extends StatelessWidget {
-
   const EmojiText(
     this.text, {
     super.key,
@@ -81,11 +79,11 @@ class EmojiText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => RichText(
-      textScaler: MediaQuery.of(context).textScaler,
-      maxLines: maxLines,
-      overflow: overflow ?? TextOverflow.clip,
-      text: TextSpan(
-        children: _buildTextSpans(text),
-      ),
-    );
+        textScaler: MediaQuery.of(context).textScaler,
+        maxLines: maxLines,
+        overflow: overflow ?? TextOverflow.clip,
+        text: TextSpan(
+          children: _buildTextSpans(text),
+        ),
+      );
 }

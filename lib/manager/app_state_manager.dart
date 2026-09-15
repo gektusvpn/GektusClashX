@@ -1,19 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/clash/core.dart';
-import 'package:flclashx/clash/lib.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/plugins/tile.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/clash/core.dart';
+import 'package:gektusclashx/clash/lib.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/plugins/tile.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppStateManager extends ConsumerStatefulWidget {
-
   const AppStateManager({
     super.key,
     required this.child,
@@ -52,15 +51,6 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
         }
       });
     });
-    ref.listenManual(
-      checkIpProvider,
-      (prev, next) {
-        if (prev != next && next.b) {
-          detectionState.startCheck();
-        }
-      },
-      fireImmediately: true,
-    );
     ref.listenManual(configStateProvider, (prev, next) {
       if (prev != next) {
         globalState.appController.savePreferencesDebounce();
@@ -75,9 +65,8 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
         final restore = !(next.a == true && next.b == true);
         // Chain through _dnsOp so set/restore never overlap; catchError keeps the
         // chain alive if one networksetup invocation throws.
-        _dnsOp = _dnsOp
-            .then((_) => system.setMacOSDns(restore))
-            .catchError((_) {});
+        _dnsOp =
+            _dnsOp.then((_) => system.setMacOSDns(restore)).catchError((_) {});
       },
     );
     ref.listenManual(
@@ -196,15 +185,14 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Widget build(BuildContext context) => Listener(
-      onPointerHover: (_) {
-        render?.resume();
-      },
-      child: widget.child,
-    );
+        onPointerHover: (_) {
+          render?.resume();
+        },
+        child: widget.child,
+      );
 }
 
 class AppEnvManager extends StatelessWidget {
-
   const AppEnvManager({
     super.key,
     required this.child,

@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/plugins/app.dart';
-import 'package:flclashx/plugins/tile.dart';
-import 'package:flclashx/plugins/vpn.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/plugins/app.dart';
+import 'package:gektusclashx/plugins/tile.dart';
+import 'package:gektusclashx/plugins/vpn.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -129,11 +129,11 @@ Future<void> _handleStart() async {
 }
 
 String _buildNotificationTitle(Profile? profile) {
-  if (profile == null) return 'FlClashX';
+  if (profile == null) return 'GektusClashX';
   final profileName = profile.label ?? profile.id;
 
   String serviceName = '';
-  final svc = profile.providerHeaders['flclashx-servicename'];
+  final svc = profile.providerHeaders['gektusclashx-servicename'];
   if (svc != null && svc.isNotEmpty) {
     try {
       final normalized = base64.normalize(svc);

@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/services.dart';
 
 import 'interface.dart';
 
-/// Android-only bridge to the `com.follow.clashx/service` AIDL service living
+/// Android-only bridge to the `com.gektus.clashx/service` AIDL service living
 /// in the `:remote` process. Replaces the old FFI + dart-port / service-isolate
 /// architecture: every call now goes through a MethodChannel and is forwarded
 /// across AIDL to the Go core.
@@ -22,7 +22,8 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
     unawaited(_init());
   }
 
-  final MethodChannel _channel = const MethodChannel('com.follow.clashx/service');
+  final MethodChannel _channel =
+      const MethodChannel('com.gektus.clashx/service');
   Completer<bool> _initCompleter = Completer<bool>();
   // Guards against launching a second concurrent native `init` while a prior
   // _init() is still awaiting (its completer not yet settled).
@@ -35,7 +36,8 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   Future<void> _init() async {
     _initInFlight = true;
     try {
-      await _channel.invokeMethod<String>('init')
+      await _channel
+          .invokeMethod<String>('init')
           .timeout(const Duration(seconds: 15));
       _crashCount = 0;
       if (!_initCompleter.isCompleted) _initCompleter.complete(true);
@@ -183,7 +185,8 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
         if (id != null) {
           final completer = callbackCompleterMap.remove(id);
           if (completer != null && !completer.isCompleted) {
-            commonPrint.log('_failPendingCompleter: method=$method reason=$reason');
+            commonPrint
+                .log('_failPendingCompleter: method=$method reason=$reason');
             // Complete with the typed default (not null) so a Completer<bool/String/Map>
             // resolves immediately instead of throwing TypeError and hanging to timeout.
             completer.complete(callbackDefaultMap.remove(id));
@@ -266,9 +269,9 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
     final merged = _mergeAccessControl(optionsRaw);
     // Defensive backstop: the native side always replies (even on permission
     // denial -> 0), but never block the start flow indefinitely if it doesn't.
-    final res = await _channel
-        .invokeMethod('start', {'data': merged})
-        .timeout(const Duration(seconds: 60), onTimeout: () => 0);
+    final res = await _channel.invokeMethod('start', {'data': merged}).timeout(
+        const Duration(seconds: 60),
+        onTimeout: () => 0);
     return (res is int) ? res : int.tryParse('$res') ?? 0;
   }
 
@@ -315,11 +318,10 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   }) async {
     final res = await _channel
         .invokeMethod<String>('quickStart', <String, String>{
-          'init': json.encode(initParams),
-          'params': json.encode(setupParams),
-          'state': json.encode(state),
-        })
-        .timeout(const Duration(seconds: 60),
+      'init': json.encode(initParams),
+      'params': json.encode(setupParams),
+      'state': json.encode(state),
+    }).timeout(const Duration(seconds: 60),
             onTimeout: () => 'quickStart timed out');
     return res ?? '';
   }
@@ -333,10 +335,12 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   }) async {
     try {
       await _channel
-          .invokeMethod('updateNotificationParams', json.encode({
-            'title': title,
-            'stopText': server,
-          }))
+          .invokeMethod(
+              'updateNotificationParams',
+              json.encode({
+                'title': title,
+                'stopText': server,
+              }))
           .timeout(const Duration(seconds: 10));
     } catch (e) {
       commonPrint.log('updateNotificationParams error: $e');
@@ -363,13 +367,11 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
     required CoreState state,
   }) async {
     try {
-      await _channel
-          .invokeMethod('saveParams', <String, String>{
-            'init': json.encode(initParams),
-            'params': json.encode(setupParams),
-            'state': json.encode(state),
-          })
-          .timeout(const Duration(seconds: 15));
+      await _channel.invokeMethod('saveParams', <String, String>{
+        'init': json.encode(initParams),
+        'params': json.encode(setupParams),
+        'state': json.encode(state),
+      }).timeout(const Duration(seconds: 15));
     } catch (e) {
       commonPrint.log('saveParamsForColdStart error: $e');
     }

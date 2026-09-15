@@ -1,11 +1,10 @@
 import 'dart:math';
 
-import 'package:flclashx/providers/app.dart';
+import 'package:gektusclashx/providers/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CommonDialog extends ConsumerWidget {
-
   const CommonDialog({
     super.key,
     required this.title,
@@ -26,12 +25,13 @@ class CommonDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = ref.watch(viewSizeProvider);
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return AlertDialog(
       title: Text(title),
       actions: actions,
       contentPadding: padding,
-      backgroundColor: backgroundColor ?? colorScheme.surface.withValues(alpha: 0.92),
+      backgroundColor:
+          backgroundColor ?? colorScheme.surface.withValues(alpha: 0.92),
       content: Container(
         constraints: BoxConstraints(
           maxHeight: min(
@@ -52,7 +52,6 @@ class CommonDialog extends ConsumerWidget {
 }
 
 class CommonModal extends ConsumerWidget {
-
   const CommonModal({
     super.key,
     this.child,

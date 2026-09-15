@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flclashx/models/models.dart';
+import 'package:gektusclashx/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constant.dart';
 
 class Preferences {
-
   factory Preferences() {
     _instance ??= Preferences._internal();
     return _instance!;

@@ -2,8 +2,8 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
 import 'package:path/path.dart';
 import 'package:win32/win32.dart';
 
@@ -34,7 +34,8 @@ class Windows {
         final valueNamePtr = valueName.toNativeUtf16(allocator: arena);
         final phkResult = arena<HKEY>();
 
-        var result = RegOpenKeyEx(HKEY_CURRENT_USER, keyPath, 0, KEY_READ, phkResult);
+        var result =
+            RegOpenKeyEx(HKEY_CURRENT_USER, keyPath, 0, KEY_READ, phkResult);
         if (result != ERROR_SUCCESS) return false;
 
         final hKey = phkResult.value;
@@ -42,7 +43,8 @@ class Windows {
         final dataSize = arena<DWORD>();
         dataSize.value = sizeOf<DWORD>();
 
-        result = RegQueryValueEx(hKey, valueNamePtr, nullptr, nullptr, data.cast(), dataSize);
+        result = RegQueryValueEx(
+            hKey, valueNamePtr, nullptr, nullptr, data.cast(), dataSize);
         RegCloseKey(hKey);
         if (result != ERROR_SUCCESS) return false;
 
@@ -117,8 +119,8 @@ class Windows {
           }
         }
       } catch (_) {
-      // FFI call may fail on unsupported Windows versions
-    }
+        // FFI call may fail on unsupported Windows versions
+      }
     } catch (_) {
       // FFI call may fail on unsupported Windows versions
     }
@@ -141,8 +143,8 @@ class Windows {
 
         setWindowTheme(hwnd, themeName, nullptr);
       } catch (_) {
-      // FFI call may fail on unsupported Windows versions
-    }
+        // FFI call may fail on unsupported Windows versions
+      }
 
       if (themeName != nullptr) {
         calloc.free(themeName);

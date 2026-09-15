@@ -89,7 +89,7 @@ class AppController {
 
     // Decode service name from header
     String serviceName = "";
-    final svc = profile.providerHeaders['flclashx-servicename'];
+    final svc = profile.providerHeaders['gektusclashx-servicename'];
     if (svc != null && svc.isNotEmpty) {
       try {
         final normalized = base64.normalize(svc);
@@ -99,7 +99,8 @@ class AppController {
       }
     }
 
-    commonPrint.log('[initForegroundCache] profileName="$profileName" serviceName="$serviceName"');
+    commonPrint.log(
+        '[initForegroundCache] profileName="$profileName" serviceName="$serviceName"');
     vpn?.updateProfileInfo(
       profileName: profileName,
       serviceName: serviceName,
@@ -296,7 +297,8 @@ class AppController {
                 autoRun: effectiveSettings.contains('autostart'),
                 autoCheckUpdate: effectiveSettings.contains('autoupdate'),
                 openLogs: effectiveSettings.contains('openlogs'),
-                closeConnections: effectiveSettings.contains('closeconnections'),
+                closeConnections:
+                    effectiveSettings.contains('closeconnections'),
               ));
     } catch (e) {
       // Silently ignore subscription settings errors
@@ -307,7 +309,7 @@ class AppController {
     final headers = profile.providerHeaders;
     if (headers.isEmpty) return;
 
-    final customBehavior = headers['flclashx-custom'];
+    final customBehavior = headers['gektusclashx-custom'];
 
     final shouldApply = switch (customBehavior) {
       'add' => isNewProfile,
@@ -331,7 +333,7 @@ class AppController {
         return;
       }
 
-      final settingsHeader = headers['flclashx-settings'];
+      final settingsHeader = headers['gektusclashx-settings'];
       if (settingsHeader != null) {
         final settings = settingsHeader
             .split(',')
@@ -347,7 +349,7 @@ class AppController {
 
   void _applyThemeColor(Map<String, String> headers) {
     try {
-      final hexHeader = headers['flclashx-hex'];
+      final hexHeader = headers['gektusclashx-hex'];
       if (hexHeader != null && hexHeader.isNotEmpty) {
         _applyThemeColorFromHex(hexHeader);
       }
@@ -382,10 +384,10 @@ class AppController {
         radix: 16,
       );
 
-      commonPrint
-          .log('Applying theme from flclashx-hex: #${hexString.toUpperCase()}'
-              '${variantName != null ? ', variant=$variantName' : ''}'
-              '${enablePureBlack ? ', pureBlack=true' : ''}');
+      commonPrint.log(
+          'Applying theme from gektusclashx-hex: #${hexString.toUpperCase()}'
+          '${variantName != null ? ', variant=$variantName' : ''}'
+          '${enablePureBlack ? ', pureBlack=true' : ''}');
 
       _ref.read(themeSettingProvider.notifier).updateState((state) {
         final updatedColors = [...state.primaryColors];
@@ -427,66 +429,54 @@ class AppController {
   }
 
   Future<void> updateProfile(Profile profile) async {
-    _ref.read(profilesProvider.notifier).setProfile(
-      profile.copyWith(isUpdating: true),
-    );
-    try {
-    final prefs = await SharedPreferences.getInstance();
-    final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
-    final newProfile = await profile.update(
-      shouldSendHeaders: shouldSend,
-    );
-
-    final mergedHeaders = Map<String, String>.from(profile.providerHeaders)
-      ..addAll(newProfile.providerHeaders);
-    for (final key in ['announce', 'support-url']) {
-      if (!newProfile.providerHeaders.containsKey(key)) {
-        mergedHeaders.remove(key);
-      }
-    }
-    final mergedProfile = newProfile.copyWith(
-      providerHeaders: mergedHeaders,
-      isUpdating: false,
-    );
-
-    // Apply the header-driven app settings (theme/flclashx-hex, flclashx-settings,
-    // flclashx-custom view/widgets, etc.) ONLY when the updated profile is the ACTIVE
-    // one. Otherwise auto-updating a background profile would push its headers into the
-    // global settings and clobber the active profile's ("last updated wins"). Mirrors
-    // the active-profile gate on applyProfileDebounce below; the reactive header
-    // providers (background / global-mode / server-info) already read the active profile.
-    if (mergedHeaders.isNotEmpty &&
-        profile.id == _ref.read(currentProfileIdProvider)) {
-      _applyAllHeaderSettings(mergedProfile, isNewProfile: false);
-    }
-
-    final showHwidLimit = mergedHeaders['x-hwid-max-devices-reached']?.toLowerCase() == 'true';
-    final announceText = mergedHeaders['announce'];
-    if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
-      _showHwidLimitNotice(announceText, mergedHeaders['support-url']);
-    }
-
-    if (mergedHeaders['x-hwid-not-supported']?.toLowerCase() == 'true') {
-      _showHwidNotSupportedNotice();
-    }
-
     _ref
         .read(profilesProvider.notifier)
-        .setProfile(mergedProfile);
-
-    if (profile.id == _ref.read(currentProfileIdProvider)) {
-      applyProfileDebounce(silence: true);
-    }
-
-    // Check subscription expiration and show notification if needed
-    unawaited(SubscriptionNotificationService.checkAndNotify(newProfile)
-        .catchError((e) {
-      commonPrint.log("Error checking subscription: $e");
-    }));
-    } catch (e) {
-      _ref.read(profilesProvider.notifier).setProfile(
-        profile.copyWith(isUpdating: false),
+        .setProfile(profile.copyWith(isUpdating: true));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
+      final newProfile = await profile.update(
+        shouldSendHeaders: shouldSend,
       );
+
+      // Response headers describe the current provider state. Replacing the
+      // map also removes options which the provider stopped sending.
+      final updatedProfile = newProfile.copyWith(isUpdating: false);
+      final responseHeaders = updatedProfile.providerHeaders;
+
+      // A background profile must not overwrite settings of the active one.
+      if (responseHeaders.isNotEmpty &&
+          profile.id == _ref.read(currentProfileIdProvider)) {
+        _applyAllHeaderSettings(updatedProfile, isNewProfile: false);
+      }
+
+      final showHwidLimit =
+          responseHeaders['x-hwid-max-devices-reached']?.toLowerCase() ==
+              'true';
+      final announceText = responseHeaders['announce'];
+      if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
+        _showHwidLimitNotice(announceText, responseHeaders['support-url']);
+      }
+
+      if (responseHeaders['x-hwid-not-supported']?.toLowerCase() == 'true') {
+        _showHwidNotSupportedNotice();
+      }
+
+      _ref.read(profilesProvider.notifier).setProfile(updatedProfile);
+
+      if (profile.id == _ref.read(currentProfileIdProvider)) {
+        applyProfileDebounce(silence: true);
+      }
+
+      // Check subscription expiration and show notification if needed
+      unawaited(SubscriptionNotificationService.checkAndNotify(newProfile)
+          .catchError((e) {
+        commonPrint.log("Error checking subscription: $e");
+      }));
+    } catch (e) {
+      _ref
+          .read(profilesProvider.notifier)
+          .setProfile(profile.copyWith(isUpdating: false));
       rethrow;
     }
   }
@@ -707,7 +697,7 @@ class AppController {
       patchConfig = syncedConfig;
     }
 
-    // flclashx-androidsecure header: on Android, when the current profile
+    // gektusclashx-androidsecure header: on Android, when the current profile
     // declares "androidsecure: true", force mixedPort=0 on the Dart-side
     // ClashConfig so that all downstream providers (coreStateProvider,
     // proxyStateProvider, http.handleFindProxy) observe the disabled inbound
@@ -715,7 +705,7 @@ class AppController {
     // after syncFromProvider so it overrides both user and provider values.
     if (Platform.isAndroid) {
       final profile = _ref.read(currentProfileProvider);
-      final secure = profile?.providerHeaders['flclashx-androidsecure']
+      final secure = profile?.providerHeaders['gektusclashx-androidsecure']
               ?.trim()
               .toLowerCase() ==
           'true';
@@ -803,7 +793,6 @@ class AppController {
     _ref.read(requestsProvider.notifier).value = FixedList(maxLength);
     globalState.cacheHeightMap = {};
     globalState.cacheScrollPosition = {};
-
   }
 
   void updateBrightness(Brightness brightness) {
@@ -1122,7 +1111,7 @@ class AppController {
       final filesToDelete = [
         'cache.db',
         'libCachedImageData.json',
-        'FlClashX.lock',
+        'GektusClashX.lock',
       ];
 
       for (final fileName in filesToDelete) {
@@ -1610,7 +1599,8 @@ class AppController {
         _applyAllHeaderSettings(profile, isNewProfile: true);
 
         final headers = profile.providerHeaders;
-        final showHwidLimit = headers['x-hwid-max-devices-reached']?.toLowerCase() == 'true';
+        final showHwidLimit =
+            headers['x-hwid-max-devices-reached']?.toLowerCase() == 'true';
         final announceText = headers['announce'];
         if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
           _showHwidLimitNotice(announceText, headers['support-url']);

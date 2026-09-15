@@ -1,12 +1,11 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/widgets/fade_box.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/widgets/fade_box.dart';
 import 'package:flutter/material.dart';
 
 import 'text.dart';
 
 class Info {
-
   const Info({
     required this.label,
     this.iconData,
@@ -16,7 +15,6 @@ class Info {
 }
 
 class InfoHeader extends StatelessWidget {
-
   const InfoHeader({
     super.key,
     required this.info,
@@ -29,54 +27,54 @@ class InfoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: padding ?? baseInfoEdgeInsets,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            flex: 1,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                if (info.iconData != null) ...[
-                  Icon(
-                    info.iconData,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                ],
-                Flexible(
-                  flex: 1,
-                  child: TooltipText(
-                    text: Text(
-                      info.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
+        padding: padding ?? baseInfoEdgeInsets,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  if (info.iconData != null) ...[
+                    Icon(
+                      info.iconData,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                  ],
+                  Flexible(
+                    flex: 1,
+                    child: TooltipText(
+                      text: Text(
+                        info.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: context.colorScheme.onSurfaceVariant,
+                            ),
+                      ),
                     ),
                   ),
-                ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ...actions,
               ],
             ),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ...actions,
-            ],
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 class CommonCard extends StatelessWidget {
@@ -214,20 +212,19 @@ class SelectIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-      color: Theme.of(context).colorScheme.inversePrimary,
-      shape: const CircleBorder(),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        child: const Icon(
-          Icons.check,
-          size: 16,
+        color: Theme.of(context).colorScheme.inversePrimary,
+        shape: const CircleBorder(),
+        child: Container(
+          padding: const EdgeInsets.all(4),
+          child: const Icon(
+            Icons.check,
+            size: 16,
+          ),
         ),
-      ),
-    );
+      );
 }
 
 class SettingsBlock extends StatelessWidget {
-
   const SettingsBlock({
     super.key,
     required this.title,
@@ -238,21 +235,22 @@ class SettingsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          InfoHeader(
-            info: Info(
-              label: title,
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            InfoHeader(
+              info: Info(
+                label: title,
+              ),
             ),
-          ),
-          Card(
-            color: context.colorScheme.surfaceContainer.withValues(alpha: 0.85),
-            child: Column(
-              children: settings,
+            Card(
+              color:
+                  context.colorScheme.surfaceContainer.withValues(alpha: 0.85),
+              child: Column(
+                children: settings,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }

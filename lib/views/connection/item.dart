@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/common/process_icon.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/plugins/app.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/common/process_icon.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/plugins/app.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 enum ConnectionRowMode { active, log }

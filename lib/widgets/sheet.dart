@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 
 import 'scaffold.dart';
@@ -126,7 +126,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
     final colorScheme = context.colorScheme;
     final bottomSheet = widget.type == SheetType.bottomSheet;
     final sideSheet = widget.type == SheetType.sideSheet;
-    final backgroundColor = sideSheet 
+    final backgroundColor = sideSheet
         ? colorScheme.surface.withValues(alpha: 0.92)
         : colorScheme.surface.withValues(alpha: 0.92);
     final appBar = AppBar(

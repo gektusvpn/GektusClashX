@@ -1,9 +1,8 @@
-import 'package:flclashx/common/common.dart';
+import 'package:gektusclashx/common/common.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Measure {
-
   Measure.of(this.context, double textScaleFactor)
       : _measureMap = {},
         _textScaler = TextScaler.linear(

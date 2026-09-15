@@ -1,8 +1,8 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/dialog.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/dialog.dart';
 import 'package:flutter/material.dart';
 
 class BaseNavigator {
@@ -38,7 +38,6 @@ class BaseNavigator {
 }
 
 class CommonDesktopRoute<T> extends PageRoute<T> {
-
   CommonDesktopRoute({
     required this.builder,
   });
@@ -108,13 +107,14 @@ class CommonPageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) => CommonPageTransition(
-      context: context,
-      primaryRouteAnimation: animation,
-      secondaryRouteAnimation: secondaryAnimation,
-      linearTransition: false,
-      child: child,
-    );
+  ) =>
+      CommonPageTransition(
+        context: context,
+        primaryRouteAnimation: animation,
+        secondaryRouteAnimation: secondaryAnimation,
+        linearTransition: false,
+        child: child,
+      );
 }
 
 class CommonPageTransition extends StatefulWidget {
@@ -259,12 +259,12 @@ class _CommonPageTransitionState extends State<CommonPageTransition> {
 }
 
 class _CommonEdgeShadowDecoration extends Decoration {
-
   const _CommonEdgeShadowDecoration([this._colors]);
   final List<Color>? _colors;
 
   @override
-  BoxPainter createBoxPainter([VoidCallback? onChanged]) => _CommonEdgeShadowPainter(this, onChanged);
+  BoxPainter createBoxPainter([VoidCallback? onChanged]) =>
+      _CommonEdgeShadowPainter(this, onChanged);
 }
 
 class _CommonEdgeShadowPainter extends BoxPainter {

@@ -1,7 +1,7 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/plugins/tile.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/plugins/tile.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/config.g.dart';
@@ -130,7 +130,8 @@ class Profiles extends _$Profiles with AutoDisposeNotifierMixin {
     state = profilesTemp;
   }
 
-  void updateProfile(String profileId, Profile Function(Profile profile) builder) {
+  void updateProfile(
+      String profileId, Profile Function(Profile profile) builder) {
     final profilesTemp = List<Profile>.from(state);
     final index = profilesTemp.indexWhere((element) => element.id == profileId);
     if (index != -1) {
@@ -265,7 +266,8 @@ class ScriptState extends _$ScriptState with AutoDisposeNotifierMixin {
     );
   }
 
-  bool isExits(String label) => state.scripts.indexWhere((item) => item.label == label) != -1;
+  bool isExits(String label) =>
+      state.scripts.indexWhere((item) => item.label == label) != -1;
 }
 
 @riverpod

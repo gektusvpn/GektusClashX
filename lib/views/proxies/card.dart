@@ -1,15 +1,14 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/proxies/common.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/views/proxies/common.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProxyCard extends StatelessWidget {
-
   const ProxyCard({
     super.key,
     required this.groupName,
@@ -34,43 +33,43 @@ class ProxyCard extends StatelessWidget {
   }
 
   Widget _buildDelayText() => SizedBox(
-      height: measure.labelSmallHeight,
-      child: Consumer(
-        builder: (context, ref, __) {
-          final delay = ref.watch(getDelayProvider(
-            proxyName: proxy.name,
-            testUrl: testUrl,
-          ));
-          return delay == 0 || delay == null
-              ? SizedBox(
-                  height: measure.labelSmallHeight,
-                  width: measure.labelSmallHeight,
-                  child: delay == 0
-                      ? const CircularProgressIndicator(
-                          strokeWidth: 2,
-                        )
-                      : IconButton(
-                          icon: const Icon(Icons.bolt),
-                          iconSize: globalState.measure.labelSmallHeight,
-                          padding: EdgeInsets.zero,
-                          onPressed: _handleTestCurrentDelay,
+        height: measure.labelSmallHeight,
+        child: Consumer(
+          builder: (context, ref, __) {
+            final delay = ref.watch(getDelayProvider(
+              proxyName: proxy.name,
+              testUrl: testUrl,
+            ));
+            return delay == 0 || delay == null
+                ? SizedBox(
+                    height: measure.labelSmallHeight,
+                    width: measure.labelSmallHeight,
+                    child: delay == 0
+                        ? const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.bolt),
+                            iconSize: globalState.measure.labelSmallHeight,
+                            padding: EdgeInsets.zero,
+                            onPressed: _handleTestCurrentDelay,
+                          ),
+                  )
+                : GestureDetector(
+                    onTap: _handleTestCurrentDelay,
+                    child: Text(
+                      delay > 0 ? '$delay ms' : "Timeout",
+                      style: context.textTheme.labelSmall?.copyWith(
+                        overflow: TextOverflow.ellipsis,
+                        color: utils.getDelayColor(
+                          delay,
                         ),
-                )
-              : GestureDetector(
-                  onTap: _handleTestCurrentDelay,
-                  child: Text(
-                    delay > 0 ? '$delay ms' : "Timeout",
-                    style: context.textTheme.labelSmall?.copyWith(
-                      overflow: TextOverflow.ellipsis,
-                      color: utils.getDelayColor(
-                        delay,
                       ),
                     ),
-                  ),
-                );
-        },
-      ),
-    );
+                  );
+          },
+        ),
+      );
 
   Widget _buildProxyNameText(BuildContext context) {
     if (type == ProxyCardType.oneline) {
@@ -229,7 +228,6 @@ class ProxyCard extends StatelessWidget {
 }
 
 class _ProxyDesc extends ConsumerWidget {
-
   const _ProxyDesc({
     required this.proxy,
   });
@@ -251,7 +249,6 @@ class _ProxyDesc extends ConsumerWidget {
 }
 
 class _ProxyComputedMark extends ConsumerWidget {
-
   const _ProxyComputedMark({
     required this.groupName,
     required this.proxy,

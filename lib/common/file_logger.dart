@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/common/path.dart';
+import 'package:gektusclashx/common/path.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
@@ -28,7 +28,7 @@ class FileLogger {
   /// Check if Flutter bindings are initialized
   bool _checkBindingInitialized() {
     if (_isBindingInitialized) return true;
-    
+
     try {
       // Try to access WidgetsBinding - this will throw if not initialized
       WidgetsBinding.instance;
@@ -53,9 +53,9 @@ class FileLogger {
 
   String _getLogFileName(String date, {int index = 0}) {
     if (index == 0) {
-      return 'FlClashX_$date.log';
+      return 'GektusClashX_$date.log';
     }
-    return 'FlClashX_$date\_$index.log';
+    return 'GektusClashX_$date\_$index.log';
   }
 
   Future<void> _rotateLogs() async {

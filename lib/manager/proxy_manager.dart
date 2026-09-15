@@ -1,11 +1,10 @@
-import 'package:flclashx/common/proxy.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/state.dart';
+import 'package:gektusclashx/common/proxy.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProxyManager extends ConsumerStatefulWidget {
-
   const ProxyManager({super.key, required this.child});
   final Widget child;
 
