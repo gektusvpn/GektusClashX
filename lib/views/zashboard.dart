@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -109,7 +109,8 @@ Future<void> openZashboard(BuildContext context, {required bool inApp}) async {
 
   if (useWebView && Platform.isMacOS) {
     try {
-      await _openZashboardWindow(url, disableControllerOnClose: manageController);
+      await _openZashboardWindow(url,
+          disableControllerOnClose: manageController);
       return;
     } catch (_) {
       // Native window unavailable — fall through to the external browser and

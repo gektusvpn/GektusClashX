@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
-import 'package:flclashx/common/print.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/print.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:path/path.dart' as p;
 
 // Public zashboard instance — kept only as a defensive fallback. With external-ui
@@ -15,6 +15,22 @@ const publicZashboardBase = 'https://board.zash.run.place';
 // demand so the core serves it at /ui/ (same origin/http as the backend).
 const zashboardDistUrl =
     'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip';
+const _maxZashboardArchiveSize = 50 * 1024 * 1024;
+const _maxZashboardExtractedSize = 200 * 1024 * 1024;
+
+String? safeZashboardArchivePath(String root, String entryName) {
+  final normalized = p.normalize(entryName.replaceAll(r'\', '/'));
+  if (normalized == '.' ||
+      p.isAbsolute(normalized) ||
+      normalized == '..' ||
+      normalized.startsWith('../')) {
+    return null;
+  }
+
+  final absoluteRoot = p.absolute(root);
+  final output = p.absolute(p.join(absoluteRoot, normalized));
+  return p.isWithin(absoluteRoot, output) ? output : null;
+}
 
 /// Whether the local zashboard bundle is already extracted into external-ui.
 Future<bool> isZashboardUiReady() async {
@@ -33,37 +49,50 @@ Future<bool> ensureZashboardUi() async {
   if (await index.exists()) return true;
   try {
     final resp = await Dio().get<List<int>>(
-      zashboardDistUrl,
+      globalState.githubUrl(zashboardDistUrl),
       options: Options(responseType: ResponseType.bytes),
     );
     final bytes = resp.data;
-    if (bytes == null || bytes.isEmpty) return false;
+    if (bytes == null ||
+        bytes.isEmpty ||
+        bytes.length > _maxZashboardArchiveSize) {
+      return false;
+    }
     final archive = ZipDecoder().decodeBytes(Uint8List.fromList(bytes));
     // dist.zip may nest everything under a top folder (e.g. dist/); find where
     // index.html sits and strip that prefix so files land at the dir root.
-    var prefix = '';
+    String? prefix;
     for (final f in archive) {
       if (f.isFile && p.basename(f.name) == 'index.html') {
-        final d = p.dirname(f.name.replaceAll('\\', '/'));
+        final d = p.dirname(f.name.replaceAll(r'\', '/'));
         prefix = d == '.' ? '' : '$d/';
         break;
       }
     }
+    if (prefix == null) return false;
+
+    final extractedSize = archive.files
+        .where((file) => file.isFile)
+        .fold<int>(0, (total, file) => total + file.size);
+    if (extractedSize > _maxZashboardExtractedSize) return false;
+
     for (final f in archive) {
       if (!f.isFile) continue;
-      var name = f.name.replaceAll('\\', '/');
+      var name = f.name.replaceAll(r'\', '/');
       if (prefix.isNotEmpty) {
         if (!name.startsWith(prefix)) continue;
         name = name.substring(prefix.length);
       }
       if (name.isEmpty) continue;
-      final out = File(p.join(dir, name));
+      final outputPath = safeZashboardArchivePath(dir, name);
+      if (outputPath == null) continue;
+      final out = File(outputPath);
       await out.parent.create(recursive: true);
       await out.writeAsBytes(f.content as List<int>);
     }
     return await index.exists();
-  } catch (e) {
-    commonPrint.log('zashboard ui download failed: $e');
+  } catch (_) {
+    commonPrint.log('zashboard ui download failed');
     return false;
   }
 }
