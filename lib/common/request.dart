@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
 
 class Request {
-
   Request() {
     _dio = Dio(
       BaseOptions(
@@ -50,8 +50,12 @@ class Request {
   Future<Response<Uint8List>> getFileResponseForUrl(
     String rawUrl, {
     Map<String, dynamic>? headers,
+    String? githubProxyBase,
   }) async {
-    final url = rawUrl.normalizeUrlCredentials;
+    final normalizedUrl = rawUrl.normalizeUrlCredentials;
+    final url = githubProxyBase == null
+        ? globalState.githubUrl(normalizedUrl)
+        : githubProxyUrlWithBase(normalizedUrl, githubProxyBase);
     final requestHeaders = headers ?? {};
     requestHeaders['User-Agent'] = globalState.ua;
 
@@ -67,13 +71,13 @@ class Request {
       ),
     );
 
-    if (firstResponse.isRedirect == true) {
+    if (firstResponse.isRedirect) {
       final newUrl = firstResponse.headers.value('location');
       if (newUrl == null) {
         throw Exception('Redirect detected, but no location header was found.');
       }
 
-      print('↪️ Redirecting to: $newUrl');
+      commonPrint.log('HTTP redirect received');
       final finalResponse = await dio.get<Uint8List>(
         newUrl,
         options: Options(
@@ -91,7 +95,7 @@ class Request {
 
   Future<Response> getTextResponseForUrl(String url) async {
     final response = await _clashDio.get(
-      url,
+      globalState.githubUrl(url),
       options: Options(
         responseType: ResponseType.plain,
       ),
@@ -102,7 +106,7 @@ class Request {
   Future<MemoryImage?> getImage(String url) async {
     if (url.isEmpty) return null;
     final response = await _dio.get<Uint8List>(
-      url,
+      globalState.githubUrl(url),
       options: Options(
         responseType: ResponseType.bytes,
       ),
@@ -112,24 +116,65 @@ class Request {
     return MemoryImage(data);
   }
 
-  Future<Map<String, dynamic>?> checkForUpdate() async {
-    final response = await _dio.get(
-      "https://api.github.com/repos/$repository/releases/latest",
-      options: Options(
-        responseType: ResponseType.json,
-      ),
+  Future<String> getDirectText(String url) async {
+    final response = await _dio.get<String>(
+      globalState.githubUrl(url),
+      options: Options(responseType: ResponseType.plain),
     );
-    if (response.statusCode != 200) return null;
-    final data = response.data as Map<String, dynamic>;
-    final remoteVersion = data['tag_name'];
+    return response.data ?? '';
+  }
+
+  Future<void> downloadFile(
+    String url,
+    String targetPath, {
+    CancelToken? cancelToken,
+    void Function(int received, int total)? onProgress,
+  }) async {
+    await _dio.download(
+      globalState.githubUrl(url),
+      targetPath,
+      cancelToken: cancelToken,
+      onReceiveProgress: onProgress,
+    );
+  }
+
+  Future<Map<String, dynamic>?> checkForUpdate() async {
+    final data = await _getLatestRelease();
+    if (data == null) return null;
+    final remoteVersion = data['tag_name'] as String?;
+    if (remoteVersion == null || remoteVersion.isEmpty) return null;
     final version = globalState.packageInfo.version;
-    final hasUpdate =
-        utils.compareVersions(remoteVersion.replaceAll('v', ''), version) > 0;
+    final normalizedVersion = remoteVersion.replaceFirst(RegExp(r'^v'), '');
+    final hasUpdate = utils.compareVersions(normalizedVersion, version) > 0;
     if (!hasUpdate) return null;
     return data;
   }
 
-  Future<Map<String, dynamic>?> checkForCoreUpdate(String currentCoreVersion) async {
+  Future<Map<String, dynamic>?> _getLatestRelease() async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        globalState.githubUrl(
+          "https://github.com/$repository/releases/latest/download/update.json",
+        ),
+        options: Options(responseType: ResponseType.json),
+      );
+      if (response.statusCode == HttpStatus.ok && response.data != null) {
+        return response.data;
+      }
+    } on DioException catch (error) {
+      commonPrint
+          .log('Update manifest unavailable: ${error.response?.statusCode}');
+    }
+
+    final response = await _dio.get<Map<String, dynamic>>(
+      "https://api.github.com/repos/$repository/releases/latest",
+      options: Options(responseType: ResponseType.json),
+    );
+    return response.statusCode == HttpStatus.ok ? response.data : null;
+  }
+
+  Future<Map<String, dynamic>?> checkForCoreUpdate(
+      String currentCoreVersion) async {
     final response = await _dio.get(
       "https://api.github.com/repos/$repository/releases",
       options: Options(responseType: ResponseType.json),
@@ -141,7 +186,8 @@ class Request {
     for (final release in releases) {
       final tag = release['tag_name'] as String? ?? '';
       if (!tag.startsWith('core-')) continue;
-      final remote = tag.replaceFirst('core-', '').replaceAll(RegExp(r'^v'), '');
+      final remote =
+          tag.replaceFirst('core-', '').replaceAll(RegExp(r'^v'), '');
       // Strictly newer only: a locally built core can be ahead of the newest
       // core-* release, and offering it back would be a silent downgrade.
       if (utils.compareVersions(remote, current) <= 0) return null;
@@ -150,26 +196,46 @@ class Request {
     return null;
   }
 
-  Future<String?> downloadCoreUpdate(
+  Future<CoreUpdateDownloadError?> downloadCoreUpdate(
     String downloadUrl,
     String targetPath, {
+    required String? expectedDigest,
     void Function(int received, int total)? onProgress,
   }) async {
+    final digestMatch = RegExp(r'^sha256:([0-9a-fA-F]{64})$')
+        .firstMatch(expectedDigest?.trim() ?? '');
+    if (digestMatch == null) {
+      return CoreUpdateDownloadError.verificationFailed;
+    }
+
+    final tmpFile = File('$targetPath.tmp');
     try {
-      final tmpPath = '$targetPath.tmp';
       await _dio.download(
-        downloadUrl,
-        tmpPath,
+        globalState.githubUrl(downloadUrl),
+        tmpFile.path,
         onReceiveProgress: onProgress,
       );
-      final tmpFile = File(tmpPath);
-      if (!await tmpFile.exists()) return 'Download failed';
+      if (!await tmpFile.exists()) {
+        return CoreUpdateDownloadError.downloadFailed;
+      }
+      final actualDigest = (await sha256.bind(tmpFile.openRead()).first)
+          .toString()
+          .toLowerCase();
+      if (actualDigest != digestMatch.group(1)!.toLowerCase()) {
+        return CoreUpdateDownloadError.verificationFailed;
+      }
       final target = File(targetPath);
       if (await target.exists()) await target.delete();
       await tmpFile.rename(targetPath);
       return null;
-    } catch (e) {
-      return e.toString();
+    } catch (_) {
+      return CoreUpdateDownloadError.downloadFailed;
+    } finally {
+      try {
+        if (await tmpFile.exists()) {
+          await tmpFile.delete();
+        }
+      } catch (_) {}
     }
   }
 
@@ -281,7 +347,8 @@ class Request {
   /// per-machine installs (Program Files) where the unelevated app can't
   /// overwrite the binary itself. The helper stops the core, moves the file and
   /// refreshes the allow-list hash. Returns true only if it reports success.
-  Future<bool> replaceCoreByHelper(String pendingPath, String targetPath) async {
+  Future<bool> replaceCoreByHelper(
+      String pendingPath, String targetPath) async {
     try {
       final response = await _dio
           .post(
@@ -327,12 +394,14 @@ class Request {
     try {
       final addr = globalState.effectiveExternalController.value;
       if (addr.isEmpty) return null;
-      final response = await _dio.get<Map<String, dynamic>>(
-        "http://$addr/version",
-        options: Options(
-          responseType: ResponseType.json,
-        ),
-      ).timeout(const Duration(seconds: 2));
+      final response = await _dio
+          .get<Map<String, dynamic>>(
+            "http://$addr/version",
+            options: Options(
+              responseType: ResponseType.json,
+            ),
+          )
+          .timeout(const Duration(seconds: 2));
 
       if (response.statusCode != HttpStatus.ok) return null;
       return response.data;
@@ -340,6 +409,11 @@ class Request {
       return null;
     }
   }
+}
+
+enum CoreUpdateDownloadError {
+  verificationFailed,
+  downloadFailed,
 }
 
 final request = Request();

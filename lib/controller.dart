@@ -4,17 +4,18 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:archive/archive.dart';
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/archive.dart';
-import 'package:flclashx/services/subscription_notification_service.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/plugins/app.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/dialog.dart';
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gektusclashx/clash/clash.dart';
+import 'package:gektusclashx/common/archive.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/plugins/app.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/services/subscription_notification_service.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/dialog.dart';
 
 import 'package:path/path.dart' hide windows;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +25,9 @@ import 'common/common.dart';
 import 'models/models.dart';
 import 'plugins/vpn.dart';
 import 'views/profiles/override_profile.dart';
+
+const _androidAutoCheckUpdateDefaultKey =
+    'androidAutoCheckUpdateDefaultInitialized';
 
 class AppController {
   AppController(this.context, WidgetRef ref) : _ref = ref;
@@ -1150,9 +1154,38 @@ class AppController {
   }
 
   Future<void> autoCheckUpdate() async {
+    await _initializeAndroidAutoCheckUpdate();
     if (!_ref.read(appSettingProvider).autoCheckUpdate) return;
-    final res = await request.checkForUpdate();
-    checkUpdateResultHandle(data: res);
+    try {
+      final res = await request.checkForUpdate();
+      await checkUpdateResultHandle(data: res);
+    } catch (error) {
+      commonPrint.log('Automatic app update check failed: $error');
+    }
+  }
+
+  Future<void> _initializeAndroidAutoCheckUpdate() async {
+    if (!Platform.isAndroid) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_androidAutoCheckUpdateDefaultKey) == true) return;
+
+    final settings = _ref.read(appSettingProvider);
+    final providerManagesSettings = globalState
+            .config.currentProfile?.providerHeaders
+            .containsKey('gektusclashx-settings') ??
+        false;
+
+    if (!providerManagesSettings &&
+        !settings.overrideProviderSettings &&
+        !settings.autoCheckUpdate) {
+      _ref.read(appSettingProvider.notifier).updateState(
+            (state) => state.copyWith(autoCheckUpdate: true),
+          );
+      await savePreferences();
+    }
+
+    await prefs.setBool(_androidAutoCheckUpdateDefaultKey, true);
   }
 
   Future<void> checkUpdateResultHandle({
@@ -1163,6 +1196,9 @@ class AppController {
       return;
     }
     if (data != null) {
+      final desktopDownloadUri =
+          Platform.isAndroid ? null : await desktopAppUpdater.downloadUri(data);
+      if (!context.mounted) return;
       final tagName = data['tag_name'];
       final body = data['body'];
       final submits = utils.parseReleaseBody(body);
@@ -1184,21 +1220,146 @@ class AppController {
               ),
           ],
         ),
-        confirmText: appLocalizations.goDownload,
+        confirmText: Platform.isAndroid
+            ? appLocalizations.update
+            : desktopDownloadUri != null
+                ? appLocalizations.downloadUpdate
+                : appLocalizations.goDownload,
       );
       if (res != true) {
         return;
       }
+      if (Platform.isAndroid) {
+        await _downloadAndInstallAndroidUpdate(data);
+        return;
+      }
       unawaited(launchUrl(
-        Uri.parse("https://github.com/$repository/releases/latest"),
+        Uri.parse(
+          globalState.githubUrl(
+            (desktopDownloadUri ??
+                    Uri.parse(
+                      "https://github.com/$repository/releases/latest",
+                    ))
+                .toString(),
+          ),
+        ),
       ));
     } else if (handleError) {
-      globalState.showMessage(
+      await globalState.showMessage(
         title: appLocalizations.checkUpdate,
         message: TextSpan(
           text: appLocalizations.checkUpdateError,
         ),
       );
+    }
+  }
+
+  Future<void> _downloadAndInstallAndroidUpdate(
+    Map<String, dynamic> release,
+  ) async {
+    final progress = ValueNotifier<double?>(null);
+    final cancelToken = CancelToken();
+    final dialogReady = Completer<void>();
+    BuildContext? downloadDialogContext;
+    var dialogOpen = true;
+
+    void closeDownloadDialog() {
+      final dialogContext = downloadDialogContext;
+      if (!dialogOpen || dialogContext == null || !dialogContext.mounted) {
+        return;
+      }
+      dialogOpen = false;
+      Navigator.of(dialogContext).pop();
+    }
+
+    final dialogFuture = globalState.showCommonDialog<void>(
+      dismissible: false,
+      child: Builder(
+        builder: (dialogContext) {
+          downloadDialogContext = dialogContext;
+          if (!dialogReady.isCompleted) {
+            dialogReady.complete();
+          }
+          return CommonDialog(
+            title: appLocalizations.downloadingAppUpdate,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  cancelToken.cancel();
+                  closeDownloadDialog();
+                },
+                child: Text(appLocalizations.cancel),
+              ),
+            ],
+            child: SizedBox(
+              width: 300,
+              child: ValueListenableBuilder<double?>(
+                valueListenable: progress,
+                builder: (_, value, __) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LinearProgressIndicator(value: value),
+                    if (value != null) ...[
+                      const SizedBox(height: 12),
+                      Text('${(value * 100).round()}%'),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+    await dialogReady.future;
+    try {
+      final apk = await androidAppUpdater.download(
+        release,
+        cancelToken: cancelToken,
+        onProgress: (received, total) {
+          progress.value = total > 0 ? received / total : null;
+        },
+      );
+      closeDownloadDialog();
+      await dialogFuture;
+      final installerStarted = await app?.installApk(apk.path) ?? false;
+      if (!installerStarted) {
+        await globalState.showMessage(
+          title: appLocalizations.update,
+          message: TextSpan(
+            text: appLocalizations.appUpdateInstallPermissionDenied,
+          ),
+        );
+      }
+    } on AndroidAppUpdateException catch (error) {
+      closeDownloadDialog();
+      await dialogFuture;
+      if (error.code == AndroidAppUpdateError.cancelled) return;
+      final message = switch (error.code) {
+        AndroidAppUpdateError.assetNotFound =>
+          appLocalizations.appUpdateAssetNotFound,
+        AndroidAppUpdateError.checksumNotFound ||
+        AndroidAppUpdateError.checksumMismatch =>
+          appLocalizations.appUpdateVerificationFailed,
+        AndroidAppUpdateError.downloadFailed =>
+          appLocalizations.appUpdateDownloadFailed,
+        AndroidAppUpdateError.cancelled => '',
+      };
+      await globalState.showMessage(
+        title: appLocalizations.update,
+        message: TextSpan(text: message),
+      );
+    } catch (error) {
+      commonPrint.log('Android app update failed: $error');
+      closeDownloadDialog();
+      await dialogFuture;
+      await globalState.showMessage(
+        title: appLocalizations.update,
+        message: TextSpan(text: appLocalizations.appUpdateInstallFailed),
+      );
+    } finally {
+      progress.dispose();
     }
   }
 
@@ -1285,7 +1446,7 @@ class AppController {
     Future.delayed(
         const Duration(seconds: 1), _updateCurrentProfileSubscription);
     autoUpdateProfiles();
-    autoCheckUpdate();
+    unawaited(autoCheckUpdate());
     if (!Platform.isMacOS) {
       if (!_ref.read(appSettingProvider).silentLaunch) {
         window?.show();

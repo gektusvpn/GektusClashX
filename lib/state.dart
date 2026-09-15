@@ -167,6 +167,11 @@ class GlobalState {
       config.patchClashConfig.globalUa ??
       packageInfo.ua(appVersion: _uaVersion, coreVersion: coreVersion);
 
+  String githubUrl(String targetUrl) => githubProxyUrlWithBase(
+        targetUrl,
+        config.currentProfile?.providerHeaders['gektusclashx-gh-proxy'],
+      );
+
   int _tasksEpoch = 0;
 
   Future<void> startUpdateTasks([UpdateTasks? tasks]) async {

@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:flclashx/common/app_localizations.dart';
-import 'package:flclashx/models/models.dart';
+import 'package:gektusclashx/common/app_localizations.dart';
+import 'package:gektusclashx/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class App {
-
   factory App() {
     _instance ??= App._internal();
     return _instance!;
@@ -39,7 +38,8 @@ class App {
   late MethodChannel methodChannel;
   Function()? onExit;
 
-  Future<bool?> moveTaskToBack() async => methodChannel.invokeMethod<bool>("moveTaskToBack");
+  Future<bool?> moveTaskToBack() async =>
+      methodChannel.invokeMethod<bool>("moveTaskToBack");
 
   Future<List<Package>> getPackages() async {
     final packagesString =
@@ -61,10 +61,17 @@ class App {
     });
   }
 
-  Future<bool> openFile(String path) async => await methodChannel.invokeMethod<bool>("openFile", {
-          "path": path,
-        }) ??
-        false;
+  Future<bool> openFile(String path) async =>
+      await methodChannel.invokeMethod<bool>("openFile", {
+        "path": path,
+      }) ??
+      false;
+
+  Future<bool> installApk(String path) async =>
+      await methodChannel.invokeMethod<bool>("installApk", {
+        "path": path,
+      }) ??
+      false;
 
   final _iconCache = <String, ImageProvider?>{};
   final _iconFutures = <String, Future<ImageProvider?>>{};
@@ -86,27 +93,30 @@ class App {
     return icon;
   }
 
-  Future<bool?> tip(String? message) async => methodChannel.invokeMethod<bool>("tip", {
-      "message": "$message",
-    });
+  Future<bool?> tip(String? message) async =>
+      methodChannel.invokeMethod<bool>("tip", {
+        "message": "$message",
+      });
 
   Future<bool?> initShortcuts() async => methodChannel.invokeMethod<bool>(
-      "initShortcuts",
-      <String, String>{
-        "toggle": appLocalizations.toggle,
-        "start": appLocalizations.start,
-        "stop": appLocalizations.stop,
-      },
-    );
+        "initShortcuts",
+        <String, String>{
+          "toggle": appLocalizations.toggle,
+          "start": appLocalizations.start,
+          "stop": appLocalizations.stop,
+        },
+      );
 
-  Future<bool?> updateExcludeFromRecents(bool value) async => methodChannel.invokeMethod<bool>("updateExcludeFromRecents", {
-      "value": value,
-    });
+  Future<bool?> updateExcludeFromRecents(bool value) async =>
+      methodChannel.invokeMethod<bool>("updateExcludeFromRecents", {
+        "value": value,
+      });
 
   /// Whether the app is exempt from battery optimization (the key OEM survival
   /// lever). Returns true on pre-M / non-Android.
   Future<bool> isIgnoringBatteryOptimizations() async =>
-      await methodChannel.invokeMethod<bool>("isIgnoringBatteryOptimizations") ??
+      await methodChannel
+          .invokeMethod<bool>("isIgnoringBatteryOptimizations") ??
       false;
 
   /// Re-promptable battery-optimization exemption request.

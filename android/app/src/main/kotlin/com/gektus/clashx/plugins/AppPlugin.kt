@@ -6,9 +6,13 @@ import android.app.ActivityManager
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ComponentInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,8 +36,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
-import android.os.Handler
-import android.os.Looper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -136,6 +138,15 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
 
     val GET_INSTALLED_APPS_PERMISSION_REQUEST_CODE = 1003
+
+    private val APK_INSTALL_PERMISSION_REQUEST_CODE = 1004
+
+    private data class PendingApkInstall(
+        val path: String,
+        val result: Result,
+    )
+
+    private var pendingApkInstall: PendingApkInstall? = null
 
     private var isBlockNotification: Boolean = false
 
@@ -253,6 +264,14 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 val path = call.argument<String>("path") ?: run { result.success(false); return }
                 openFile(path)
                 result.success(true)
+            }
+
+            "installApk" -> {
+                val path = call.argument<String>("path") ?: run {
+                    result.error("APK_PATH_MISSING", "APK path is missing", null)
+                    return
+                }
+                installApk(path, result)
             }
 
             "isIgnoringBatteryOptimizations" -> {
@@ -384,6 +403,146 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         } catch (e: Exception) {
             android.util.Log.w("AppPlugin", "openFile failed", e)
         }
+    }
+
+    private fun installApk(path: String, result: Result) {
+        val activity = activityRef?.get()
+        if (activity == null) {
+            result.error("ACTIVITY_UNAVAILABLE", "Android activity is unavailable", null)
+            return
+        }
+
+        val validationError = validateUpdateApk(path)
+        if (validationError != null) {
+            result.error("APK_INVALID", validationError, null)
+            return
+        }
+
+        val packageManager = activity.packageManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            !packageManager.canRequestPackageInstalls()
+        ) {
+            if (pendingApkInstall != null) {
+                result.error("INSTALL_IN_PROGRESS", "Another APK install is pending", null)
+                return
+            }
+            pendingApkInstall = PendingApkInstall(path, result)
+            val intent = Intent(
+                Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                android.net.Uri.parse("package:${activity.packageName}"),
+            )
+            try {
+                activity.startActivityForResult(intent, APK_INSTALL_PERMISSION_REQUEST_CODE)
+            } catch (error: Exception) {
+                pendingApkInstall = null
+                result.error("INSTALL_PERMISSION_FAILED", error.message, null)
+            }
+            return
+        }
+
+        try {
+            launchPackageInstaller(activity, path)
+            result.success(true)
+        } catch (error: Exception) {
+            result.error("INSTALL_LAUNCH_FAILED", error.message, null)
+        }
+    }
+
+    private fun validateUpdateApk(path: String): String? {
+        val file = File(path)
+        if (!file.isFile) return "Downloaded APK does not exist"
+
+        val context = GektusClashXApplication.getAppContext()
+        val packageManager = context.packageManager
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            PackageManager.GET_SIGNING_CERTIFICATES
+        } else {
+            @Suppress("DEPRECATION")
+            PackageManager.GET_SIGNATURES
+        }
+        val candidate = packageManager.getPackageArchiveInfo(path, flags)
+            ?: return "Downloaded file is not a valid APK"
+        val installed = try {
+            packageManager.getPackageInfo(context.packageName, flags)
+        } catch (_: PackageManager.NameNotFoundException) {
+            return "Installed application package was not found"
+        }
+
+        if (candidate.packageName != context.packageName) {
+            return "Downloaded APK has a different package name"
+        }
+        val candidateVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            candidate.longVersionCode
+        } else {
+            @Suppress("DEPRECATION")
+            candidate.versionCode.toLong()
+        }
+        val installedVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            installed.longVersionCode
+        } else {
+            @Suppress("DEPRECATION")
+            installed.versionCode.toLong()
+        }
+        if (candidateVersion <= installedVersion) {
+            return "Downloaded APK is not newer than the installed version"
+        }
+
+        val candidateSigners = signingCertificateDigests(candidate)
+        val installedSigners = signingCertificateDigests(installed)
+        if (candidateSigners.isEmpty() ||
+            installedSigners.isEmpty() ||
+            candidateSigners.intersect(installedSigners).isEmpty()
+        ) {
+            return "Downloaded APK has a different signing certificate"
+        }
+        return null
+    }
+
+    private fun signingCertificateDigests(packageInfo: PackageInfo): Set<String> {
+        val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val signingInfo = packageInfo.signingInfo ?: return emptySet()
+            if (signingInfo.hasMultipleSigners()) {
+                signingInfo.apkContentsSigners
+            } else {
+                signingInfo.signingCertificateHistory
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            packageInfo.signatures
+        }
+        return signatures
+            ?.map { signature ->
+                java.security.MessageDigest
+                    .getInstance("SHA-256")
+                    .digest(signature.toByteArray())
+                    .joinToString("") { byte -> "%02x".format(byte) }
+            }
+            ?.toSet()
+            ?: emptySet()
+    }
+
+    private fun launchPackageInstaller(activity: Activity, path: String) {
+        val context = GektusClashXApplication.getAppContext()
+        val file = File(path)
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileProvider",
+            file,
+        )
+        val intent = Intent(Intent.ACTION_VIEW)
+            .setDataAndType(uri, "application/vnd.android.package-archive")
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        for (handler in context.packageManager.queryIntentActivities(
+            intent,
+            PackageManager.MATCH_DEFAULT_ONLY,
+        )) {
+            context.grantUriPermission(
+                handler.activityInfo.packageName,
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION,
+            )
+        }
+        activity.startActivity(intent)
     }
 
     private fun updateExcludeFromRecents(value: Boolean?) {
@@ -652,16 +811,42 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         val pendingApps = installedAppsCallbacks.toList()
         installedAppsCallbacks.clear()
         pendingApps.forEach { it.invoke() }
+        pendingApkInstall?.result?.successOnMain(false)
+        pendingApkInstall = null
     }
 
     private fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+        if (requestCode == APK_INSTALL_PERMISSION_REQUEST_CODE) {
+            val pending = pendingApkInstall ?: return true
+            pendingApkInstall = null
+            val activity = activityRef?.get()
+            if (activity == null ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                    !activity.packageManager.canRequestPackageInstalls())
+            ) {
+                pending.result.successOnMain(false)
+                return true
+            }
+            try {
+                launchPackageInstaller(activity, pending.path)
+                pending.result.successOnMain(true)
+            } catch (error: Exception) {
+                pending.result.error(
+                    "INSTALL_LAUNCH_FAILED",
+                    error.message,
+                    null,
+                )
+            }
+            return true
+        }
         if (requestCode == VPN_PERMISSION_REQUEST_CODE) {
             val granted = resultCode == FlutterActivity.RESULT_OK
             val pending = vpnCallBacks.toList()
             vpnCallBacks.clear()
             pending.forEach { it.invoke(granted) }
+            return true
         }
-        return true
+        return false
     }
 
     private fun onRequestPermissionsResultListener(

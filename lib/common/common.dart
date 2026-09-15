@@ -1,4 +1,5 @@
 export 'android.dart';
+export 'android_app_update.dart';
 export 'app_localizations.dart';
 export 'color.dart';
 export 'constant.dart';
@@ -6,10 +7,12 @@ export 'context.dart';
 export 'converter.dart';
 export 'core_update.dart';
 export 'datetime.dart';
+export 'desktop_app_update.dart';
 export 'file_logger.dart';
 export 'fixed.dart';
 export 'function.dart';
 export 'future.dart';
+export 'github_proxy.dart';
 export 'http.dart';
 export 'icons.dart';
 export 'iterable.dart';
