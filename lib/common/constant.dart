@@ -3,19 +3,20 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
 import 'package:flutter/material.dart';
 
-const appName = "FlClashX";
-const appHelperService = "FlClashHelperService";
+const appName = "GektusClashX";
+const appHelperService = "GektusClashHelperService";
 const coreName = "clashx.meta";
 const browserUa =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-const packageName = "com.follow.clashx";
-final unixSocketPath = "/tmp/FlClashXSocket_${pid}_${Random.secure().nextInt(1 << 30)}.sock";
-const helperPort = 47890;
+const packageName = "com.gektus.clashx";
+final unixSocketPath =
+    "/tmp/GektusClashXSocket_${pid}_${Random.secure().nextInt(1 << 30)}.sock";
+const helperPort = 47891;
 const maxTextScale = 1.4;
 const minTextScale = 0.8;
 final baseInfoEdgeInsets = EdgeInsets.symmetric(
@@ -45,7 +46,7 @@ const localhost = "127.0.0.1";
 const clashConfigKey = "clash_config";
 const configKey = "config";
 const double dialogCommonWidth = 300;
-const repository = "pluralplay/FlClashX";
+const repository = "gektusvpn/GektusClashX";
 const defaultExternalController = "127.0.0.1:9090";
 const maxMobileWidth = 600;
 const maxLaptopWidth = 840;
@@ -82,12 +83,11 @@ const viewModeColumnsMap = {
 // const toolsStoreKey = PageStorageKey<String>('tools');
 // const profilesStoreKey = PageStorageKey<String>('profiles');
 
-const defaultPrimaryColor = 0xFF03A9F4;
+const defaultPrimaryColor = 0xFFAECC8B;
 
 double getWidgetHeight(num lines) => max(lines * 84 + (lines - 1) * 16, 0).ap;
 
 const maxLength = 150;
-
 
 const defaultPrimaryColors = [
   0xFF795548,

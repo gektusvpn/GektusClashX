@@ -2,8 +2,8 @@
 
 import 'dart:math';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -100,11 +100,12 @@ class Log with _$Log {
 
   factory Log.app(
     String payload,
-  ) => Log(
-      payload: payload,
-      dateTime: _logDateTime(null),
-      // id: _logId(null),
-    );
+  ) =>
+      Log(
+        payload: payload,
+        dateTime: _logDateTime(null),
+        // id: _logId(null),
+      );
 
   factory Log.fromJson(Map<String, Object?> json) => _$LogFromJson(json);
 }
@@ -203,16 +204,15 @@ class VersionInfo with _$VersionInfo {
 }
 
 class Traffic {
-
   Traffic({int? up, int? down})
       : id = DateTime.now().millisecondsSinceEpoch,
         up = TrafficValue(value: up),
         down = TrafficValue(value: down);
 
   factory Traffic.fromMap(Map<String, dynamic> map) => Traffic(
-      up: map['up'],
-      down: map['down'],
-    );
+        up: map['up'],
+        down: map['down'],
+      );
   int id;
   TrafficValue up;
   TrafficValue down;
@@ -237,7 +237,6 @@ class Traffic {
 
 @immutable
 class TrafficValueShow {
-
   const TrafficValueShow({
     required this.value,
     required this.unit,
@@ -320,7 +319,6 @@ extension GroupExt on Group {
 
 @immutable
 class TrafficValue {
-
   const TrafficValue({int? value}) : _value = value ?? 0;
   final int _value;
 
@@ -417,7 +415,6 @@ extension ColorSchemesExt on ColorSchemes {
 }
 
 class IpInfo {
-
   const IpInfo({
     required this.ip,
     required this.countryCode,
@@ -426,64 +423,64 @@ class IpInfo {
   final String countryCode;
 
   static IpInfo fromIpInfoIoJson(Map<String, dynamic> json) => switch (json) {
-      {
-        "ip": final String ip,
-        "country": final String country,
-      } =>
-        IpInfo(
-          ip: ip,
-          countryCode: country,
-        ),
-      _ => throw const FormatException("invalid json"),
-    };
+        {
+          "ip": final String ip,
+          "country": final String country,
+        } =>
+          IpInfo(
+            ip: ip,
+            countryCode: country,
+          ),
+        _ => throw const FormatException("invalid json"),
+      };
 
   static IpInfo fromIpApiCoJson(Map<String, dynamic> json) => switch (json) {
-      {
-        "ip": final String ip,
-        "country_code": final String countryCode,
-      } =>
-        IpInfo(
-          ip: ip,
-          countryCode: countryCode,
-        ),
-      _ => throw const FormatException("invalid json"),
-    };
+        {
+          "ip": final String ip,
+          "country_code": final String countryCode,
+        } =>
+          IpInfo(
+            ip: ip,
+            countryCode: countryCode,
+          ),
+        _ => throw const FormatException("invalid json"),
+      };
 
   static IpInfo fromIpSbJson(Map<String, dynamic> json) => switch (json) {
-      {
-        "ip": final String ip,
-        "country_code": final String countryCode,
-      } =>
-        IpInfo(
-          ip: ip,
-          countryCode: countryCode,
-        ),
-      _ => throw const FormatException("invalid json"),
-    };
+        {
+          "ip": final String ip,
+          "country_code": final String countryCode,
+        } =>
+          IpInfo(
+            ip: ip,
+            countryCode: countryCode,
+          ),
+        _ => throw const FormatException("invalid json"),
+      };
 
   static IpInfo fromIpwhoIsJson(Map<String, dynamic> json) => switch (json) {
-      {
-        "ip": final String ip,
-        "country_code": final String countryCode,
-      } =>
-        IpInfo(
-          ip: ip,
-          countryCode: countryCode,
-        ),
-      _ => throw const FormatException("invalid json"),
-    };
+        {
+          "ip": final String ip,
+          "country_code": final String countryCode,
+        } =>
+          IpInfo(
+            ip: ip,
+            countryCode: countryCode,
+          ),
+        _ => throw const FormatException("invalid json"),
+      };
 
   static IpInfo fromIpApiComJson(Map<String, dynamic> json) => switch (json) {
-      {
-        "query": final String ip,
-        "countryCode": final String countryCode,
-      } =>
-        IpInfo(
-          ip: ip,
-          countryCode: countryCode,
-        ),
-      _ => throw const FormatException("invalid json"),
-    };
+        {
+          "query": final String ip,
+          "countryCode": final String countryCode,
+        } =>
+          IpInfo(
+            ip: ip,
+            countryCode: countryCode,
+          ),
+        _ => throw const FormatException("invalid json"),
+      };
 
   @override
   String toString() => 'IpInfo{ip: $ip, countryCode: $countryCode}';
@@ -520,6 +517,7 @@ enum PopupMenuItemType {
 class PopupMenuItemData {
   const PopupMenuItemData({
     this.icon,
+    this.iconWidget,
     required this.label,
     required this.onPressed,
   });
@@ -527,6 +525,7 @@ class PopupMenuItemData {
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
+  final Widget? iconWidget;
 }
 
 @freezed
@@ -585,11 +584,12 @@ class Script with _$Script {
   factory Script.create({
     required String label,
     required String content,
-  }) => Script(
-      id: utils.uuidV4,
-      label: label,
-      content: content,
-    );
+  }) =>
+      Script(
+        id: utils.uuidV4,
+        label: label,
+        content: content,
+      );
 
   factory Script.fromJson(Map<String, Object?> json) => _$ScriptFromJson(json);
 }

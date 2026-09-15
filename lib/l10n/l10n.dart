@@ -1499,6 +1499,76 @@ class AppLocalizations {
     );
   }
 
+  /// `Download update`
+  String get downloadUpdate {
+    return Intl.message(
+      'Download update',
+      name: 'downloadUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloading update…`
+  String get downloadingAppUpdate {
+    return Intl.message(
+      'Downloading update…',
+      name: 'downloadingAppUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No APK for this device was found in the GitHub release.`
+  String get appUpdateAssetNotFound {
+    return Intl.message(
+      'No APK for this device was found in the GitHub release.',
+      name: 'appUpdateAssetNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The update integrity could not be verified.`
+  String get appUpdateVerificationFailed {
+    return Intl.message(
+      'The update integrity could not be verified.',
+      name: 'appUpdateVerificationFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The update could not be downloaded.`
+  String get appUpdateDownloadFailed {
+    return Intl.message(
+      'The update could not be downloaded.',
+      name: 'appUpdateDownloadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The update installer could not be opened.`
+  String get appUpdateInstallFailed {
+    return Intl.message(
+      'The update installer could not be opened.',
+      name: 'appUpdateInstallFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Permission to install apps from GektusClashX was not granted.`
+  String get appUpdateInstallPermissionDenied {
+    return Intl.message(
+      'Permission to install apps from GektusClashX was not granted.',
+      name: 'appUpdateInstallPermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Unknown`
   String get unknown {
     return Intl.message('Unknown', name: 'unknown', desc: '', args: []);
@@ -2192,6 +2262,16 @@ class AppLocalizations {
   /// `Stop`
   String get stop {
     return Intl.message('Stop', name: 'stop', desc: '', args: []);
+  }
+
+  /// `Enable`
+  String get enableVpn {
+    return Intl.message('Enable', name: 'enableVpn', desc: '', args: []);
+  }
+
+  /// `Disable`
+  String get disableVpn {
+    return Intl.message('Disable', name: 'disableVpn', desc: '', args: []);
   }
 
   /// `Running`
@@ -3574,6 +3654,61 @@ class AppLocalizations {
     return Intl.message('Traffic', name: 'traffic', desc: '', args: []);
   }
 
+  /// `Subscription`
+  String get subscription {
+    return Intl.message(
+      'Subscription',
+      name: 'subscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active`
+  String get subscriptionActive {
+    return Intl.message(
+      'Active',
+      name: 'subscriptionActive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expired`
+  String get subscriptionExpiredStatus {
+    return Intl.message(
+      'Expired',
+      name: 'subscriptionExpiredStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `B`
+  String get byteUnit {
+    return Intl.message('B', name: 'byteUnit', desc: '', args: []);
+  }
+
+  /// `KB`
+  String get kilobyteUnit {
+    return Intl.message('KB', name: 'kilobyteUnit', desc: '', args: []);
+  }
+
+  /// `MB`
+  String get megabyteUnit {
+    return Intl.message('MB', name: 'megabyteUnit', desc: '', args: []);
+  }
+
+  /// `GB`
+  String get gigabyteUnit {
+    return Intl.message('GB', name: 'gigabyteUnit', desc: '', args: []);
+  }
+
+  /// `TB`
+  String get terabyteUnit {
+    return Intl.message('TB', name: 'terabyteUnit', desc: '', args: []);
+  }
+
   /// `Unlimited Traffic`
   String get trafficUnlimited {
     return Intl.message(
@@ -3597,11 +3732,6 @@ class AppLocalizations {
   /// `Expires on`
   String get expiresOn {
     return Intl.message('Expires on', name: 'expiresOn', desc: '', args: []);
-  }
-
-  /// `New look`
-  String get newDashboard {
-    return Intl.message('New look', name: 'newDashboard', desc: '', args: []);
   }
 
   /// `until`
@@ -3747,6 +3877,31 @@ class AppLocalizations {
   /// `Support`
   String get support {
     return Intl.message('Support', name: 'support', desc: '', args: []);
+  }
+
+  /// `Have questions? Contact support and we’ll help you find a solution.`
+  String get supportMessage {
+    return Intl.message(
+      'Have questions? Contact support and we’ll help you find a solution.',
+      name: 'supportMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Write`
+  String get writeToSupport {
+    return Intl.message('Write', name: 'writeToSupport', desc: '', args: []);
+  }
+
+  /// `Website`
+  String get website {
+    return Intl.message('Website', name: 'website', desc: '', args: []);
+  }
+
+  /// `Email`
+  String get email {
+    return Intl.message('Email', name: 'email', desc: '', args: []);
   }
 
   /// `Thanks for contribution`
@@ -3934,6 +4089,16 @@ class AppLocalizations {
     return Intl.message(
       'Downloading Zashboard…',
       name: 'downloadingZashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Buy more traffic`
+  String get buyMoreTraffic {
+    return Intl.message(
+      'Buy more traffic',
+      name: 'buyMoreTraffic',
       desc: '',
       args: [],
     );

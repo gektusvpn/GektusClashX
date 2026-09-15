@@ -1,20 +1,20 @@
 import 'dart:io';
 
-import 'package:flclashx/clash/core.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/common/yaml_dump.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/l10n/l10n.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/pages/editor.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/about.dart';
-import 'package:flclashx/views/access.dart';
-import 'package:flclashx/views/application_setting.dart';
-import 'package:flclashx/views/config/config.dart';
-import 'package:flclashx/views/hotkey.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/clash/core.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/common/yaml_dump.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/l10n/l10n.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/pages/editor.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/views/about.dart';
+import 'package:gektusclashx/views/access.dart';
+import 'package:gektusclashx/views/application_setting.dart';
+import 'package:gektusclashx/views/config/config.dart';
+import 'package:gektusclashx/views/hotkey.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -36,55 +36,57 @@ class ToolsView extends ConsumerStatefulWidget {
 }
 
 class _ToolboxViewState extends ConsumerState<ToolsView> {
-  ListItem<dynamic> _buildNavigationMenuItem(NavigationItem navigationItem) => ListItem.open(
-      leading: navigationItem.icon,
-      title: Text(Intl.message(navigationItem.label.name)),
-      subtitle: navigationItem.description != null
-          ? Text(Intl.message(navigationItem.description!))
-          : null,
-      delegate: OpenDelegate(
-        title: Intl.message(navigationItem.label.name),
-        widget: navigationItem.view,
-      ),
-    );
+  ListItem<dynamic> _buildNavigationMenuItem(NavigationItem navigationItem) =>
+      ListItem.open(
+        leading: navigationItem.icon,
+        title: Text(Intl.message(navigationItem.label.name)),
+        subtitle: navigationItem.description != null
+            ? Text(Intl.message(navigationItem.description!))
+            : null,
+        delegate: OpenDelegate(
+          title: Intl.message(navigationItem.label.name),
+          widget: navigationItem.view,
+        ),
+      );
 
   Widget _buildNavigationMenu(List<NavigationItem> navigationItems) => Column(
-      children: [
-        for (final navigationItem in navigationItems) ...[
-          _buildNavigationMenuItem(navigationItem),
-          navigationItems.last != navigationItem
-              ? const Divider(
-                  height: 0,
-                )
-              : Container(),
-        ]
-      ],
-    );
+        children: [
+          for (final navigationItem in navigationItems) ...[
+            _buildNavigationMenuItem(navigationItem),
+            navigationItems.last != navigationItem
+                ? const Divider(
+                    height: 0,
+                  )
+                : Container(),
+          ]
+        ],
+      );
 
-  List<Widget> _getOtherList(BuildContext context, bool enableDeveloperMode) => generateSection(
-      title: AppLocalizations.of(context).other,
-      items: [
-        const _RuntimeConfigItem(),
-        const _DisclaimerItem(),
-        if (enableDeveloperMode) const _DeveloperItem(),
-        const _InfoItem(),
-        const _CoreStatusItem(),
-      ],
-    );
+  List<Widget> _getOtherList(BuildContext context, bool enableDeveloperMode) =>
+      generateSection(
+        title: AppLocalizations.of(context).other,
+        items: [
+          const _RuntimeConfigItem(),
+          const _DisclaimerItem(),
+          if (enableDeveloperMode) const _DeveloperItem(),
+          const _InfoItem(),
+          const _CoreStatusItem(),
+        ],
+      );
 
   List<Widget> _getSettingList(BuildContext context) => generateSection(
-      title: AppLocalizations.of(context).settings,
-      items: [
-        const _LocaleItem(),
-        const _ThemeItem(),
-        const _BackupItem(),
-        if (system.isDesktop) const _HotkeyItem(),
-        if (Platform.isWindows) const _LoopbackItem(),
-        if (Platform.isAndroid) const _AccessItem(),
-        const _ConfigItem(),
-        const _SettingItem(),
-      ],
-    );
+        title: AppLocalizations.of(context).settings,
+        items: [
+          const _LocaleItem(),
+          const _ThemeItem(),
+          const _BackupItem(),
+          if (system.isDesktop) const _HotkeyItem(),
+          if (Platform.isWindows) const _LoopbackItem(),
+          if (Platform.isAndroid) const _AccessItem(),
+          const _ConfigItem(),
+          const _SettingItem(),
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -475,7 +477,8 @@ class _CoreStatusItemState extends State<_CoreStatusItem> {
     try {
       final alive = await clashCore.isInit;
       if (mounted) {
-        setState(() => _state = alive ? _CoreState.running : _CoreState.stopped);
+        setState(
+            () => _state = alive ? _CoreState.running : _CoreState.stopped);
       }
     } catch (_) {
       if (mounted) setState(() => _state = _CoreState.stopped);
@@ -483,16 +486,16 @@ class _CoreStatusItemState extends State<_CoreStatusItem> {
   }
 
   Color get _statusColor => switch (_state) {
-    _CoreState.running => Colors.green,
-    _CoreState.restarting => Colors.orange,
-    _CoreState.stopped => Colors.red,
-  };
+        _CoreState.running => Colors.green,
+        _CoreState.restarting => Colors.orange,
+        _CoreState.stopped => Colors.red,
+      };
 
   String _statusText(AppLocalizations l) => switch (_state) {
-    _CoreState.running => l.coreStatusRunning,
-    _CoreState.restarting => l.coreStatusRestarting,
-    _CoreState.stopped => l.coreStatusStopped,
-  };
+        _CoreState.running => l.coreStatusRunning,
+        _CoreState.restarting => l.coreStatusRestarting,
+        _CoreState.stopped => l.coreStatusStopped,
+      };
 
   Future<void> _restart() async {
     if (_state == _CoreState.restarting) return;

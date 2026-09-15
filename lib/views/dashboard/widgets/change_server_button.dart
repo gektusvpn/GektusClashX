@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/common.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/common.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -73,7 +73,7 @@ class ChangeServerButton extends ConsumerWidget {
     }
 
     final serverInfoGroupName = _decodeBase64IfNeeded(
-      profile.providerHeaders['flclashx-serverinfo'],
+      profile.providerHeaders['gektusclashx-serverinfo'],
     );
 
     if (serverInfoGroupName == null || serverInfoGroupName.isEmpty) {
@@ -95,7 +95,8 @@ class ChangeServerButton extends ConsumerWidget {
     // moving `now` host isn't a stable label). `now` already carries whichever it
     // is, so no group-type branching is needed.
     final now = group.now;
-    final currentServerName = (now != null && now.isNotEmpty) ? now : group.name;
+    final currentServerName =
+        (now != null && now.isNotEmpty) ? now : group.name;
 
     final currentProxy = group.all.firstWhere(
       (proxy) => proxy.name == currentServerName,

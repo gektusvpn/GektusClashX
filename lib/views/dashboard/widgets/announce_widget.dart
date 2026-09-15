@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:emoji_regex/emoji_regex.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +43,8 @@ class AnnounceWidget extends ConsumerWidget {
 
     for (final match in urlPattern.allMatches(text)) {
       if (match.start > lastIndex) {
-        spans.addAll(_emojiAware(text.substring(lastIndex, match.start), baseStyle));
+        spans.addAll(
+            _emojiAware(text.substring(lastIndex, match.start), baseStyle));
       }
       final url = match.group(0)!;
       spans.add(TextSpan(

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/common.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/clash/clash.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/models/common.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 final _memoryInfoStateNotifier = ValueNotifier<TrafficValue>(
@@ -49,27 +49,27 @@ class _MemoryInfoState extends State<MemoryInfo> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      height: getWidgetHeight(1),
-      child: CommonCard(
-        info: Info(
-          iconData: Icons.memory,
-          label: appLocalizations.memoryInfo,
-        ),
-        onPressed: clashCore.requestGc,
-        child: Container(
-          padding: baseInfoEdgeInsets.copyWith(
-            top: 0,
+        height: getWidgetHeight(1),
+        child: CommonCard(
+          info: Info(
+            iconData: Icons.memory,
+            label: appLocalizations.memoryInfo,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: globalState.measure.bodyMediumHeight + 2,
-                child: ValueListenableBuilder(
-                  valueListenable: _memoryInfoStateNotifier,
-                  builder: (_, trafficValue, __) => Row(
+          onPressed: clashCore.requestGc,
+          child: Container(
+            padding: baseInfoEdgeInsets.copyWith(
+              top: 0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: globalState.measure.bodyMediumHeight + 2,
+                  child: ValueListenableBuilder(
+                    valueListenable: _memoryInfoStateNotifier,
+                    builder: (_, trafficValue, __) => Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
@@ -87,11 +87,11 @@ class _MemoryInfoState extends State<MemoryInfo> {
                         )
                       ],
                     ),
-                ),
-              )
-            ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

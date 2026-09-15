@@ -1,12 +1,12 @@
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/proxies/list.dart';
-import 'package:flclashx/views/proxies/providers.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/clash/clash.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/views/proxies/list.dart';
+import 'package:gektusclashx/views/proxies/providers.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -51,7 +51,6 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           },
           child: const _ModeSelectorAction(),
         ),
-        const SearchOrderMarker(),
         IconButton(
           tooltip: appLocalizations.testAllDelay,
           onPressed: _pingAllGroups,
@@ -68,8 +67,8 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                   (state) => state.value.map((e) => e.name).toList(),
                 ),
               );
-              final allExpanded = groupNames.isNotEmpty &&
-                  groupNames.every(unfoldSet.contains);
+              final allExpanded =
+                  groupNames.isNotEmpty && groupNames.every(unfoldSet.contains);
               return IconButton(
                 tooltip: allExpanded
                     ? appLocalizations.collapseAll
@@ -91,15 +90,15 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
         ],
         CommonPopupBox(
           targetBuilder: (open) => IconButton(
-              onPressed: () {
-                open(
-                  offset: const Offset(0, 20),
-                );
-              },
-              icon: const Icon(
-                Icons.more_vert,
-              ),
+            onPressed: () {
+              open(
+                offset: const Offset(0, 20),
+              );
+            },
+            icon: const Icon(
+              Icons.more_vert,
             ),
+          ),
           popup: CommonPopupMenu(
             items: [
               PopupMenuItemData(
@@ -112,10 +111,10 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                       isScrollControlled: true,
                     ),
                     builder: (_, type) => AdaptiveSheetScaffold(
-                        type: type,
-                        body: const ProxiesSetting(),
-                        title: appLocalizations.settings,
-                      ),
+                      type: type,
+                      body: const ProxiesSetting(),
+                      title: appLocalizations.settings,
+                    ),
                   );
                 },
               ),
@@ -147,21 +146,6 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
       ];
 
   @override
-  Null Function(String value) get onSearch => (value) {
-        ref.read(proxiesQueryProvider.notifier).value = value;
-      };
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(proxiesQueryProvider.notifier).value = "";
-      }
-    });
-  }
-
-  @override
   void initState() {
     ref.listenManual(
       proxiesActionsStateProvider,
@@ -175,31 +159,10 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           _isTab = next.type == ProxiesType.tab;
           initPageState();
           return;
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              ref.read(proxiesQueryProvider.notifier).value = "";
-            }
-          });
         }
       },
     );
     super.initState();
-  }
-
-  @override
-  void initPageState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final commonScaffoldState = context.commonScaffoldState;
-      commonScaffoldState?.actions = actions;
-      commonScaffoldState?.floatingActionButton = floatingActionButton;
-      commonScaffoldState?.onKeywordsUpdate = onKeywordsUpdate;
-      commonScaffoldState?.updateSearchState(
-        (_) => AppBarSearchState(
-          onSearch: onSearch,
-        ),
-      );
-    });
   }
 
   @override

@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,89 +113,90 @@ class _StartButtonState extends ConsumerState<StartButton>
 
     final colorScheme = Theme.of(context).colorScheme;
     final activeColor = Colors.green.shade600.withValues(alpha: 0.9);
-    final inactiveColor = colorScheme.secondaryContainer.withValues(alpha: 0.85);
+    final inactiveColor =
+        colorScheme.secondaryContainer.withValues(alpha: 0.85);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: AnimatedBuilder(
         animation: Listenable.merge([_controller, _pressController]),
         builder: (_, child) => Transform.scale(
-            scale: _scaleAnimation.value,
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: GestureDetector(
-                onTapDown: _onTapDown,
-                onTapUp: _onTapUp,
-                onTapCancel: _onTapCancel,
-                child: FilledButton(
-                  onPressed: handleSwitchStart,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: isStart ? activeColor : inactiveColor,
-                    foregroundColor: isStart
-                        ? Colors.white
-                        : colorScheme.onSecondaryContainer,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: isStart ? 4 : 0,
+          scale: _scaleAnimation.value,
+          child: SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onTapCancel: _onTapCancel,
+              child: FilledButton(
+                onPressed: handleSwitchStart,
+                style: FilledButton.styleFrom(
+                  backgroundColor: isStart ? activeColor : inactiveColor,
+                  foregroundColor:
+                      isStart ? Colors.white : colorScheme.onSecondaryContainer,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Center(
-                    child: AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeOutCubic,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          AnimatedIcon(
-                            icon: AnimatedIcons.play_pause,
-                            progress: _animation,
-                            size: 36,
-                            color: isStart
-                                ? Colors.white
-                                : colorScheme.onSecondaryContainer,
-                          ),
-                          if (child != null) ...[
-                            const SizedBox(width: 12),
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              switchInCurve: Curves.easeOutCubic,
-                              switchOutCurve: Curves.easeInCubic,
-                              transitionBuilder: (childWidget, animation) {
-                                final offsetAnimation = Tween<Offset>(
-                                  begin: const Offset(0, 0.3),
-                                  end: Offset.zero,
-                                ).animate(CurvedAnimation(
-                                  parent: animation,
-                                  curve: Curves.easeOutCubic,
-                                ));
+                  elevation: isStart ? 4 : 0,
+                ),
+                child: Center(
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedIcon(
+                          icon: AnimatedIcons.play_pause,
+                          progress: _animation,
+                          size: 36,
+                          color: isStart
+                              ? Colors.white
+                              : colorScheme.onSecondaryContainer,
+                        ),
+                        if (child != null) ...[
+                          const SizedBox(width: 12),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            switchInCurve: Curves.easeOutCubic,
+                            switchOutCurve: Curves.easeInCubic,
+                            transitionBuilder: (childWidget, animation) {
+                              final offsetAnimation = Tween<Offset>(
+                                begin: const Offset(0, 0.3),
+                                end: Offset.zero,
+                              ).animate(CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeOutCubic,
+                              ));
 
-                                return SlideTransition(
-                                  position: offsetAnimation,
-                                  child: FadeTransition(
-                                    opacity: animation,
-                                    child: childWidget,
-                                  ),
-                                );
-                              },
-                              layoutBuilder: (currentChild, previousChildren) => Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    ...previousChildren,
-                                    if (currentChild != null) currentChild,
-                                  ],
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: FadeTransition(
+                                  opacity: animation,
+                                  child: childWidget,
                                 ),
-                              child: child,
+                              );
+                            },
+                            layoutBuilder: (currentChild, previousChildren) =>
+                                Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                ...previousChildren,
+                                if (currentChild != null) currentChild,
+                              ],
                             ),
-                          ],
+                            child: child,
+                          ),
                         ],
-                      ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
           ),
+        ),
         child: Consumer(
           builder: (_, ref, __) {
             final runTime = ref.watch(runTimeProvider);

@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/app.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,37 +15,38 @@ class TrafficUsage extends StatelessWidget {
     BuildContext context,
     Icon icon,
     TrafficValue trafficValue,
-  ) => Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Flexible(
-          flex: 1,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              icon,
-              const SizedBox(
-                width: 8,
-              ),
-              Flexible(
-                flex: 1,
-                child: Text(
-                  trafficValue.showValue,
-                  style: context.textTheme.bodySmall,
-                  maxLines: 1,
+  ) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Flexible(
+            flex: 1,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                icon,
+                const SizedBox(
+                  width: 8,
                 ),
-              ),
-            ],
+                Flexible(
+                  flex: 1,
+                  child: Text(
+                    trafficValue.showValue,
+                    style: context.textTheme.bodySmall,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Text(
-          trafficValue.showUnit,
-          style: context.textTheme.bodySmall?.toLighter,
-        ),
-      ],
-    );
+          Text(
+            trafficValue.showUnit,
+            style: context.textTheme.bodySmall?.toLighter,
+          ),
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,11 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/text.dart';
 import 'package:intl/intl.dart';
 
 String _countryCodeToEmoji(String code) {
@@ -53,12 +53,12 @@ class StatsGrid extends ConsumerWidget {
               Row(
                 children: [
                   if (hasExpire)
-                    Expanded(child: _ExpiryPill(timestamp: sub!.expire))
+                    Expanded(child: _ExpiryPill(timestamp: sub.expire))
                   else
                     const Expanded(child: SizedBox.shrink()),
                   const SizedBox(width: 8),
                   if (hasTraffic)
-                    Expanded(child: _TrafficPill(sub: sub!))
+                    Expanded(child: _TrafficPill(sub: sub))
                   else
                     const Expanded(child: SizedBox.shrink()),
                 ],
@@ -84,9 +84,9 @@ class _IpPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (!detectionState.forceCheck()) {
-          context.showNotifier(appLocalizations.tooFrequentOperation);
+          await context.showNotifier(appLocalizations.tooFrequentOperation);
         }
       },
       child: Container(
@@ -103,13 +103,16 @@ class _IpPill extends StatelessWidget {
           children: [
             if (isLoading)
               SizedBox(
-                width: 14, height: 14,
+                width: 14,
+                height: 14,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2, color: colorScheme.onSurfaceVariant,
+                  strokeWidth: 2,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               )
             else
-              Icon(Icons.public_rounded, size: 14, color: colorScheme.onSurfaceVariant),
+              Icon(Icons.public_rounded,
+                  size: 14, color: colorScheme.onSurfaceVariant),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -118,7 +121,8 @@ class _IpPill extends StatelessWidget {
                   color: colorScheme.onSurfaceVariant,
                   fontFamily: FontFamily.jetBrainsMono.value,
                 ),
-                maxLines: 1, overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             if (flag != null) ...[
@@ -166,7 +170,8 @@ class _TrafficPill extends StatelessWidget {
               color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
               child: Row(
                 children: [
-                  Icon(Icons.data_usage_rounded, size: 14, color: colorScheme.onSurfaceVariant),
+                  Icon(Icons.data_usage_rounded,
+                      size: 14, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -174,7 +179,8 @@ class _TrafficPill extends StatelessWidget {
                       style: context.textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -221,7 +227,8 @@ class _ExpiryPill extends StatelessWidget {
           Icon(
             isExpired ? Icons.warning_amber_rounded : Icons.event_rounded,
             size: 14,
-            color: isExpired ? Colors.red.shade400 : colorScheme.onSurfaceVariant,
+            color:
+                isExpired ? Colors.red.shade400 : colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 6),
           if (!isExpired)
@@ -235,9 +242,12 @@ class _ExpiryPill extends StatelessWidget {
             child: Text(
               formatted,
               style: context.textTheme.labelSmall?.copyWith(
-                color: isExpired ? Colors.red.shade400 : colorScheme.onSurfaceVariant,
+                color: isExpired
+                    ? Colors.red.shade400
+                    : colorScheme.onSurfaceVariant,
               ),
-              maxLines: 1, overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -245,4 +255,3 @@ class _ExpiryPill extends StatelessWidget {
     );
   }
 }
-

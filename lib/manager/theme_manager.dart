@@ -1,14 +1,13 @@
 import 'dart:math';
-import 'package:flclashx/common/constant.dart';
-import 'package:flclashx/common/measure.dart';
-import 'package:flclashx/common/theme.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/constant.dart';
+import 'package:gektusclashx/common/measure.dart';
+import 'package:gektusclashx/common/theme.dart';
+import 'package:gektusclashx/providers/config.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ThemeManager extends ConsumerWidget {
-
   const ThemeManager({
     super.key,
     required this.child,

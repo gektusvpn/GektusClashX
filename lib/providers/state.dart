@@ -1,8 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -52,7 +52,7 @@ GroupsState currentGroupsState(Ref ref) {
   return GroupsState(
     value: switch (mode) {
       Mode.direct => [],
-      // With `flclashx-override` on GLOBAL, global mode has a single selector —
+      // With `gektusclashx-override` on GLOBAL, global mode has a single selector —
       // show only GLOBAL (service groups belong to rule mode). Otherwise keep
       // the original behaviour: every group.
       Mode.global => globalState.globalOverrideEnabled.value
@@ -289,7 +289,8 @@ ProfilesSelectorState profilesSelectorState(Ref ref) {
 
 @riverpod
 ProxiesListSelectorState proxiesListSelectorState(Ref ref) {
-  final groupNames = ref.watch(currentGroupsStateProvider.select((state) => state.value.map((e) => e.name).toList()));
+  final groupNames = ref.watch(currentGroupsStateProvider
+      .select((state) => state.value.map((e) => e.name).toList()));
   final currentUnfoldSet = ref.watch(unfoldSetProvider);
   final proxiesStyle = ref.watch(proxiesStyleSettingProvider);
   final sortNum = ref.watch(sortNumProvider);
@@ -328,12 +329,12 @@ ProxiesSelectorState proxiesSelectorState(Ref ref) {
 
 @riverpod
 GroupNamesState groupNamesState(Ref ref) => GroupNamesState(
-    groupNames: ref.watch(
-      currentGroupsStateProvider.select(
-        (state) => state.value.map((e) => e.name).toList(),
+      groupNames: ref.watch(
+        currentGroupsStateProvider.select(
+          (state) => state.value.map((e) => e.name).toList(),
+        ),
       ),
-    ),
-  );
+    );
 
 @riverpod
 ProxyGroupSelectorState proxyGroupSelectorState(Ref ref, String groupName) {
@@ -349,7 +350,9 @@ ProxyGroupSelectorState proxyGroupSelectorState(Ref ref, String groupName) {
   final columns = ref.watch(getProxiesColumnsProvider);
   final query =
       ref.watch(proxiesQueryProvider.select((state) => state.toLowerCase()));
-  final proxies = group?.all.where((item) => item.name.toLowerCase().contains(query)).toList() ??
+  final proxies = group?.all
+          .where((item) => item.name.toLowerCase().contains(query))
+          .toList() ??
       [];
   return ProxyGroupSelectorState(
     testUrl: group?.testUrl,
@@ -376,15 +379,17 @@ PackageListSelectorState packageListSelectorState(Ref ref) {
 @riverpod
 MoreToolsSelectorState moreToolsSelectorState(Ref ref) {
   final viewMode = ref.watch(viewModeProvider);
-  final navigationItems = ref.watch(navigationsStateProvider.select((state) => state.value.where((element) {
-      final isMore = element.modes.contains(NavigationItemMode.more);
-      final isDesktop = element.modes.contains(NavigationItemMode.desktop);
-      if (isMore && !isDesktop) return true;
-      if (viewMode != ViewMode.mobile || !isMore) {
-        return false;
-      }
-      return true;
-    }).toList()));
+  final navigationItems = ref.watch(
+      navigationsStateProvider.select((state) => state.value.where((element) {
+            final isMore = element.modes.contains(NavigationItemMode.more);
+            final isDesktop =
+                element.modes.contains(NavigationItemMode.desktop);
+            if (isMore && !isDesktop) return true;
+            if (viewMode != ViewMode.mobile || !isMore) {
+              return false;
+            }
+            return true;
+          }).toList()));
 
   return MoreToolsSelectorState(navigationItems: navigationItems);
 }
@@ -454,17 +459,17 @@ Set<String> unfoldSet(Ref ref) {
 
 @riverpod
 HotKeyAction getHotKeyAction(Ref ref, HotAction hotAction) => ref.watch(
-    hotKeyActionsProvider.select(
-      (state) {
-        final index = state.indexWhere((item) => item.action == hotAction);
-        return index != -1
-            ? state[index]
-            : HotKeyAction(
-                action: hotAction,
-              );
-      },
-    ),
-  );
+      hotKeyActionsProvider.select(
+        (state) {
+          final index = state.indexWhere((item) => item.action == hotAction);
+          return index != -1
+              ? state[index]
+              : HotKeyAction(
+                  action: hotAction,
+                );
+        },
+      ),
+    );
 
 @riverpod
 Profile? currentProfile(Ref ref) {
@@ -476,20 +481,8 @@ Profile? currentProfile(Ref ref) {
 @riverpod
 bool globalModeEnabled(Ref ref) {
   final profile = ref.watch(currentProfileProvider);
-  final value = profile?.providerHeaders['flclashx-globalmode'];
+  final value = profile?.providerHeaders['gektusclashx-globalmode'];
   return value?.toLowerCase() != 'false';
-}
-
-/// Single source of truth for whether the "new look" (hero) dashboard is shown.
-/// Just the `newDashboard` setting — the toggle is never locked. The
-/// `flclashx-newboard` header writes this setting via _applyCustomViewSettings under
-/// the standard `flclashx-custom` policy (`update` re-applies on every profile apply,
-/// `add` only when the subscription is first added), so the provider can switch the
-/// board on/off through the normal header pipeline rather than overriding here.
-@riverpod
-bool newDashboardEnabled(Ref ref) {
-  return ref.watch(appSettingProvider.select((state) => state.newDashboard)) ??
-      false;
 }
 
 @riverpod
@@ -502,18 +495,18 @@ bool hasAnnounceData(Ref ref) {
 @riverpod
 bool hasServiceInfoData(Ref ref) {
   final profile = ref.watch(currentProfileProvider);
-  final value = profile?.providerHeaders['flclashx-servicename'];
+  final value = profile?.providerHeaders['gektusclashx-servicename'];
   return value != null && value.isNotEmpty;
 }
 
 @riverpod
 bool hasServerInfoData(Ref ref) {
   final profile = ref.watch(currentProfileProvider);
-  final value = profile?.providerHeaders['flclashx-serverinfo'];
+  final value = profile?.providerHeaders['gektusclashx-serverinfo'];
   return value != null && value.isNotEmpty;
 }
 
-// `flclashx-background` is "<url>" or "<url>,<opacity 1-100>" (opacity = how visible
+// `gektusclashx-background` is "<url>" or "<url>,<opacity 1-100>" (opacity = how visible
 // the background image is; higher = more visible; absent = the default dimmed look).
 String? backgroundUrlFromHeader(String? raw) {
   if (raw == null || raw.isEmpty) return null;
@@ -533,15 +526,17 @@ int? backgroundOpacityFromHeader(String? raw) {
 @riverpod
 String? backgroundUrl(Ref ref) {
   final profile = ref.watch(currentProfileProvider);
-  return backgroundUrlFromHeader(profile?.providerHeaders['flclashx-background']);
+  return backgroundUrlFromHeader(
+      profile?.providerHeaders['gektusclashx-background']);
 }
 
 /// Background image opacity (1-100, higher = more visible) parsed from the optional
-/// `,<opacity>` suffix of `flclashx-background`. Null = not specified (default look).
+/// `,<opacity>` suffix of `gektusclashx-background`. Null = not specified (default look).
 @riverpod
 int? backgroundOpacity(Ref ref) {
   final profile = ref.watch(currentProfileProvider);
-  return backgroundOpacityFromHeader(profile?.providerHeaders['flclashx-background']);
+  return backgroundOpacityFromHeader(
+      profile?.providerHeaders['gektusclashx-background']);
 }
 
 @riverpod
@@ -633,8 +628,8 @@ String getProxyDesc(Ref ref, Proxy proxy) {
 class ProfileOverrideState extends _$ProfileOverrideState {
   @override
   ProfileOverrideStateModel build() => const ProfileOverrideStateModel(
-      selectedRules: {},
-    );
+        selectedRules: {},
+      );
 
   void updateState(
     ProfileOverrideStateModel? Function(ProfileOverrideStateModel state)
@@ -650,10 +645,10 @@ class ProfileOverrideState extends _$ProfileOverrideState {
 
 @riverpod
 OverrideData? getProfileOverrideData(Ref ref, String profileId) => ref.watch(
-    profilesProvider.select(
-      (state) => state.getProfile(profileId)?.overrideData,
-    ),
-  );
+      profilesProvider.select(
+        (state) => state.getProfile(profileId)?.overrideData,
+      ),
+    );
 
 @riverpod
 VM2? layoutChange(Ref ref) {
@@ -663,24 +658,6 @@ VM2? layoutChange(Ref ref) {
   return VM2(
     a: viewWidth,
     b: textScale,
-  );
-}
-
-@riverpod
-VM2<int, bool> checkIp(Ref ref) {
-  final checkIpNum = ref.watch(checkIpNumProvider);
-  final containsDetection = ref.watch(
-    dashboardStateProvider.select(
-      (state) =>
-          state.dashboardWidgets.contains(DashboardWidget.networkDetection),
-    ),
-  );
-  // The "new look" hero also shows the exit IP, so it needs the same re-check on
-  // proxy change.
-  final newDashboard = ref.watch(newDashboardEnabledProvider);
-  return VM2(
-    a: checkIpNum,
-    b: containsDetection || newDashboard,
   );
 }
 

@@ -43,7 +43,6 @@ mixin _$AppSettingProps {
   bool get overrideProviderSettings => throw _privateConstructorUsedError;
   bool get overrideNetworkSettings => throw _privateConstructorUsedError;
   RecoveryStrategy get recoveryStrategy => throw _privateConstructorUsedError;
-  bool? get newDashboard => throw _privateConstructorUsedError;
 
   /// Serializes this AppSettingProps to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -83,8 +82,7 @@ abstract class $AppSettingPropsCopyWith<$Res> {
       bool zashboardInApp,
       bool overrideProviderSettings,
       bool overrideNetworkSettings,
-      RecoveryStrategy recoveryStrategy,
-      bool? newDashboard});
+      RecoveryStrategy recoveryStrategy});
 }
 
 /// @nodoc
@@ -123,7 +121,6 @@ class _$AppSettingPropsCopyWithImpl<$Res, $Val extends AppSettingProps>
     Object? overrideProviderSettings = null,
     Object? overrideNetworkSettings = null,
     Object? recoveryStrategy = null,
-    Object? newDashboard = freezed,
   }) {
     return _then(_value.copyWith(
       locale: freezed == locale
@@ -210,10 +207,6 @@ class _$AppSettingPropsCopyWithImpl<$Res, $Val extends AppSettingProps>
           ? _value.recoveryStrategy
           : recoveryStrategy // ignore: cast_nullable_to_non_nullable
               as RecoveryStrategy,
-      newDashboard: freezed == newDashboard
-          ? _value.newDashboard
-          : newDashboard // ignore: cast_nullable_to_non_nullable
-              as bool?,
     ) as $Val);
   }
 }
@@ -248,8 +241,7 @@ abstract class _$$AppSettingPropsImplCopyWith<$Res>
       bool zashboardInApp,
       bool overrideProviderSettings,
       bool overrideNetworkSettings,
-      RecoveryStrategy recoveryStrategy,
-      bool? newDashboard});
+      RecoveryStrategy recoveryStrategy});
 }
 
 /// @nodoc
@@ -286,7 +278,6 @@ class __$$AppSettingPropsImplCopyWithImpl<$Res>
     Object? overrideProviderSettings = null,
     Object? overrideNetworkSettings = null,
     Object? recoveryStrategy = null,
-    Object? newDashboard = freezed,
   }) {
     return _then(_$AppSettingPropsImpl(
       locale: freezed == locale
@@ -373,10 +364,6 @@ class __$$AppSettingPropsImplCopyWithImpl<$Res>
           ? _value.recoveryStrategy
           : recoveryStrategy // ignore: cast_nullable_to_non_nullable
               as RecoveryStrategy,
-      newDashboard: freezed == newDashboard
-          ? _value.newDashboard
-          : newDashboard // ignore: cast_nullable_to_non_nullable
-              as bool?,
     ));
   }
 }
@@ -406,8 +393,7 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
       this.zashboardInApp = true,
       this.overrideProviderSettings = false,
       this.overrideNetworkSettings = false,
-      this.recoveryStrategy = RecoveryStrategy.compatible,
-      this.newDashboard})
+      this.recoveryStrategy = RecoveryStrategy.compatible})
       : _dashboardWidgets = dashboardWidgets;
 
   factory _$AppSettingPropsImpl.fromJson(Map<String, dynamic> json) =>
@@ -482,12 +468,10 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
   @override
   @JsonKey()
   final RecoveryStrategy recoveryStrategy;
-  @override
-  final bool? newDashboard;
 
   @override
   String toString() {
-    return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, crashlytics: $crashlytics, zashboardInApp: $zashboardInApp, overrideProviderSettings: $overrideProviderSettings, overrideNetworkSettings: $overrideNetworkSettings, recoveryStrategy: $recoveryStrategy, newDashboard: $newDashboard)';
+    return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, crashlytics: $crashlytics, zashboardInApp: $zashboardInApp, overrideProviderSettings: $overrideProviderSettings, overrideNetworkSettings: $overrideNetworkSettings, recoveryStrategy: $recoveryStrategy)';
   }
 
   @override
@@ -534,9 +518,7 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
                     other.overrideNetworkSettings, overrideNetworkSettings) ||
                 other.overrideNetworkSettings == overrideNetworkSettings) &&
             (identical(other.recoveryStrategy, recoveryStrategy) ||
-                other.recoveryStrategy == recoveryStrategy) &&
-            (identical(other.newDashboard, newDashboard) ||
-                other.newDashboard == newDashboard));
+                other.recoveryStrategy == recoveryStrategy));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -563,8 +545,7 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
         zashboardInApp,
         overrideProviderSettings,
         overrideNetworkSettings,
-        recoveryStrategy,
-        newDashboard
+        recoveryStrategy
       ]);
 
   /// Create a copy of AppSettingProps
@@ -607,8 +588,7 @@ abstract class _AppSettingProps implements AppSettingProps {
       final bool zashboardInApp,
       final bool overrideProviderSettings,
       final bool overrideNetworkSettings,
-      final RecoveryStrategy recoveryStrategy,
-      final bool? newDashboard}) = _$AppSettingPropsImpl;
+      final RecoveryStrategy recoveryStrategy}) = _$AppSettingPropsImpl;
 
   factory _AppSettingProps.fromJson(Map<String, dynamic> json) =
       _$AppSettingPropsImpl.fromJson;
@@ -656,8 +636,6 @@ abstract class _AppSettingProps implements AppSettingProps {
   bool get overrideNetworkSettings;
   @override
   RecoveryStrategy get recoveryStrategy;
-  @override
-  bool? get newDashboard;
 
   /// Create a copy of AppSettingProps
   /// with the given fields replaced by the non-null parameter values.
@@ -2279,10 +2257,10 @@ class __$$ThemePropsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ThemePropsImpl implements _ThemeProps {
   const _$ThemePropsImpl(
-      {this.primaryColor,
+      {this.primaryColor = defaultPrimaryColor,
       final List<int> primaryColors = defaultPrimaryColors,
       this.themeMode = ThemeMode.system,
-      this.schemeVariant = DynamicSchemeVariant.content,
+      this.schemeVariant = DynamicSchemeVariant.tonalSpot,
       this.pureBlack = false,
       this.textScale = const TextScale()})
       : _primaryColors = primaryColors;
@@ -2291,6 +2269,7 @@ class _$ThemePropsImpl implements _ThemeProps {
       _$$ThemePropsImplFromJson(json);
 
   @override
+  @JsonKey()
   final int? primaryColor;
   final List<int> _primaryColors;
   @override

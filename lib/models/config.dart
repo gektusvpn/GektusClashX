@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -36,9 +36,7 @@ const defaultNetworkProps = NetworkProps();
 const defaultProxiesStyle = ProxiesStyle();
 const defaultWindowProps = WindowProps();
 const defaultAccessControl = AccessControl();
-const defaultThemeProps = ThemeProps(
-  primaryColor: defaultPrimaryColor,
-);
+const defaultThemeProps = ThemeProps();
 
 const List<DashboardWidget> defaultDashboardWidgets = [
   DashboardWidget.announce,
@@ -85,15 +83,13 @@ class AppSettingProps with _$AppSettingProps {
     @Default(false) bool overrideProviderSettings,
     @Default(false) bool overrideNetworkSettings,
     @Default(RecoveryStrategy.compatible) RecoveryStrategy recoveryStrategy,
-    bool? newDashboard,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>
       _$AppSettingPropsFromJson(json);
 
-  factory AppSettingProps.safeFromJson(Map<String, Object?>? json) => json == null
-        ? defaultAppSettingProps
-        : AppSettingProps.fromJson(json);
+  factory AppSettingProps.safeFromJson(Map<String, Object?>? json) =>
+      json == null ? defaultAppSettingProps : AppSettingProps.fromJson(json);
 }
 
 @freezed
@@ -190,10 +186,10 @@ class TextScale with _$TextScale {
 @freezed
 class ThemeProps with _$ThemeProps {
   const factory ThemeProps({
-    int? primaryColor,
+    @Default(defaultPrimaryColor) int? primaryColor,
     @Default(defaultPrimaryColors) List<int> primaryColors,
     @Default(ThemeMode.system) ThemeMode themeMode,
-    @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
+    @Default(DynamicSchemeVariant.tonalSpot) DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
     @Default(TextScale()) TextScale textScale,
   }) = _ThemeProps;

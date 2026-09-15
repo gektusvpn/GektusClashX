@@ -1,17 +1,20 @@
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/dashboard/widgets/hero_nav_bar.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 typedef OnSelected = void Function(int index);
+
+String _navigationLabel(PageLabel label) => label == PageLabel.proxies
+    ? appLocalizations.locations
+    : Intl.message(label.name);
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -33,19 +36,13 @@ class HomePage extends StatelessWidget {
               navigationItems: navigationItems,
               currentIndex: currentIndex,
             );
-            // Mobile bottom bar follows the dashboard style: the hero nav bar for
-            // the new look, the classic Material NavigationBar for the old one.
-            final newDashboard = ref.watch(newDashboardEnabledProvider);
-            final bottomNavigationBar = viewMode == ViewMode.mobile
-                ? (newDashboard ? const HeroNavBar() : navigationBar)
-                : null;
+            final bottomNavigationBar =
+                viewMode == ViewMode.mobile ? navigationBar : null;
             final sideNavigationBar =
                 viewMode != ViewMode.mobile ? navigationBar : null;
             return CommonScaffold(
               key: globalState.homeScaffoldKey,
-              title: Intl.message(
-                pageLabel.name,
-              ),
+              title: _navigationLabel(pageLabel),
               sideNavigationBar: sideNavigationBar,
               body: child!,
               bottomNavigationBar: bottomNavigationBar,
@@ -175,19 +172,22 @@ class CommonNavigationBar extends ConsumerWidget {
     if (viewMode == ViewMode.mobile) {
       return NavigationBarTheme(
         data: _NavigationBarDefaultsM3(context),
-        child: NavigationBar(
-          destinations: navigationItems
-              .map(
-                (e) => NavigationDestination(
-                  icon: e.icon,
-                  label: Intl.message(e.label.name),
-                ),
-              )
-              .toList(),
-          onDestinationSelected: (index) {
-            globalState.appController.toPage(navigationItems[index].label);
-          },
-          selectedIndex: currentIndex,
+        child: TooltipVisibility(
+          visible: false,
+          child: NavigationBar(
+            destinations: navigationItems
+                .map(
+                  (e) => NavigationDestination(
+                    icon: e.icon,
+                    label: _navigationLabel(e.label),
+                  ),
+                )
+                .toList(),
+            onDestinationSelected: (index) {
+              globalState.appController.toPage(navigationItems[index].label);
+            },
+            selectedIndex: currentIndex,
+          ),
         ),
       );
     }
@@ -244,41 +244,44 @@ class CommonNavigationBar extends ConsumerWidget {
                 behavior: HiddenBarScrollBehavior(),
                 child: SingleChildScrollView(
                   child: IntrinsicHeight(
-                    child: NavigationRail(
-                      backgroundColor: context.colorScheme.surfaceContainer,
-                      selectedIconTheme: IconThemeData(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                      unselectedIconTheme: IconThemeData(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                      selectedLabelTextStyle:
-                          context.textTheme.labelLarge!.copyWith(
-                        color: context.colorScheme.onSurface,
-                      ),
-                      unselectedLabelTextStyle:
-                          context.textTheme.labelLarge!.copyWith(
-                        color: context.colorScheme.onSurface,
-                      ),
-                      destinations: navigationItems
-                          .map(
-                            (e) => NavigationRailDestination(
-                              icon: e.icon,
-                              label: Text(
-                                Intl.message(e.label.name),
+                    child: TooltipVisibility(
+                      visible: false,
+                      child: NavigationRail(
+                        backgroundColor: context.colorScheme.surfaceContainer,
+                        selectedIconTheme: IconThemeData(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                        unselectedIconTheme: IconThemeData(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                        selectedLabelTextStyle:
+                            context.textTheme.labelLarge!.copyWith(
+                          color: context.colorScheme.onSurface,
+                        ),
+                        unselectedLabelTextStyle:
+                            context.textTheme.labelLarge!.copyWith(
+                          color: context.colorScheme.onSurface,
+                        ),
+                        destinations: navigationItems
+                            .map(
+                              (e) => NavigationRailDestination(
+                                icon: e.icon,
+                                label: Text(
+                                  _navigationLabel(e.label),
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                      onDestinationSelected: (index) {
-                        globalState.appController
-                            .toPage(navigationItems[index].label);
-                      },
-                      extended: false,
-                      selectedIndex: currentIndex,
-                      labelType: showLabel
-                          ? NavigationRailLabelType.all
-                          : NavigationRailLabelType.none,
+                            )
+                            .toList(),
+                        onDestinationSelected: (index) {
+                          globalState.appController
+                              .toPage(navigationItems[index].label);
+                        },
+                        extended: false,
+                        selectedIndex: currentIndex,
+                        labelType: showLabel
+                            ? NavigationRailLabelType.all
+                            : NavigationRailLabelType.none,
+                      ),
                     ),
                   ),
                 ),

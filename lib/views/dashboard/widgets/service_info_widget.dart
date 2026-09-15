@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/providers/providers.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -82,9 +82,10 @@ class ServiceInfoWidget extends ConsumerWidget {
     }
 
     final headers = profile.providerHeaders;
-    final serviceName = _decodeBase64IfNeeded(headers['flclashx-servicename']);
+    final serviceName =
+        _decodeBase64IfNeeded(headers['gektusclashx-servicename']);
     final supportUrl = headers['support-url'];
-    final logoUrl = _decodeBase64IfNeeded(headers['flclashx-servicelogo']);
+    final logoUrl = _decodeBase64IfNeeded(headers['gektusclashx-servicelogo']);
 
     if (serviceName == null || serviceName.isEmpty) {
       return const SizedBox.shrink();

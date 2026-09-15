@@ -1,7 +1,7 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/views/zashboard.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/providers/config.dart';
+import 'package:gektusclashx/views/zashboard.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

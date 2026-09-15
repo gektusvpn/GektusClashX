@@ -1,8 +1,8 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/providers/config.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -86,10 +86,10 @@ class OutboundModeV2 extends StatelessWidget {
   const OutboundModeV2({super.key});
 
   Color _getTextColor(BuildContext context, Mode mode) => switch (mode) {
-      Mode.rule => context.colorScheme.onSecondaryContainer,
-      Mode.global => context.colorScheme.onPrimaryContainer,
-      Mode.direct => context.colorScheme.onTertiaryContainer,
-    };
+        Mode.rule => context.colorScheme.onSecondaryContainer,
+        Mode.global => context.colorScheme.onPrimaryContainer,
+        Mode.direct => context.colorScheme.onTertiaryContainer,
+      };
 
   @override
   Widget build(BuildContext context) {

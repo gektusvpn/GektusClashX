@@ -36,7 +36,6 @@ _$AppSettingPropsImpl _$$AppSettingPropsImplFromJson(
       recoveryStrategy: $enumDecodeNullable(
               _$RecoveryStrategyEnumMap, json['recoveryStrategy']) ??
           RecoveryStrategy.compatible,
-      newDashboard: json['newDashboard'] as bool?,
     );
 
 Map<String, dynamic> _$$AppSettingPropsImplToJson(
@@ -65,7 +64,6 @@ Map<String, dynamic> _$$AppSettingPropsImplToJson(
       'overrideProviderSettings': instance.overrideProviderSettings,
       'overrideNetworkSettings': instance.overrideNetworkSettings,
       'recoveryStrategy': _$RecoveryStrategyEnumMap[instance.recoveryStrategy]!,
-      'newDashboard': instance.newDashboard,
     };
 
 const _$RecoveryStrategyEnumMap = {
@@ -268,7 +266,8 @@ Map<String, dynamic> _$$TextScaleImplToJson(_$TextScaleImpl instance) =>
 
 _$ThemePropsImpl _$$ThemePropsImplFromJson(Map<String, dynamic> json) =>
     _$ThemePropsImpl(
-      primaryColor: (json['primaryColor'] as num?)?.toInt(),
+      primaryColor:
+          (json['primaryColor'] as num?)?.toInt() ?? defaultPrimaryColor,
       primaryColors: (json['primaryColors'] as List<dynamic>?)
               ?.map((e) => (e as num).toInt())
               .toList() ??
@@ -277,7 +276,7 @@ _$ThemePropsImpl _$$ThemePropsImplFromJson(Map<String, dynamic> json) =>
           ThemeMode.system,
       schemeVariant: $enumDecodeNullable(
               _$DynamicSchemeVariantEnumMap, json['schemeVariant']) ??
-          DynamicSchemeVariant.content,
+          DynamicSchemeVariant.tonalSpot,
       pureBlack: json['pureBlack'] as bool? ?? false,
       textScale: json['textScale'] == null
           ? const TextScale()
