@@ -1,7 +1,7 @@
-display_name: FlClashX
+display_name: GektusClashX
 
-packager: pluralplay
-packagerEmail: mail@pluralplay.rw
+packager: GektusVPN
+packagerEmail: noreply@github.com
 license: Other
 
 priority: optional
@@ -11,11 +11,11 @@ essential: false
 icon: ./assets/images/icon.png
 
 keywords:
-  - FlClashX
+  - GektusClashX
   - Clash
     - Proxy
 
-generic_name: FlClashX
+generic_name: GektusClashX
 
 group: Applications/Internet
 

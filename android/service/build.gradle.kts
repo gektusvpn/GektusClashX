@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.follow.clashx.service"
+    namespace = "com.gektus.clashx.service"
     compileSdk = 36
 
     defaultConfig {

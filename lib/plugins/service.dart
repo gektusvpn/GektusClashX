@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/clash/clash.dart';
+import 'package:gektusclashx/clash/clash.dart';
 
 /// Compatibility façade over [ClashLib] for call-sites that still reach for a
 /// standalone "service" object. Under the AIDL architecture there is no

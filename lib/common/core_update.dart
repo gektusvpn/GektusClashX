@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
 
 class CoreUpdater {
   factory CoreUpdater() {

@@ -1,11 +1,11 @@
 script_template: inno_setup.iss
-app_id: 728B3532-C74B-4870-9068-BE70FE12A3E6
-app_name: FlClashX
-publisher: pluralplay
-publisher_url: https://github.com/pluralplay/FlClashX
-display_name: FlClashX
-executable_name: FlClashX.exe
-output_base_file_name: FlClashX.exe
+app_id: EE50BAE7-23E9-4BD7-9ACA-780E5B15BF97
+app_name: GektusClashX
+publisher: GektusVPN
+publisher_url: https://github.com/gektusvpn/GektusClashX
+display_name: GektusClashX
+executable_name: GektusClashX.exe
+output_base_file_name: GektusClashX.exe
 setup_icon_file: ..\windows\runner\resources\app_icon.ico
 locales:
   - lang: ru

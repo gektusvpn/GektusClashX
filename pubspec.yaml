@@ -1,4 +1,4 @@
-name: flclashx
+name: gektusclashx
 description: Fork multi-platform proxy client FlClash based on ClashMeta, simple and easy to use, open-source and ad-free.
 publish_to: "none"
 version: 0.4.2+2026071801
@@ -99,7 +99,6 @@ flutter:
     - assets/data/
     - assets/fonts/
     - assets/images/
-    - assets/images/avatars/
     - assets/images/icons/
   fonts:
     - family: JetBrainsMono
@@ -137,10 +136,10 @@ flutter_launcher_icons:
   adaptive_icon_monochrome: "assets/images/icon_white.png"
 
 msix_config:
-  display_name: FlClashX
-  publisher_display_name: pluralplay
+  display_name: GektusClashX
+  publisher_display_name: GektusVPN
   publisher: CN=F778E60B-B797-4F7E-AE56-743F6A0F5B32
-  identity_name: pluralplay.FlClashX
+  identity_name: gektusvpn.GektusClashX
   msix_version: 0.4.2.0
   logo_path: assets/images/icon.png
   capabilities: internetClient, privateNetworkClientServer

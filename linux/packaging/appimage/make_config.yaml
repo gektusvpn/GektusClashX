@@ -1,14 +1,14 @@
-display_name: FlClashX
+display_name: GektusClashX
 
 icon: ./assets/images/icon.png
 
 keywords:
-  - FlClashX
+  - GektusClashX
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: FlClashX
+generic_name: GektusClashX
 
 categories:
   - Network
