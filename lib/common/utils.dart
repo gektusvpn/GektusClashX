@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/enum/enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -151,26 +151,15 @@ class Utils {
   }
 
   String getTrayIconPath({
-    required Brightness brightness,
-    bool isRunning = false,
-    bool? isSystemDark,
+    required bool isRunning,
   }) {
     if (Platform.isMacOS) {
       return "assets/images/icon_white.png";
     }
 
-    if (isRunning) {
-      return "assets/images/icon.ico";
-    }
-
-    final effectiveBrightness = isSystemDark != null
-        ? (isSystemDark ? Brightness.dark : Brightness.light)
-        : brightness;
-
-    return switch (effectiveBrightness) {
-      Brightness.dark => "assets/images/icon_stop_white.ico",
-      Brightness.light => "assets/images/icon_stop_black.ico",
-    };
+    final extension = Platform.isWindows ? "ico" : "png";
+    final state = isRunning ? "start" : "stop";
+    return "assets/images/icon_tray_$state.$extension";
   }
 
   int compareVersions(String version1, String version2) {
@@ -191,14 +180,16 @@ class Utils {
     if (patch1 != patch2) {
       return patch1.compareTo(patch2);
     }
-    final build1 = version1.contains('+') ? int.parse(version1.split('+')[1]) : 0;
-    final build2 = version2.contains('+') ? int.parse(version2.split('+')[1]) : 0;
+    final build1 =
+        version1.contains('+') ? int.parse(version1.split('+')[1]) : 0;
+    final build2 =
+        version2.contains('+') ? int.parse(version2.split('+')[1]) : 0;
     return build1.compareTo(build2);
   }
 
   String getPinyin(String value) => value.isNotEmpty
-        ? PinyinHelper.getFirstWordPinyin(value.substring(0, 1))
-        : "";
+      ? PinyinHelper.getFirstWordPinyin(value.substring(0, 1))
+      : "";
 
   String? getFileNameForDisposition(String? disposition) {
     if (disposition == null) return null;
@@ -218,7 +209,8 @@ class Utils {
     return parameters[fileNameKey];
   }
 
-  FlutterView getScreen() => WidgetsBinding.instance.platformDispatcher.views.first;
+  FlutterView getScreen() =>
+      WidgetsBinding.instance.platformDispatcher.views.first;
 
   List<String> parseReleaseBody(String? body) {
     if (body == null) return [];

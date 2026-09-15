@@ -1268,7 +1268,7 @@ class AppController {
     FlutterError.onError = (details) {
       commonPrint.log(details.stack.toString());
     };
-    updateTray(true);
+    await updateTray(focus: true);
     // Desktop only (clashService is null on Android): on an unexpected core-process
     // death, respawn it AND re-init/re-apply (and re-start the tunnel if it was up).
     clashService?.onCoreCrash = (_) => restartCore();
@@ -1716,9 +1716,8 @@ class AppController {
     return _ref.read(packagesProvider);
   }
 
-  void updateStart() {
-    updateStatus(!_ref.read(runTimeProvider.notifier).isStart);
-  }
+  Future<void> updateStart() =>
+      updateStatus(!_ref.read(runTimeProvider.notifier).isStart);
 
   void updateCurrentSelectedMap(String groupName, String proxyName) {
     final currentProfile = _ref.read(currentProfileProvider);
@@ -1855,9 +1854,10 @@ class AppController {
     });
   }
 
-  Future<void> updateTray([bool focus = false]) async {
-    tray.update(
+  Future<void> updateTray({bool focus = false}) async {
+    await tray.update(
       trayState: _ref.read(trayStateProvider),
+      focus: focus,
     );
   }
 

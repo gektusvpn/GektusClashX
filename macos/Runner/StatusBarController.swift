@@ -30,6 +30,15 @@ class StatusBarController {
     private var statusItem: NSStatusItem
     private var popover: NSPopover
     private var contextMenu: NSMenu?
+
+    private static func makeTrayIcon() -> NSImage? {
+        guard let icon = NSImage(named: NSImage.Name("TrayIcon")) else {
+            return nil
+        }
+        icon.isTemplate = true
+        icon.size = NSSize(width: 18, height: 18)
+        return icon
+    }
     
     init(_ popover: NSPopover) {
         self.popover = popover
@@ -38,13 +47,7 @@ class StatusBarController {
         
         
         if let statusBarButton = statusItem.button {
-            
-            if let icon = NSImage(systemSymbolName: "xmark.rectangle", accessibilityDescription: "FlClashX") {
-                let config = NSImage.SymbolConfiguration(scale: .large)
-                let configuredIcon = icon.withSymbolConfiguration(config)
-                statusBarButton.image = configuredIcon
-                statusBarButton.image?.isTemplate = true
-            }
+            statusBarButton.image = Self.makeTrayIcon()
             
             statusBarButton.action = #selector(togglePopover(sender:))
             statusBarButton.target = self
@@ -61,7 +64,7 @@ class StatusBarController {
         let menu = NSMenu()
         
         let quitItem = NSMenuItem(
-            title: "Quit FlClashX",
+            title: "Quit GektusClashX",
             action: #selector(quitApp),
             keyEquivalent: "q"
         )
@@ -114,15 +117,9 @@ class StatusBarController {
         popover.performClose(sender)
     }
     
-    func updateIcon(isVpnConnected: Bool) {
+    func updateIcon(isVpnConnected _: Bool) {
         if let button = statusItem.button {
-            let imageName = isVpnConnected ? "checkmark.rectangle.fill" : "xmark.rectangle"
-            if let icon = NSImage(systemSymbolName: imageName, accessibilityDescription: "FlClashX") {
-                let config = NSImage.SymbolConfiguration(scale: .large)
-                let configuredIcon = icon.withSymbolConfiguration(config)
-                button.image = configuredIcon
-                button.image?.isTemplate = true
-            }
+            button.image = Self.makeTrayIcon()
         }
     }
 

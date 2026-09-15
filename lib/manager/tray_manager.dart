@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:ffi/ffi.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/providers/state.dart';
-import 'package:flclashx/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ffi/ffi.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/providers/state.dart';
+import 'package:gektusclashx/state.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:win32/win32.dart';
 
@@ -22,7 +22,8 @@ class TrayManager extends ConsumerStatefulWidget {
   ConsumerState<TrayManager> createState() => _TrayContainerState();
 }
 
-class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener, WidgetsBindingObserver {
+class _TrayContainerState extends ConsumerState<TrayManager>
+    with TrayListener, WidgetsBindingObserver {
   Timer? _menuMonitor;
 
   void _closeWindowsPopupMenu() {
@@ -125,7 +126,7 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener, 
       trayStateProvider,
       (prev, next) {
         if (prev != next) {
-          globalState.appController.updateTray();
+          unawaited(globalState.appController.updateTray());
         }
       },
     );
@@ -133,13 +134,13 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener, 
 
   @override
   void didChangePlatformBrightness() {
-    globalState.appController.updateTray();
+    unawaited(globalState.appController.updateTray());
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      globalState.appController.updateTray();
+      unawaited(globalState.appController.updateTray());
     }
   }
 
@@ -148,7 +149,7 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener, 
 
   @override
   void onTrayIconRightMouseDown() {
-    trayManager.popUpContextMenu();
+    unawaited(trayManager.popUpContextMenu());
     _startMenuMonitor();
   }
 
@@ -163,7 +164,7 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener, 
   void onTrayIconMouseDown() {
     _closeWindowsPopupMenu();
     if (!Platform.isLinux) {
-      window?.show();
+      unawaited(window?.show());
     }
   }
 
