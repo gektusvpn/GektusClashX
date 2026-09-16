@@ -67,7 +67,6 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
         title: AppLocalizations.of(context).other,
         items: [
           const _RuntimeConfigItem(),
-          const _DisclaimerItem(),
           if (enableDeveloperMode) const _DeveloperItem(),
           const _InfoItem(),
           const _CoreStatusItem(),
@@ -397,26 +396,6 @@ class _RuntimeConfigSheetState extends ConsumerState<_RuntimeConfigSheet> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _DisclaimerItem extends StatelessWidget {
-  const _DisclaimerItem();
-
-  @override
-  Widget build(BuildContext context) {
-    final appLocale = AppLocalizations.of(context);
-    return ListItem(
-      leading: const Icon(Icons.gavel),
-      title: Text(appLocale.disclaimer),
-      onTap: () async {
-        final isDisclaimerAccepted =
-            await globalState.appController.showDisclaimer();
-        if (!isDisclaimerAccepted) {
-          globalState.appController.handleExit();
-        }
-      },
     );
   }
 }

@@ -7,7 +7,6 @@ import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/profiles/edit_profile.dart';
 import 'package:gektusclashx/views/profiles/override_profile.dart';
-import 'package:gektusclashx/views/profiles/scripts.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,25 +79,6 @@ class _ProfilesViewState extends State<ProfilesView> with PageMixin {
           tooltip: appLocalizations.sync,
           onPressed: _updateProfiles,
           icon: const Icon(Icons.sync),
-        ),
-        IconButton(
-          tooltip: appLocalizations.script,
-          onPressed: () {
-            showExtend(
-              context,
-              builder: (_, type) => const ScriptsView(),
-            );
-          },
-          icon: Consumer(
-            builder: (context, ref, __) {
-              final isScriptMode = ref.watch(
-                  scriptStateProvider.select((state) => state.realId != null));
-              return Icon(
-                Icons.functions,
-                color: isScriptMode ? context.colorScheme.primary : null,
-              );
-            },
-          ),
         ),
         IconButton(
           tooltip: appLocalizations.profilesSort,

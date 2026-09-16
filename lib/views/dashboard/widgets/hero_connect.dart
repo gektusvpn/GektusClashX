@@ -97,71 +97,85 @@ class HeroConnect extends ConsumerWidget {
     final hasSupport = (supportUrl?.isNotEmpty ?? false) ||
         (supportEmail?.isNotEmpty ?? false);
 
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Column(
-              children: [
-                _Logo(logoUrl: logoUrl),
+        SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 82),
+          child: Column(
+            children: [
+              _Logo(logoUrl: logoUrl),
+              const SizedBox(height: 16),
+              Text(
+                serviceName,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (announce != null && announce.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                Text(
-                  serviceName,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                _AnnounceBanner(text: announce),
+              ],
+              if (hasSub) ...[
+                const SizedBox(height: 18),
+                _SubscriptionCard(
+                  sub: sub,
+                  isUpdating: profile?.isUpdating ?? false,
+                  onUpdate: profile == null
+                      ? null
+                      : () => globalState.appController.updateProfile(profile),
+                  buyPlanUrl: buyPlanUrl,
+                ),
+              ],
+              if (hasSupport) ...[
+                const SizedBox(height: 12),
+                _SupportCard(
+                  supportUrl: supportUrl,
+                  supportEmail: supportEmail,
+                  imageUrl: supportImageUrl,
+                ),
+              ],
+              if (showBuyTraffic) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    onPressed: () =>
+                        unawaited(globalState.openUrl(buyTrafficUrl!)),
+                    icon: const Icon(Icons.add_rounded),
+                    label: Text(appLocalizations.buyMoreTraffic),
                   ),
                 ),
-                if (announce != null && announce.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  _AnnounceBanner(text: announce),
-                ],
-                if (hasSub) ...[
-                  const SizedBox(height: 18),
-                  _SubscriptionCard(
-                    sub: sub,
-                    isUpdating: profile?.isUpdating ?? false,
-                    onUpdate: profile == null
-                        ? null
-                        : () =>
-                            globalState.appController.updateProfile(profile),
-                    buyPlanUrl: buyPlanUrl,
-                  ),
-                ],
-                if (hasSupport) ...[
-                  const SizedBox(height: 12),
-                  _SupportCard(
-                    supportUrl: supportUrl,
-                    supportEmail: supportEmail,
-                    imageUrl: supportImageUrl,
-                  ),
-                ],
-                if (showBuyTraffic) ...[
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(globalState.openUrl(buyTrafficUrl!)),
-                      icon: const Icon(Icons.add_rounded),
-                      label: Text(appLocalizations.buyMoreTraffic),
-                    ),
-                  ),
-                ],
               ],
+            ],
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  context.colorScheme.surfaceContainer.withValues(alpha: 0),
+                  context.colorScheme.surfaceContainer,
+                  context.colorScheme.surfaceContainer,
+                ],
+                stops: const [0, 0.56, 1],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 28, 16, 16),
+              child: _ConnectButton(isReady: isReady),
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _ConnectButton(isReady: isReady),
-        ),
-        const SizedBox(height: 16),
       ],
     );
   }
@@ -432,10 +446,10 @@ class _ConnectButtonState extends ConsumerState<_ConnectButton> {
     final Color bg;
     final Color fg;
     if (!widget.isReady || _isChanging) {
-      bg = colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
+      bg = colorScheme.surfaceContainerHighest;
       fg = colorScheme.onSurface.withValues(alpha: 0.38);
     } else if (isStart) {
-      bg = colorScheme.surfaceContainerHigh.withValues(alpha: 0.8);
+      bg = colorScheme.surfaceContainerHigh;
       fg = colorScheme.primary;
     } else {
       bg = colorScheme.primary;
@@ -470,6 +484,7 @@ class _ConnectButtonState extends ConsumerState<_ConnectButton> {
                   Text(
                     appLocalizations.disableVpn,
                     style: context.textTheme.titleSmall?.copyWith(
+                      color: fg,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -477,6 +492,7 @@ class _ConnectButtonState extends ConsumerState<_ConnectButton> {
                   Text(
                     utils.getTimeText(runTime),
                     style: context.textTheme.titleSmall?.copyWith(
+                      color: fg,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
                       fontFamily: FontFamily.jetBrainsMono.value,

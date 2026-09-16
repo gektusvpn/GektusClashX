@@ -1444,7 +1444,6 @@ class AppController {
       }
     }
     await _handlePreference();
-    await _handlerDisclaimer();
     _ref.read(initProvider.notifier).value = true;
   }
 
@@ -1536,46 +1535,6 @@ class AppController {
         addProfileFormURL(url);
       },
     );
-  }
-
-  Future<bool> showDisclaimer() async =>
-      await globalState.showCommonDialog<bool>(
-        dismissible: false,
-        child: CommonDialog(
-          title: appLocalizations.disclaimer,
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop<bool>(false);
-              },
-              child: Text(appLocalizations.exit),
-            ),
-            TextButton(
-              onPressed: () {
-                _ref.read(appSettingProvider.notifier).updateState(
-                      (state) => state.copyWith(disclaimerAccepted: true),
-                    );
-                Navigator.of(context).pop<bool>(true);
-              },
-              child: Text(appLocalizations.agree),
-            )
-          ],
-          child: SelectableText(
-            appLocalizations.disclaimerDesc,
-          ),
-        ),
-      ) ??
-      false;
-
-  Future<void> _handlerDisclaimer() async {
-    if (_ref.read(appSettingProvider).disclaimerAccepted) {
-      return;
-    }
-    final isDisclaimerAccepted = await showDisclaimer();
-    if (!isDisclaimerAccepted) {
-      await handleExit();
-    }
-    return;
   }
 
   Future<void> addProfileFormURL(String url) async {
