@@ -1,3 +1,19 @@
+## v0.5.1
+
+- Restored the branded subscription User-Agent and allowed debug Android builds
+  to be installed alongside release builds.
+
+- Fixed Android native library loading after the application ID migration and
+  added 16 KB page-size support for 64-bit devices.
+
+- Replaced the legacy Quick Settings tile artwork, corrected the adaptive icon
+  background, and aligned the tile icon with Android system icon sizing.
+
+- Removed the startup disclaimer and the Scripts action from Profiles.
+
+- Refined the fixed Home connection control with an opaque Material 3 button,
+  consistent disconnect colors, and a gradient over scrolling content.
+
 ## v0.5.0
 
 - Core updated to mihomo 1.19.30.
