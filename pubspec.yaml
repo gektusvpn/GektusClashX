@@ -131,7 +131,7 @@ flutter_launcher_icons:
   android: true
   ios: false
   image_path: "assets/images/icon.png"
-  adaptive_icon_background: "#202020"
+  adaptive_icon_background: "#AECC8B"
   adaptive_icon_foreground: "assets/images/icon.png"
   adaptive_icon_monochrome: "assets/images/icon_white.png"
 
