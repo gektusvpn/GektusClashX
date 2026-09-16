@@ -73,7 +73,6 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
             manifestPlaceholders["appLabel"] = "GektusClashX Debug"
             isMinifyEnabled = false
         }
@@ -115,4 +114,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
     implementation("com.google.firebase:firebase-crashlytics-ndk")
     implementation("com.google.firebase:firebase-analytics")
+    // flutter_js currently resolves 0.3.5, whose prebuilt QuickJS library uses
+    // 4 KB ELF alignment. 0.3.6 is rebuilt for Android's 16 KB page size.
+    implementation("com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-quickjs:0.3.6")
 }

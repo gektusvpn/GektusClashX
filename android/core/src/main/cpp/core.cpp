@@ -100,7 +100,7 @@ static void event_listener_impl(void *listener, const char *data) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_follow_clashx_core_Core_nativeStartTun(JNIEnv *env, jobject, const jint fd, jobject cb) {
+Java_com_gektus_clashx_core_Core_nativeStartTun(JNIEnv *env, jobject, const jint fd, jobject cb) {
     const auto interface = new_global(cb);
     const auto ok = startTUN(fd, interface);
     return ok ? JNI_TRUE : JNI_FALSE;
@@ -108,13 +108,13 @@ Java_com_follow_clashx_core_Core_nativeStartTun(JNIEnv *env, jobject, const jint
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_stopTun(JNIEnv *, jobject) {
+Java_com_gektus_clashx_core_Core_stopTun(JNIEnv *, jobject) {
     stopTun();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_invokeAction(JNIEnv *env, jobject, jstring data, jobject cb) {
+Java_com_gektus_clashx_core_Core_invokeAction(JNIEnv *env, jobject, jstring data, jobject cb) {
     const auto interface = new_global(cb);
     scoped_string c_data = get_string(data);
     invokeAction(c_data, interface);
@@ -122,7 +122,7 @@ Java_com_follow_clashx_core_Core_invokeAction(JNIEnv *env, jobject, jstring data
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_quickStart(JNIEnv *env, jobject,
+Java_com_gektus_clashx_core_Core_quickStart(JNIEnv *env, jobject,
                                             jstring init, jstring params, jstring state,
                                             jobject cb) {
     const auto interface = new_global(cb);
@@ -134,7 +134,7 @@ Java_com_follow_clashx_core_Core_quickStart(JNIEnv *env, jobject,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_setEventListener(JNIEnv *env, jobject, jobject cb) {
+Java_com_gektus_clashx_core_Core_setEventListener(JNIEnv *env, jobject, jobject cb) {
     if (cb == nullptr) {
         setEventListener(nullptr);
         return;
@@ -145,14 +145,14 @@ Java_com_follow_clashx_core_Core_setEventListener(JNIEnv *env, jobject, jobject 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_setState(JNIEnv *env, jobject, jstring s) {
+Java_com_gektus_clashx_core_Core_setState(JNIEnv *env, jobject, jstring s) {
     scoped_string c_s = get_string(s);
     setState(c_s);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_updateDns(JNIEnv *env, jobject, jstring s) {
+Java_com_gektus_clashx_core_Core_updateDns(JNIEnv *env, jobject, jstring s) {
     scoped_string c_s = get_string(s);
     updateDns(c_s);
 }
@@ -172,49 +172,49 @@ Java_com_follow_clashx_core_Core_updateDns(JNIEnv *env, jobject, jstring s) {
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clashx_core_Core_getTraffic(JNIEnv *env, jobject) {
+Java_com_gektus_clashx_core_Core_getTraffic(JNIEnv *env, jobject) {
     RETURN_GO_STRING(getTraffic());
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clashx_core_Core_getTotalTraffic(JNIEnv *env, jobject) {
+Java_com_gektus_clashx_core_Core_getTotalTraffic(JNIEnv *env, jobject) {
     RETURN_GO_STRING(getTotalTraffic());
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clashx_core_Core_getRunTime(JNIEnv *env, jobject) {
+Java_com_gektus_clashx_core_Core_getRunTime(JNIEnv *env, jobject) {
     RETURN_GO_STRING(getRunTime());
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clashx_core_Core_getCurrentProfileName(JNIEnv *env, jobject) {
+Java_com_gektus_clashx_core_Core_getCurrentProfileName(JNIEnv *env, jobject) {
     RETURN_GO_STRING(getCurrentProfileName());
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clashx_core_Core_getAndroidVpnOptions(JNIEnv *env, jobject) {
+Java_com_gektus_clashx_core_Core_getAndroidVpnOptions(JNIEnv *env, jobject) {
     RETURN_GO_STRING(getAndroidVpnOptions());
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_resetConnections(JNIEnv *, jobject) {
+Java_com_gektus_clashx_core_Core_resetConnections(JNIEnv *, jobject) {
     resetConnections();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_startListener(JNIEnv *, jobject) {
+Java_com_gektus_clashx_core_Core_startListener(JNIEnv *, jobject) {
     startListener();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clashx_core_Core_stopListener(JNIEnv *, jobject) {
+Java_com_gektus_clashx_core_Core_stopListener(JNIEnv *, jobject) {
     stopListener();
 }
 
@@ -232,7 +232,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
 
     initialize_jni(vm, env);
 
-    const auto c_tun_interface = find_class("com/follow/clashx/core/TunInterface");
+    const auto c_tun_interface = find_class("com/gektus/clashx/core/TunInterface");
     if (c_tun_interface == nullptr) return JNI_ERR;
     m_tun_interface_protect = find_method(c_tun_interface, "protect", "(I)V");
     m_tun_interface_resolve_process = find_method(
@@ -240,7 +240,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
             "resolverProcess",
             "(ILjava/lang/String;Ljava/lang/String;I)Ljava/lang/String;");
 
-    const auto c_invoke_interface = find_class("com/follow/clashx/core/InvokeInterface");
+    const auto c_invoke_interface = find_class("com/gektus/clashx/core/InvokeInterface");
     if (c_invoke_interface == nullptr) return JNI_ERR;
     m_invoke_interface_on_result = find_method(
             c_invoke_interface,
