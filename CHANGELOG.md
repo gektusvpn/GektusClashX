@@ -1,3 +1,19 @@
+## v0.5.3
+
+- Added an expressive Home identity with a slanted provider logo, a responsive
+  Google Sans Flex wordmark, stronger section titles, and consistent tonal
+  header actions.
+
+- Added the optional `gektusclashx-fallback` subscription domain. The client
+  retries a failed primary request against that domain while preserving the
+  original scheme, port, path, token, and query parameters.
+
+- Prevented the Linux tray icon from blinking during window and theme state
+  changes, and added localized application descriptions for Linux launchers.
+
+- Limited generated release notes to the current version and simplified
+  Telegram release notifications to one configured chat, group, or channel.
+
 ## v0.5.2
 
 - Reworked popup menus and profile creation around Material 3 components,
