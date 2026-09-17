@@ -32,7 +32,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
 
   @override
   List<Widget> get actions => [
-        IconButton(
+        CommonHeaderIconButton(
           tooltip: appLocalizations.settings,
           onPressed: _openSettings,
           icon: const Icon(Icons.settings_rounded),

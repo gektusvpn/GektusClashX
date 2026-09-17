@@ -114,6 +114,9 @@ flutter:
     - family: Unbounded
       fonts:
         - asset: assets/fonts/Unbounded-Regular.ttf
+    - family: GoogleSansFlex
+      fonts:
+        - asset: assets/fonts/GoogleSansFlex-Regular.ttf
 
 ffigen:
   name: "ClashFFI"

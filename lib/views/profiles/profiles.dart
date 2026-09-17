@@ -63,12 +63,12 @@ class _ProfilesViewState extends State<ProfilesView> with PageMixin {
 
   @override
   List<Widget> get actions => [
-        IconButton(
+        CommonHeaderIconButton(
           tooltip: appLocalizations.sync,
           onPressed: _updateProfiles,
           icon: const Icon(Icons.sync),
         ),
-        IconButton(
+        CommonHeaderIconButton(
           tooltip: appLocalizations.profilesSort,
           onPressed: () {
             final profiles = globalState.config.profiles;

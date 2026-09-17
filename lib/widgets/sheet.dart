@@ -140,6 +140,9 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
       backgroundColor: backgroundColor,
       title: Text(
         widget.title,
+        style: context.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
       actions: genActions([
         if (widget.actions.isEmpty && sideSheet) const CloseButton(),

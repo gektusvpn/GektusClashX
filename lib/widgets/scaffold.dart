@@ -280,6 +280,9 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
               : appLocalizations.selectedCountTitle(
                   "${_appBarState.value.editState?.editCount ?? 0}",
                 ),
+          style: context.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         );
 
   List<Widget> _buildActions(

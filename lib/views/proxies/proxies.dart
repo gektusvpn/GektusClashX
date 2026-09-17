@@ -64,7 +64,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
               );
               final allExpanded =
                   groupNames.isNotEmpty && groupNames.every(unfoldSet.contains);
-              return IconButton(
+              return CommonHeaderIconButton(
                 tooltip: allExpanded
                     ? appLocalizations.collapseAll
                     : appLocalizations.expandAll,
@@ -84,7 +84,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           ),
         ],
         CommonPopupBox(
-          targetBuilder: (open) => IconButton(
+          targetBuilder: (open) => CommonHeaderIconButton(
             onPressed: open,
             icon: const Icon(
               Icons.more_vert,
@@ -197,7 +197,7 @@ class _ModeSelectorAction extends ConsumerWidget {
     );
 
     return CommonPopupBox(
-      targetBuilder: (open) => IconButton(
+      targetBuilder: (open) => CommonHeaderIconButton(
         tooltip: appLocalizations.action_mode,
         onPressed: open,
         icon: Icon(_modeIcon(mode)),

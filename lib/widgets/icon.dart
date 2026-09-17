@@ -1,8 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:gektusclashx/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gektusclashx/common/common.dart';
+
+class CommonHeaderIconButton extends StatelessWidget {
+  const CommonHeaderIconButton({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+    this.tooltip,
+    this.iconSize,
+  });
+
+  final VoidCallback? onPressed;
+  final Widget icon;
+  final String? tooltip;
+  final double? iconSize;
+
+  @override
+  Widget build(BuildContext context) => IconButton.filledTonal(
+        tooltip: tooltip,
+        onPressed: onPressed,
+        iconSize: iconSize,
+        style: IconButton.styleFrom(
+          backgroundColor: context.colorScheme.surfaceContainerHigh,
+          foregroundColor: context.colorScheme.onSurfaceVariant,
+        ),
+        icon: icon,
+      );
+}
 
 class CommonTargetIcon extends StatelessWidget {
   const CommonTargetIcon({

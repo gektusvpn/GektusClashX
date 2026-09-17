@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +16,14 @@ import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/profiles/add_profile.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:share_plus/share_plus.dart';
 
 const _smallButtonHeight = 40.0;
 const _smallButtonIconSize = 20.0;
 const _smallProgressIndicatorSize = 16.0;
+const _slantedSkew = 0.1;
+const _normalizedSlantedSkew = _slantedSkew / (1 + _slantedSkew);
 
 String _formatBytes(int bytes) {
   final units = [
@@ -117,16 +121,9 @@ class HeroConnect extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  _Logo(logoUrl: logoUrl),
-                  const SizedBox(height: 16),
-                  Text(
-                    serviceName,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                  _ServiceIdentity(
+                    name: serviceName,
+                    logoUrl: logoUrl,
                   ),
                   if (announce != null && announce.isNotEmpty) ...[
                     const SizedBox(height: 16),
@@ -216,34 +213,215 @@ class HeroConnect extends ConsumerWidget {
   }
 }
 
-class _Logo extends StatelessWidget {
-  const _Logo({this.logoUrl});
+class _ServiceIdentity extends StatelessWidget {
+  const _ServiceIdentity({
+    required this.name,
+    required this.logoUrl,
+  });
+
+  final String name;
+  final String? logoUrl;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) {
+          final logoSize = (constraints.maxWidth * 0.34).clamp(112.0, 148.0);
+          return SizedBox(
+            height: logoSize,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox.square(
+                  dimension: logoSize,
+                  child: _ExpressiveLogo(logoUrl: logoUrl),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _ExpressiveServiceName(name: name),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+}
+
+class _ExpressiveLogo extends StatelessWidget {
+  const _ExpressiveLogo({required this.logoUrl});
 
   final String? logoUrl;
 
   @override
   Widget build(BuildContext context) {
-    const size = 104.0;
-    final fallback = ClipRRect(
-      borderRadius: BorderRadius.circular(26),
-      child: Image.asset('assets/images/icon.png',
-          width: size, height: size, fit: BoxFit.cover),
+    final fallback = Image.asset(
+      'assets/images/icon.png',
+      fit: BoxFit.cover,
     );
-    if (logoUrl == null || logoUrl!.isEmpty) return fallback;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(26),
-      child: logoUrl!.toLowerCase().endsWith('.svg')
-          ? SvgPicture.network(logoUrl!,
-              width: size, height: size, placeholderBuilder: (_) => fallback)
-          : CachedNetworkImage(
-              imageUrl: logoUrl!,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-              errorWidget: (_, __, ___) => fallback,
-            ),
+    final logo = switch (logoUrl) {
+      final url when url != null && url.toLowerCase().endsWith('.svg') =>
+        SvgPicture.network(
+          url,
+          fit: BoxFit.cover,
+          placeholderBuilder: (_) => fallback,
+        ),
+      final url when url != null && url.isNotEmpty => CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.cover,
+          placeholder: (_, __) => fallback,
+          errorWidget: (_, __, ___) => fallback,
+        ),
+      _ => fallback,
+    };
+
+    return ExcludeSemantics(
+      child: ClipPath(
+        clipper: const _SlantedClipper(),
+        clipBehavior: Clip.antiAlias,
+        child: ColoredBox(
+          color: context.colorScheme.primaryContainer,
+          child: logo,
+        ),
+      ),
     );
   }
+}
+
+class _SlantedClipper extends CustomClipper<Path> {
+  const _SlantedClipper();
+
+  @override
+  Path getClip(Size size) {
+    final rect = Offset.zero & size;
+    final base = ContinuousRectangleBorder(
+      borderRadius: BorderRadius.circular(size.shortestSide * 0.3),
+    ).getOuterPath(rect);
+    const horizontalScale = 1 / (1 + _slantedSkew);
+    const horizontalSkew = -_slantedSkew * horizontalScale;
+    final translation = rect.center.dx -
+        horizontalScale * rect.center.dx -
+        horizontalSkew * rect.center.dy;
+    return base.transform(
+      Float64List.fromList([
+        horizontalScale,
+        0,
+        0,
+        0,
+        horizontalSkew,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        translation,
+        0,
+        0,
+        1,
+      ]),
+    );
+  }
+
+  @override
+  bool shouldReclip(_SlantedClipper oldClipper) => false;
+}
+
+class _ExpressiveServiceName extends StatelessWidget {
+  const _ExpressiveServiceName({required this.name});
+
+  static const _fontSize = 100.0;
+  static const _minWidth = 25.0;
+  static const _maxWidth = 151.0;
+
+  final String name;
+
+  TextStyle _style(BuildContext context, double width) => TextStyle(
+        color: context.colorScheme.primary,
+        fontFamily: 'GoogleSansFlex',
+        fontSize: _fontSize,
+        fontWeight: FontWeight.w600,
+        height: 0.78,
+        letterSpacing: -1.5,
+        fontVariations: [
+          const FontVariation('wght', 600),
+          FontVariation('wdth', width),
+          const FontVariation('opsz', 100),
+          const FontVariation('GRAD', 0),
+          const FontVariation('ROND', 0),
+          const FontVariation('slnt', 0),
+        ],
+      );
+
+  double _textAspectRatio(
+    BuildContext context,
+    TextDirection textDirection,
+    double width,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(text: name, style: _style(context, width)),
+      maxLines: 1,
+      textDirection: textDirection,
+      textScaler: TextScaler.noScaling,
+    )..layout();
+    return painter.width / painter.height;
+  }
+
+  double _bestWidth(
+    BuildContext context,
+    TextDirection textDirection,
+    double targetAspectRatio,
+  ) {
+    var lower = _minWidth;
+    var upper = _maxWidth;
+    for (var i = 0; i < 10; i++) {
+      final midpoint = (lower + upper) / 2;
+      if (_textAspectRatio(context, textDirection, midpoint) <
+          targetAspectRatio) {
+        lower = midpoint;
+      } else {
+        upper = midpoint;
+      }
+    }
+    return (lower + upper) / 2;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) {
+          final textDirection = Directionality.of(context);
+          final slantInset = constraints.maxHeight * _normalizedSlantedSkew / 2;
+          final targetAspectRatio =
+              (constraints.maxWidth - slantInset * 2) / constraints.maxHeight;
+          final width = _bestWidth(
+            context,
+            textDirection,
+            targetAspectRatio,
+          );
+          return ClipRect(
+            child: Transform.translate(
+              offset: const Offset(0, 2.5),
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.skewX(-math.atan(_normalizedSlantedSkew)),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: slantInset),
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      name,
+                      maxLines: 1,
+                      softWrap: false,
+                      textScaler: TextScaler.noScaling,
+                      style: _style(context, width),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
 }
 
 class _SubscriptionCard extends StatelessWidget {
@@ -759,12 +937,9 @@ class _EmptyHero extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const _Logo(),
-          const SizedBox(height: 16),
-          Text(
-            appName,
-            style: context.textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w700),
+          const _ServiceIdentity(
+            name: appName,
+            logoUrl: null,
           ),
           const SizedBox(height: 24),
           SizedBox(
