@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/models/common.dart';
 import 'package:gektusclashx/providers/app.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/javascript.dart';
 import 'package:re_highlight/languages/yaml.dart';
@@ -185,9 +185,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
             _wrapController(
               (_) => CommonPopupBox(
                 targetBuilder: (open) => IconButton(
-                  onPressed: () {
-                    open(offset: const Offset(-20, 20));
-                  },
+                  onPressed: open,
                   icon: const Icon(Icons.more_vert),
                 ),
                 popup: CommonPopupMenu(

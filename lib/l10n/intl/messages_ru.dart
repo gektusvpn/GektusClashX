@@ -108,6 +108,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "appDesc": MessageLookupByLibrary.simpleMessage(
           "Обработка настроек, связанных с приложением",
         ),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
+          "Доступна новая версия:",
+        ),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "В выпуске GitHub не найден APK для этого устройства.",
         ),
@@ -120,6 +123,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInstallPermissionDenied":
             MessageLookupByLibrary.simpleMessage(
           "Разрешение на установку приложений из GektusClashX не предоставлено.",
+        ),
+        "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
+          "Это обновление нельзя установить поверх текущей сборки. Один раз переустановите приложение — следующие обновления будут устанавливаться обычно.",
+        ),
+        "appUpdateReady": MessageLookupByLibrary.simpleMessage(
+          "Обновление готово к установке.",
         ),
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "Не удалось проверить целостность обновления.",
@@ -967,6 +976,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
           "Не учитывать дополнительные задержки (например, рукопожатие)",
         ),
+        "install": MessageLookupByLibrary.simpleMessage("Установить"),
+        "retry": MessageLookupByLibrary.simpleMessage("Повторить"),
+        "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
         "unknown": MessageLookupByLibrary.simpleMessage("Неизвестно"),
         "unnamed": MessageLookupByLibrary.simpleMessage("Без имени"),
         "untilDate": MessageLookupByLibrary.simpleMessage("до"),

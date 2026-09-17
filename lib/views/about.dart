@@ -14,14 +14,20 @@ class AboutView extends StatelessWidget {
   Future<void> _checkUpdate(BuildContext context) async {
     final commonScaffoldState = context.commonScaffoldState;
     if (commonScaffoldState?.mounted != true) return;
-    final data = await commonScaffoldState?.loadingRun<Map<String, dynamic>?>(
-      request.checkForUpdate,
-      title: appLocalizations.checkUpdate,
-    );
-    await globalState.appController.checkUpdateResultHandle(
-      data: data,
-      handleError: true,
-    );
+    try {
+      final data = await commonScaffoldState?.loadingRun<Map<String, dynamic>?>(
+        request.checkForUpdate,
+        rethrowError: true,
+      );
+      await globalState.appController.checkUpdateResultHandle(
+        data: data,
+        handleError: true,
+      );
+    } catch (error) {
+      if (context.mounted) {
+        context.showSnackBar(error.toString());
+      }
+    }
   }
 
   List<Widget> _buildMoreSection(BuildContext context) => generateSection(

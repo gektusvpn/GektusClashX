@@ -107,6 +107,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "appDesc": MessageLookupByLibrary.simpleMessage(
           "Processing app related settings",
         ),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
+          "A new version is available:",
+        ),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "No APK for this device was found in the GitHub release.",
         ),
@@ -119,6 +122,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInstallPermissionDenied":
             MessageLookupByLibrary.simpleMessage(
           "Permission to install apps from GektusClashX was not granted.",
+        ),
+        "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
+          "This update cannot be installed over the current build. Reinstall the app once; future updates will then install normally.",
+        ),
+        "appUpdateReady": MessageLookupByLibrary.simpleMessage(
+          "The update is ready to install.",
         ),
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "The update integrity could not be verified.",
@@ -906,6 +915,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
           "Remove extra delays such as handshaking",
         ),
+        "install": MessageLookupByLibrary.simpleMessage("Install"),
+        "retry": MessageLookupByLibrary.simpleMessage("Retry"),
+        "share": MessageLookupByLibrary.simpleMessage("Share"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "unnamed": MessageLookupByLibrary.simpleMessage("Unnamed"),
         "untilDate": MessageLookupByLibrary.simpleMessage("until"),

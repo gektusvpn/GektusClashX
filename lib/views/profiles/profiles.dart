@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/models/models.dart' hide Action;
@@ -8,8 +11,6 @@ import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/profiles/edit_profile.dart';
 import 'package:gektusclashx/views/profiles/override_profile.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'add_profile.dart';
@@ -23,19 +24,6 @@ class ProfilesView extends StatefulWidget {
 
 class _ProfilesViewState extends State<ProfilesView> with PageMixin {
   Function? applyConfigDebounce;
-
-  void _handleShowAddExtendPage() {
-    showExtend(
-      globalState.navigatorKey.currentState!.context,
-      builder: (_, type) => AdaptiveSheetScaffold(
-        type: type,
-        body: AddProfileView(
-          context: globalState.navigatorKey.currentState!.context,
-        ),
-        title: "${appLocalizations.add}${appLocalizations.profile}",
-      ),
-    );
-  }
 
   Future<void> _updateProfiles() async {
     final profiles = globalState.config.profiles;
@@ -101,7 +89,7 @@ class _ProfilesViewState extends State<ProfilesView> with PageMixin {
   Widget? get floatingActionButton => FloatingActionButton(
         heroTag: null,
         tooltip: appLocalizations.addProfile,
-        onPressed: _handleShowAddExtendPage,
+        onPressed: () => unawaited(showAddProfileSheet(context)),
         child: const Icon(
           Icons.add,
         ),

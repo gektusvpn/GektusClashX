@@ -79,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "app": MessageLookupByLibrary.simpleMessage("应用"),
         "appAccessControl": MessageLookupByLibrary.simpleMessage("应用访问控制"),
         "appDesc": MessageLookupByLibrary.simpleMessage("处理应用相关设置"),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage("有新版本可用："),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "GitHub 版本中未找到适用于此设备的 APK。",
         ),
@@ -91,6 +92,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
           "未授予从 GektusClashX 安装应用的权限。",
         ),
+        "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
+          "无法在当前版本上安装此更新。请重新安装一次应用，之后即可正常更新。",
+        ),
+        "appUpdateReady":
+            MessageLookupByLibrary.simpleMessage("更新已准备好安装。"),
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "无法验证更新的完整性。",
         ),
@@ -573,6 +579,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "unifiedDelay": MessageLookupByLibrary.simpleMessage("统一延迟"),
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage("去除握手等额外延迟"),
+        "install": MessageLookupByLibrary.simpleMessage("安装"),
+        "retry": MessageLookupByLibrary.simpleMessage("重试"),
+        "share": MessageLookupByLibrary.simpleMessage("分享"),
         "unknown": MessageLookupByLibrary.simpleMessage("未知"),
         "unnamed": MessageLookupByLibrary.simpleMessage("未命名"),
         "update": MessageLookupByLibrary.simpleMessage("更新"),

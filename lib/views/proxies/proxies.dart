@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/clash/clash.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
@@ -7,8 +11,6 @@ import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/proxies/list.dart';
 import 'package:gektusclashx/views/proxies/providers.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common.dart';
 import 'setting.dart';
@@ -51,13 +53,6 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           },
           child: const _ModeSelectorAction(),
         ),
-        IconButton(
-          tooltip: appLocalizations.testAllDelay,
-          onPressed: _pingAllGroups,
-          icon: const Icon(
-            Icons.network_ping,
-          ),
-        ),
         if (!_isTab) ...[
           Consumer(
             builder: (_, ref, __) {
@@ -90,11 +85,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
         ],
         CommonPopupBox(
           targetBuilder: (open) => IconButton(
-            onPressed: () {
-              open(
-                offset: const Offset(0, 20),
-              );
-            },
+            onPressed: open,
             icon: const Icon(
               Icons.more_vert,
             ),
@@ -102,9 +93,14 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           popup: CommonPopupMenu(
             items: [
               PopupMenuItemData(
+                icon: Icons.network_ping,
+                label: appLocalizations.testAllDelay,
+                onPressed: () => unawaited(_pingAllGroups()),
+              ),
+              PopupMenuItemData(
                 icon: Icons.tune,
                 label: appLocalizations.settings,
-                onPressed: () {
+                onPressed: () => unawaited(
                   showSheet(
                     context: context,
                     props: const SheetProps(
@@ -115,30 +111,30 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                       body: const ProxiesSetting(),
                       title: appLocalizations.settings,
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
               if (_hasProviders)
                 PopupMenuItemData(
                   icon: Icons.poll_outlined,
                   label: appLocalizations.providers,
-                  onPressed: () {
+                  onPressed: () => unawaited(
                     showExtend(
                       context,
                       builder: (_, type) => const ProvidersView(),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               if (!_isTab)
                 PopupMenuItemData(
                   icon: Icons.style_outlined,
                   label: appLocalizations.iconConfiguration,
-                  onPressed: () {
+                  onPressed: () => unawaited(
                     showExtend(
                       context,
                       builder: (_, type) => const _IconConfigView(),
-                    );
-                  },
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -203,7 +199,7 @@ class _ModeSelectorAction extends ConsumerWidget {
     return CommonPopupBox(
       targetBuilder: (open) => IconButton(
         tooltip: appLocalizations.action_mode,
-        onPressed: () => open(offset: const Offset(0, 20)),
+        onPressed: open,
         icon: Icon(_modeIcon(mode)),
       ),
       popup: CommonPopupMenu(

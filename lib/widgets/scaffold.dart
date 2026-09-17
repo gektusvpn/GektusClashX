@@ -154,21 +154,24 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
   Future<T?> loadingRun<T>(
     Future<T> Function() futureFunction, {
     String? title,
+    bool rethrowError = false,
   }) async {
     _loading.value = true;
     try {
-      final res = await futureFunction();
-      _loading.value = false;
-      return res;
+      return await futureFunction();
     } catch (e) {
+      if (rethrowError) {
+        rethrow;
+      }
       globalState.showMessage(
         title: title ?? appLocalizations.tip,
         message: TextSpan(
           text: e.toString(),
         ),
       );
-      _loading.value = false;
       return null;
+    } finally {
+      _loading.value = false;
     }
   }
 

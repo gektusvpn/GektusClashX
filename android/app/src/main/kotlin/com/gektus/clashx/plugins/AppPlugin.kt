@@ -3,6 +3,7 @@ package com.gektus.clashx.plugins
 import android.Manifest
 import android.app.Activity
 import android.app.ActivityManager
+import android.content.ClipData
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ComponentInfo
@@ -529,11 +530,17 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             "${context.packageName}.fileProvider",
             file,
         )
-        val intent = Intent(Intent.ACTION_VIEW)
-            .setDataAndType(uri, "application/vnd.android.package-archive")
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        fun installerIntent(action: String): Intent {
+            val intent = Intent(action)
+                .setDataAndType(uri, "application/vnd.android.package-archive")
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.clipData = ClipData.newRawUri("GektusClashX update", uri)
+            return intent
+        }
+
+        val primary = installerIntent(Intent.ACTION_INSTALL_PACKAGE)
         for (handler in context.packageManager.queryIntentActivities(
-            intent,
+            primary,
             PackageManager.MATCH_DEFAULT_ONLY,
         )) {
             context.grantUriPermission(
@@ -542,7 +549,19 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 Intent.FLAG_GRANT_READ_URI_PERMISSION,
             )
         }
-        activity.startActivity(intent)
+
+        try {
+            activity.startActivity(primary)
+        } catch (primaryError: Exception) {
+            // A few vendor ROMs expose only the legacy package-view handler.
+            val fallback = installerIntent(Intent.ACTION_VIEW)
+            try {
+                activity.startActivity(fallback)
+            } catch (fallbackError: Exception) {
+                fallbackError.addSuppressed(primaryError)
+                throw fallbackError
+            }
+        }
     }
 
     private fun updateExcludeFromRecents(value: Boolean?) {

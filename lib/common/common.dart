@@ -1,5 +1,6 @@
 export 'android.dart';
 export 'android_app_update.dart';
+export 'app_update.dart';
 export 'app_localizations.dart';
 export 'color.dart';
 export 'constant.dart';

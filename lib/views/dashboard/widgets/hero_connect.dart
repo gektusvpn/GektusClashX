@@ -15,6 +15,11 @@ import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/profiles/add_profile.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+
+const _smallButtonHeight = 40.0;
+const _smallButtonIconSize = 20.0;
+const _smallProgressIndicatorSize = 16.0;
 
 String _formatBytes(int bytes) {
   final units = [
@@ -97,86 +102,116 @@ class HeroConnect extends ConsumerWidget {
     final hasSupport = (supportUrl?.isNotEmpty ?? false) ||
         (supportEmail?.isNotEmpty ?? false);
 
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 82),
-          child: Column(
-            children: [
-              _Logo(logoUrl: logoUrl),
-              const SizedBox(height: 16),
-              Text(
-                serviceName,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+    return ValueListenableBuilder<AppUpdateState?>(
+      valueListenable: globalState.appController.appUpdateState,
+      builder: (context, updateState, _) {
+        final visibleUpdateState = updateState;
+        return Stack(
+          children: [
+            SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                visibleUpdateState == null ? 82 : 218,
               ),
-              if (announce != null && announce.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                _AnnounceBanner(text: announce),
-              ],
-              if (hasSub) ...[
-                const SizedBox(height: 18),
-                _SubscriptionCard(
-                  sub: sub,
-                  isUpdating: profile?.isUpdating ?? false,
-                  onUpdate: profile == null
-                      ? null
-                      : () => globalState.appController.updateProfile(profile),
-                  buyPlanUrl: buyPlanUrl,
-                ),
-              ],
-              if (hasSupport) ...[
-                const SizedBox(height: 12),
-                _SupportCard(
-                  supportUrl: supportUrl,
-                  supportEmail: supportEmail,
-                  imageUrl: supportImageUrl,
-                ),
-              ],
-              if (showBuyTraffic) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: OutlinedButton.icon(
-                    onPressed: () =>
-                        unawaited(globalState.openUrl(buyTrafficUrl!)),
-                    icon: const Icon(Icons.add_rounded),
-                    label: Text(appLocalizations.buyMoreTraffic),
+              child: Column(
+                children: [
+                  _Logo(logoUrl: logoUrl),
+                  const SizedBox(height: 16),
+                  Text(
+                    serviceName,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  context.colorScheme.surfaceContainer.withValues(alpha: 0),
-                  context.colorScheme.surfaceContainer,
-                  context.colorScheme.surfaceContainer,
+                  if (announce != null && announce.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    _AnnounceBanner(text: announce),
+                  ],
+                  if (hasSub) ...[
+                    const SizedBox(height: 18),
+                    _SubscriptionCard(
+                      sub: sub,
+                      isUpdating: profile?.isUpdating ?? false,
+                      onUpdate: profile == null
+                          ? null
+                          : () =>
+                              globalState.appController.updateProfile(profile),
+                      buyPlanUrl: buyPlanUrl,
+                      shareUrl: profile?.url,
+                    ),
+                  ],
+                  if (hasSupport) ...[
+                    const SizedBox(height: 12),
+                    _SupportCard(
+                      supportUrl: supportUrl,
+                      supportEmail: supportEmail,
+                      imageUrl: supportImageUrl,
+                    ),
+                  ],
+                  if (showBuyTraffic) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
+                            unawaited(globalState.openUrl(buyTrafficUrl!)),
+                        icon: const Icon(Icons.add_rounded),
+                        label: Text(appLocalizations.buyMoreTraffic),
+                      ),
+                    ),
+                  ],
                 ],
-                stops: const [0, 0.56, 1],
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 28, 16, 16),
-              child: _ConnectButton(isReady: isReady),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            context.colorScheme.surfaceContainer
+                                .withValues(alpha: 0),
+                            context.colorScheme.surfaceContainer
+                                .withValues(alpha: 0.78),
+                            context.colorScheme.surfaceContainer,
+                          ],
+                          stops: const [0, 0.58, 1],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 28, 16, 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _ConnectButton(isReady: isReady),
+                        if (visibleUpdateState != null) ...[
+                          const SizedBox(height: 12),
+                          _AppUpdateBanner(state: visibleUpdateState),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
@@ -217,12 +252,27 @@ class _SubscriptionCard extends StatelessWidget {
     required this.isUpdating,
     required this.onUpdate,
     required this.buyPlanUrl,
+    required this.shareUrl,
   });
 
   final SubscriptionInfo sub;
   final bool isUpdating;
   final VoidCallback? onUpdate;
   final String? buyPlanUrl;
+  final String? shareUrl;
+
+  Future<void> _share(BuildContext context) async {
+    final url = shareUrl?.trim();
+    if (url == null || url.isEmpty) return;
+    final box = context.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: url,
+        sharePositionOrigin:
+            box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +297,6 @@ class _SubscriptionCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         color: colorScheme.surfaceContainer,
-        border: Border.all(
-          color: colorScheme.outlineVariant,
-        ),
       ),
       child: Column(
         children: [
@@ -301,54 +348,116 @@ class _SubscriptionCard extends StatelessWidget {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            height: 48,
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.onSurfaceVariant,
-                side: BorderSide(
-                  color: colorScheme.outlineVariant.withValues(alpha: 0.8),
-                ),
-                shape: const StadiumBorder(),
-                textStyle: context.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onPressed: isUpdating ? null : onUpdate,
-              icon: SizedBox(
-                width: 18,
-                height: 18,
-                child: isUpdating
-                    ? CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colorScheme.onSurfaceVariant,
-                      )
-                    : const Icon(Icons.refresh_rounded, size: 18),
-              ),
-              label: Text(appLocalizations.update),
-            ),
-          ),
-          if (canRenew) ...[
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: FilledButton.tonalIcon(
-                style: FilledButton.styleFrom(
-                  shape: const StadiumBorder(),
-                  textStyle: context.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+            height: _smallButtonHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Builder(
+                  builder: (buttonContext) => Tooltip(
+                    message: appLocalizations.share,
+                    child: SizedBox(
+                      width: _smallButtonHeight,
+                      child: OutlinedButton(
+                        style: _outlinedGroupButtonStyle(
+                          context,
+                          const BorderRadius.horizontal(
+                            left: Radius.circular(_smallButtonHeight / 2),
+                            right: Radius.circular(8),
+                          ),
+                        ).copyWith(
+                          padding:
+                              const WidgetStatePropertyAll(EdgeInsets.zero),
+                        ),
+                        onPressed: (shareUrl?.trim().isNotEmpty ?? false)
+                            ? () => unawaited(_share(buttonContext))
+                            : null,
+                        child: const Icon(
+                          Icons.share_rounded,
+                          size: _smallButtonIconSize,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                onPressed: () => unawaited(globalState.openUrl(buyPlanUrl!)),
-                icon: const Icon(Icons.autorenew_rounded),
-                label: Text(appLocalizations.renew),
-              ),
+                const SizedBox(width: 2),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: _outlinedGroupButtonStyle(
+                      context,
+                      canRenew
+                          ? BorderRadius.circular(8)
+                          : const BorderRadius.horizontal(
+                              left: Radius.circular(8),
+                              right: Radius.circular(_smallButtonHeight / 2),
+                            ),
+                    ),
+                    onPressed: isUpdating ? null : onUpdate,
+                    icon: SizedBox.square(
+                      dimension: _smallButtonIconSize,
+                      child: isUpdating
+                          ? Center(
+                              child: SizedBox.square(
+                                dimension: _smallProgressIndicatorSize,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.refresh_rounded,
+                              size: _smallButtonIconSize,
+                            ),
+                    ),
+                    label: Text(appLocalizations.update),
+                  ),
+                ),
+                if (canRenew) ...[
+                  const SizedBox(width: 2),
+                  Expanded(
+                    child: FilledButton.tonalIcon(
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        shape: const StadiumBorder(),
+                        textStyle: context.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: () =>
+                          unawaited(globalState.openUrl(buyPlanUrl!)),
+                      icon: const Icon(
+                        Icons.credit_card_rounded,
+                        size: _smallButtonIconSize,
+                      ),
+                      label: Text(appLocalizations.renew),
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );
   }
+
+  ButtonStyle _outlinedGroupButtonStyle(
+    BuildContext context,
+    BorderRadius borderRadius,
+  ) =>
+      OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        foregroundColor: context.colorScheme.onSurfaceVariant,
+        side: BorderSide(
+          color: context.colorScheme.outlineVariant.withValues(alpha: 0.8),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: borderRadius,
+        ),
+        textStyle: context.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+      );
 }
 
 class _SubscriptionMetric extends StatelessWidget {
@@ -519,6 +628,130 @@ class _ConnectButtonState extends ConsumerState<_ConnectButton> {
   }
 }
 
+class _AppUpdateBanner extends StatelessWidget {
+  const _AppUpdateBanner({required this.state});
+
+  final AppUpdateState state;
+
+  String _message() => switch (state.phase) {
+        AppUpdatePhase.available =>
+          '${appLocalizations.appUpdateAvailable} ${state.version}',
+        AppUpdatePhase.downloading => appLocalizations.downloadingAppUpdate,
+        AppUpdatePhase.readyToInstall ||
+        AppUpdatePhase.installing =>
+          appLocalizations.appUpdateReady,
+        AppUpdatePhase.failed => switch (state.failure) {
+            AppUpdateFailure.assetNotFound =>
+              appLocalizations.appUpdateAssetNotFound,
+            AppUpdateFailure.verificationFailed =>
+              appLocalizations.appUpdateVerificationFailed,
+            AppUpdateFailure.downloadFailed =>
+              appLocalizations.appUpdateDownloadFailed,
+            AppUpdateFailure.invalidPackage =>
+              appLocalizations.appUpdateInvalidPackage,
+            AppUpdateFailure.permissionDenied =>
+              appLocalizations.appUpdateInstallPermissionDenied,
+            AppUpdateFailure.installerUnavailable ||
+            null =>
+              appLocalizations.appUpdateInstallFailed,
+          },
+      };
+
+  String _actionLabel() => switch (state.phase) {
+        AppUpdatePhase.available => appLocalizations.downloadUpdate,
+        AppUpdatePhase.downloading => appLocalizations.cancel,
+        AppUpdatePhase.readyToInstall ||
+        AppUpdatePhase.installing =>
+          appLocalizations.install,
+        AppUpdatePhase.failed =>
+          state.apk == null ? appLocalizations.retry : appLocalizations.install,
+      };
+
+  VoidCallback? _action() => switch (state.phase) {
+        AppUpdatePhase.available => Platform.isAndroid
+            ? () => unawaited(
+                  globalState.appController.downloadAndroidAppUpdate(),
+                )
+            : () => unawaited(
+                  globalState.appController.openAppUpdateDownload(),
+                ),
+        AppUpdatePhase.downloading =>
+          globalState.appController.cancelAndroidAppUpdateDownload,
+        AppUpdatePhase.readyToInstall => () => unawaited(
+              globalState.appController.installAndroidAppUpdate(),
+            ),
+        AppUpdatePhase.installing => null,
+        AppUpdatePhase.failed => state.apk == null
+            ? () => unawaited(
+                  globalState.appController.downloadAndroidAppUpdate(),
+                )
+            : () => unawaited(
+                  globalState.appController.installAndroidAppUpdate(),
+                ),
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final isDownloading = state.phase == AppUpdatePhase.downloading;
+    final isInstalling = state.phase == AppUpdatePhase.installing;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _message(),
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onTertiaryContainer,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.onTertiaryContainer,
+                ),
+                onPressed: _action(),
+                child: isInstalling
+                    ? SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colorScheme.onTertiaryContainer,
+                        ),
+                      )
+                    : Text(_actionLabel()),
+              ),
+            ],
+          ),
+          if (isDownloading) ...[
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: state.progress,
+              minHeight: 4,
+              borderRadius: BorderRadius.circular(2),
+              color: colorScheme.tertiary,
+              backgroundColor:
+                  colorScheme.onTertiaryContainer.withValues(alpha: 0.16),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _EmptyHero extends ConsumerWidget {
   const _EmptyHero();
 
@@ -539,14 +772,7 @@ class _EmptyHero extends ConsumerWidget {
             height: 52,
             child: FilledButton.icon(
               autofocus: true,
-              onPressed: () async {
-                final url = await globalState.showCommonDialog<String>(
-                  child: const URLFormDialog(),
-                );
-                if (url != null) {
-                  unawaited(globalState.appController.addProfileFormURL(url));
-                }
-              },
+              onPressed: () => unawaited(showAddProfileSheet(context)),
               icon: const Icon(Icons.add_rounded),
               label: Text(appLocalizations.addProfile),
             ),
@@ -652,37 +878,35 @@ class _SupportCard extends StatelessWidget {
 
   Widget _buildAction(BuildContext context) {
     if (_hasUrl && _hasEmail) {
-      return LayoutBuilder(
-        builder: (context, constraints) => CommonPopupBox(
-          targetBuilder: (open) => _SupportButton(
-            icon: const Icon(Icons.edit_rounded, size: 20),
-            onPressed: () => open(
-              offset: Offset(constraints.maxWidth - 48, 20),
+      return CommonPopupBox(
+        targetBuilder: (open) => _SupportButton(
+          icon: const Icon(
+            Icons.edit_rounded,
+            size: _smallButtonIconSize,
+          ),
+          onPressed: open,
+        ),
+        popup: CommonPopupMenu(
+          items: [
+            PopupMenuItemData(
+              icon: _isTelegramUrl(supportUrl!) ? null : Icons.language_rounded,
+              iconWidget:
+                  _isTelegramUrl(supportUrl!) ? const _TelegramIcon() : null,
+              label: _isTelegramUrl(supportUrl!)
+                  ? 'Telegram'
+                  : appLocalizations.website,
+              onPressed: () => unawaited(
+                globalState.openUrl(supportUrl!),
+              ),
             ),
-          ),
-          popup: CommonPopupMenu(
-            items: [
-              PopupMenuItemData(
-                icon:
-                    _isTelegramUrl(supportUrl!) ? null : Icons.language_rounded,
-                iconWidget:
-                    _isTelegramUrl(supportUrl!) ? const _TelegramIcon() : null,
-                label: _isTelegramUrl(supportUrl!)
-                    ? 'Telegram'
-                    : appLocalizations.website,
-                onPressed: () => unawaited(
-                  globalState.openUrl(supportUrl!),
-                ),
+            PopupMenuItemData(
+              icon: Icons.mail_rounded,
+              label: appLocalizations.email,
+              onPressed: () => unawaited(
+                globalState.openUrl(_emailUri(supportEmail!)),
               ),
-              PopupMenuItemData(
-                icon: Icons.mail_rounded,
-                label: appLocalizations.email,
-                onPressed: () => unawaited(
-                  globalState.openUrl(_emailUri(supportEmail!)),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
@@ -691,13 +915,19 @@ class _SupportCard extends StatelessWidget {
       return _SupportButton(
         icon: _isTelegramUrl(supportUrl!)
             ? const _TelegramIcon()
-            : const Icon(Icons.edit_rounded, size: 20),
+            : const Icon(
+                Icons.edit_rounded,
+                size: _smallButtonIconSize,
+              ),
         onPressed: () => unawaited(globalState.openUrl(supportUrl!)),
       );
     }
 
     return _SupportButton(
-      icon: const Icon(Icons.mail_rounded, size: 20),
+      icon: const Icon(
+        Icons.mail_rounded,
+        size: _smallButtonIconSize,
+      ),
       onPressed: () => unawaited(
         globalState.openUrl(_emailUri(supportEmail!)),
       ),
@@ -717,7 +947,7 @@ class _SupportButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
         width: double.infinity,
-        height: 40,
+        height: _smallButtonHeight,
         child: FilledButton.tonalIcon(
           onPressed: onPressed,
           icon: icon,
@@ -796,8 +1026,8 @@ class _TelegramIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SvgPicture.string(
         _svg,
-        width: 20,
-        height: 20,
+        width: _smallButtonIconSize,
+        height: _smallButtonIconSize,
         colorFilter: ColorFilter.mode(
           IconTheme.of(context).color ?? context.colorScheme.onSurface,
           BlendMode.srcIn,

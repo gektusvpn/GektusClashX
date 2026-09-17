@@ -7,6 +7,7 @@ import 'package:archive/archive.dart';
 import 'package:dio/dio.dart' show CancelToken;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/clash/clash.dart';
 import 'package:gektusclashx/common/archive.dart';
@@ -27,13 +28,17 @@ import 'plugins/vpn.dart';
 import 'views/profiles/override_profile.dart';
 
 const _androidAutoCheckUpdateDefaultKey =
-    'androidAutoCheckUpdateDefaultInitialized';
+    'androidAutoCheckUpdateDefaultInitializedV2';
+const _desktopAutoCheckUpdateDefaultKey =
+    'desktopAutoCheckUpdateDefaultInitializedV1';
 
 class AppController {
   AppController(this.context, WidgetRef ref) : _ref = ref;
   int? lastProfileModified;
   final BuildContext context;
   final WidgetRef _ref;
+  final appUpdateState = ValueNotifier<AppUpdateState?>(null);
+  CancelToken? _androidAppUpdateCancelToken;
 
   void setupClashConfigDebounce() {
     debouncer.call(FunctionTag.setupClashConfig, () async {
@@ -1143,7 +1148,7 @@ class AppController {
   }
 
   Future<void> autoCheckUpdate() async {
-    await _initializeAndroidAutoCheckUpdate();
+    await _initializeAutoCheckUpdate();
     if (!_ref.read(appSettingProvider).autoCheckUpdate) return;
     try {
       final res = await request.checkForUpdate();
@@ -1153,11 +1158,14 @@ class AppController {
     }
   }
 
-  Future<void> _initializeAndroidAutoCheckUpdate() async {
-    if (!Platform.isAndroid) return;
+  Future<void> _initializeAutoCheckUpdate() async {
+    if (!Platform.isAndroid && !system.isDesktop) return;
 
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_androidAutoCheckUpdateDefaultKey) == true) return;
+    final initializationKey = Platform.isAndroid
+        ? _androidAutoCheckUpdateDefaultKey
+        : _desktopAutoCheckUpdateDefaultKey;
+    if (prefs.getBool(initializationKey) == true) return;
 
     final settings = _ref.read(appSettingProvider);
     final providerManagesSettings = globalState
@@ -1174,7 +1182,7 @@ class AppController {
       await savePreferences();
     }
 
-    await prefs.setBool(_androidAutoCheckUpdateDefaultKey, true);
+    await prefs.setBool(initializationKey, true);
   }
 
   Future<void> checkUpdateResultHandle({
@@ -1185,170 +1193,140 @@ class AppController {
       return;
     }
     if (data != null) {
-      final desktopDownloadUri =
-          Platform.isAndroid ? null : await desktopAppUpdater.downloadUri(data);
-      if (!context.mounted) return;
-      final tagName = data['tag_name'];
-      final body = data['body'];
-      final submits = utils.parseReleaseBody(body);
-      final textTheme = context.textTheme;
-      final res = await globalState.showMessage(
-        title: appLocalizations.discoverNewVersion,
-        message: TextSpan(
-          text: "$tagName \n",
-          style: textTheme.headlineSmall,
-          children: [
-            TextSpan(
-              text: "\n",
-              style: textTheme.bodyMedium,
-            ),
-            for (final submit in submits)
-              TextSpan(
-                text: "- $submit \n",
-                style: textTheme.bodyMedium,
-              ),
-          ],
-        ),
-        confirmText: Platform.isAndroid
-            ? appLocalizations.update
-            : desktopDownloadUri != null
-                ? appLocalizations.downloadUpdate
-                : appLocalizations.goDownload,
+      final downloadUri =
+          system.isDesktop ? await desktopAppUpdater.downloadUri(data) : null;
+      appUpdateState.value = AppUpdateState.available(
+        data,
+        downloadUri: downloadUri,
       );
-      if (res != true) {
-        return;
+      if (handleError) {
+        globalState.navigatorKey.currentState
+            ?.popUntil((route) => route.isFirst);
+        toPage(PageLabel.dashboard);
       }
-      if (Platform.isAndroid) {
-        await _downloadAndInstallAndroidUpdate(data);
-        return;
-      }
-      unawaited(launchUrl(
-        Uri.parse(
-          globalState.githubUrl(
-            (desktopDownloadUri ??
-                    Uri.parse(
-                      "https://github.com/$repository/releases/latest",
-                    ))
-                .toString(),
-          ),
-        ),
-      ));
     } else if (handleError) {
-      await globalState.showMessage(
-        title: appLocalizations.checkUpdate,
-        message: TextSpan(
-          text: appLocalizations.checkUpdateError,
-        ),
-      );
+      context.showSnackBar(appLocalizations.checkUpdateError);
     }
   }
 
-  Future<void> _downloadAndInstallAndroidUpdate(
-    Map<String, dynamic> release,
-  ) async {
-    final progress = ValueNotifier<double?>(null);
+  Future<void> openAppUpdateDownload() async {
+    final current = appUpdateState.value;
+    if (!system.isDesktop || current == null) return;
+
+    final target = current.downloadUri ??
+        Uri.parse('https://github.com/$repository/releases/latest');
+    await launchUrl(Uri.parse(globalState.githubUrl(target.toString())));
+  }
+
+  Future<void> downloadAndroidAppUpdate() async {
+    final current = appUpdateState.value;
+    if (!Platform.isAndroid || current == null) return;
+
     final cancelToken = CancelToken();
-    final dialogReady = Completer<void>();
-    BuildContext? downloadDialogContext;
-    var dialogOpen = true;
-
-    void closeDownloadDialog() {
-      final dialogContext = downloadDialogContext;
-      if (!dialogOpen || dialogContext == null || !dialogContext.mounted) {
-        return;
-      }
-      dialogOpen = false;
-      Navigator.of(dialogContext).pop();
-    }
-
-    final dialogFuture = globalState.showCommonDialog<void>(
-      dismissible: false,
-      child: Builder(
-        builder: (dialogContext) {
-          downloadDialogContext = dialogContext;
-          if (!dialogReady.isCompleted) {
-            dialogReady.complete();
-          }
-          return CommonDialog(
-            title: appLocalizations.downloadingAppUpdate,
-            actions: [
-              TextButton(
-                onPressed: () {
-                  cancelToken.cancel();
-                  closeDownloadDialog();
-                },
-                child: Text(appLocalizations.cancel),
-              ),
-            ],
-            child: SizedBox(
-              width: 300,
-              child: ValueListenableBuilder<double?>(
-                valueListenable: progress,
-                builder: (_, value, __) => Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    LinearProgressIndicator(value: value),
-                    if (value != null) ...[
-                      const SizedBox(height: 12),
-                      Text('${(value * 100).round()}%'),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+    _androidAppUpdateCancelToken?.cancel();
+    _androidAppUpdateCancelToken = cancelToken;
+    appUpdateState.value = AppUpdateState(
+      release: current.release,
+      phase: AppUpdatePhase.downloading,
     );
-
-    await dialogReady.future;
     try {
       final apk = await androidAppUpdater.download(
-        release,
+        current.release,
         cancelToken: cancelToken,
         onProgress: (received, total) {
-          progress.value = total > 0 ? received / total : null;
+          if (cancelToken.isCancelled) return;
+          appUpdateState.value = AppUpdateState(
+            release: current.release,
+            phase: AppUpdatePhase.downloading,
+            progress: total > 0 ? received / total : null,
+          );
         },
       );
-      closeDownloadDialog();
-      await dialogFuture;
-      final installerStarted = await app?.installApk(apk.path) ?? false;
-      if (!installerStarted) {
-        await globalState.showMessage(
-          title: appLocalizations.update,
-          message: TextSpan(
-            text: appLocalizations.appUpdateInstallPermissionDenied,
-          ),
-        );
-      }
+      if (cancelToken.isCancelled) return;
+      appUpdateState.value = AppUpdateState(
+        release: current.release,
+        phase: AppUpdatePhase.readyToInstall,
+        apk: apk,
+      );
     } on AndroidAppUpdateException catch (error) {
-      closeDownloadDialog();
-      await dialogFuture;
-      if (error.code == AndroidAppUpdateError.cancelled) return;
-      final message = switch (error.code) {
-        AndroidAppUpdateError.assetNotFound =>
-          appLocalizations.appUpdateAssetNotFound,
+      if (error.code == AndroidAppUpdateError.cancelled) {
+        appUpdateState.value = AppUpdateState.available(current.release);
+        return;
+      }
+      final failure = switch (error.code) {
+        AndroidAppUpdateError.assetNotFound => AppUpdateFailure.assetNotFound,
         AndroidAppUpdateError.checksumNotFound ||
         AndroidAppUpdateError.checksumMismatch =>
-          appLocalizations.appUpdateVerificationFailed,
-        AndroidAppUpdateError.downloadFailed =>
-          appLocalizations.appUpdateDownloadFailed,
-        AndroidAppUpdateError.cancelled => '',
+          AppUpdateFailure.verificationFailed,
+        AndroidAppUpdateError.downloadFailed => AppUpdateFailure.downloadFailed,
+        AndroidAppUpdateError.cancelled => AppUpdateFailure.downloadFailed,
       };
-      await globalState.showMessage(
-        title: appLocalizations.update,
-        message: TextSpan(text: message),
+      appUpdateState.value = AppUpdateState(
+        release: current.release,
+        phase: AppUpdatePhase.failed,
+        failure: failure,
       );
     } catch (error) {
-      commonPrint.log('Android app update failed: $error');
-      closeDownloadDialog();
-      await dialogFuture;
-      await globalState.showMessage(
-        title: appLocalizations.update,
-        message: TextSpan(text: appLocalizations.appUpdateInstallFailed),
+      commonPrint.log('Android app update download failed: $error');
+      appUpdateState.value = AppUpdateState(
+        release: current.release,
+        phase: AppUpdatePhase.failed,
+        failure: AppUpdateFailure.downloadFailed,
       );
     } finally {
-      progress.dispose();
+      if (identical(_androidAppUpdateCancelToken, cancelToken)) {
+        _androidAppUpdateCancelToken = null;
+      }
+    }
+  }
+
+  void cancelAndroidAppUpdateDownload() {
+    _androidAppUpdateCancelToken?.cancel();
+  }
+
+  Future<void> installAndroidAppUpdate() async {
+    final current = appUpdateState.value;
+    final apk = current?.apk;
+    if (!Platform.isAndroid || current == null || apk == null) return;
+
+    appUpdateState.value = AppUpdateState(
+      release: current.release,
+      phase: AppUpdatePhase.installing,
+      apk: apk,
+    );
+    try {
+      final installerStarted = await app?.installApk(apk.path) ?? false;
+      appUpdateState.value = AppUpdateState(
+        release: current.release,
+        phase: installerStarted
+            ? AppUpdatePhase.readyToInstall
+            : AppUpdatePhase.failed,
+        apk: apk,
+        failure: installerStarted ? null : AppUpdateFailure.permissionDenied,
+      );
+    } on PlatformException catch (error) {
+      commonPrint.log(
+        'Android app update install failed (${error.code}): ${error.message}',
+      );
+      final failure = switch (error.code) {
+        'APK_INVALID' => AppUpdateFailure.invalidPackage,
+        'INSTALL_PERMISSION_FAILED' => AppUpdateFailure.permissionDenied,
+        _ => AppUpdateFailure.installerUnavailable,
+      };
+      appUpdateState.value = AppUpdateState(
+        release: current.release,
+        phase: AppUpdatePhase.failed,
+        apk: apk,
+        failure: failure,
+      );
+    } catch (error) {
+      commonPrint.log('Android app update install failed: $error');
+      appUpdateState.value = AppUpdateState(
+        release: current.release,
+        phase: AppUpdatePhase.failed,
+        apk: apk,
+        failure: AppUpdateFailure.installerUnavailable,
+      );
     }
   }
 
@@ -1551,7 +1529,7 @@ class AppController {
           final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
           return Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
         },
-        title: "${appLocalizations.add}${appLocalizations.profile}",
+        title: appLocalizations.addProfile,
       );
 
       if (profile != null) {
@@ -1616,7 +1594,7 @@ class AppController {
         await Future.delayed(const Duration(milliseconds: 300));
         return Profile.normal(label: platformFile?.name).saveFile(bytes);
       },
-      title: "${appLocalizations.add}${appLocalizations.profile}",
+      title: appLocalizations.addProfile,
     );
     if (profile != null) {
       await addProfile(profile);

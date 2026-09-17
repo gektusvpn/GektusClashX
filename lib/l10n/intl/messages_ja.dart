@@ -84,6 +84,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "app": MessageLookupByLibrary.simpleMessage("アプリ"),
         "appAccessControl": MessageLookupByLibrary.simpleMessage("アプリアクセス制御"),
         "appDesc": MessageLookupByLibrary.simpleMessage("アプリ関連設定の処理"),
+        "appUpdateAvailable":
+            MessageLookupByLibrary.simpleMessage("新しいバージョンがあります："),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "この端末用の APK が GitHub リリースに見つかりませんでした。",
         ),
@@ -96,6 +98,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInstallPermissionDenied":
             MessageLookupByLibrary.simpleMessage(
           "GektusClashX からアプリをインストールする権限が許可されていません。",
+        ),
+        "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
+          "現在のビルドにはこのアップデートを上書きインストールできません。一度アプリを再インストールすると、以降は通常どおり更新できます。",
+        ),
+        "appUpdateReady": MessageLookupByLibrary.simpleMessage(
+          "アップデートをインストールできます。",
         ),
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "アップデートの整合性を確認できませんでした。",
@@ -644,6 +652,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
           "ハンドシェイクなどの余分な遅延を削除",
         ),
+        "install": MessageLookupByLibrary.simpleMessage("インストール"),
+        "retry": MessageLookupByLibrary.simpleMessage("再試行"),
+        "share": MessageLookupByLibrary.simpleMessage("共有"),
         "unknown": MessageLookupByLibrary.simpleMessage("不明"),
         "unnamed": MessageLookupByLibrary.simpleMessage("無題"),
         "update": MessageLookupByLibrary.simpleMessage("更新"),

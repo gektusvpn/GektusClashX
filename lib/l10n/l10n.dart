@@ -1519,6 +1519,41 @@ class AppLocalizations {
     );
   }
 
+  /// `A new version is available:`
+  String get appUpdateAvailable {
+    return Intl.message(
+      'A new version is available:',
+      name: 'appUpdateAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The update is ready to install.`
+  String get appUpdateReady {
+    return Intl.message(
+      'The update is ready to install.',
+      name: 'appUpdateReady',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Install`
+  String get install {
+    return Intl.message('Install', name: 'install', desc: '', args: []);
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+  }
+
+  /// `Share`
+  String get share {
+    return Intl.message('Share', name: 'share', desc: '', args: []);
+  }
+
   /// `No APK for this device was found in the GitHub release.`
   String get appUpdateAssetNotFound {
     return Intl.message(
@@ -1564,6 +1599,16 @@ class AppLocalizations {
     return Intl.message(
       'Permission to install apps from GektusClashX was not granted.',
       name: 'appUpdateInstallPermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This update cannot be installed over the current build. Reinstall the app once; future updates will then install normally.`
+  String get appUpdateInvalidPackage {
+    return Intl.message(
+      'This update cannot be installed over the current build. Reinstall the app once; future updates will then install normally.',
+      name: 'appUpdateInvalidPackage',
       desc: '',
       args: [],
     );
