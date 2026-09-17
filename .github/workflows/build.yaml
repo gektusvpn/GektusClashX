@@ -193,49 +193,30 @@ jobs:
 
       - name: Generate release.md
         run: |
-          tags=($(git tag --merged $(git rev-parse HEAD) --sort=-creatordate))
-          
-          # Determine previous tag based on release type
-          if [ "${{ env.IS_STABLE }}" == "true" ]; then
-            # For stable: get latest stable release from API
-            preTag=$(curl --silent "https://api.github.com/repos/gektusvpn/GektusClashX/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
-          else
-            # For pre-release: get the latest pre-release tag (last tag with '-' in name before current)
-            preTag=""
-            for tag in "${tags[@]}"; do
-              if [ "$tag" != "${tags[0]}" ] && [[ "$tag" == *-* ]]; then
-                preTag="$tag"
-                break
-              fi
-            done
-            # If no previous pre-release found, use latest stable
-            if [ -z "$preTag" ]; then
-              preTag=$(curl --silent "https://api.github.com/repos/gektusvpn/GektusClashX/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
-            fi
-          fi
-          
-          currentTag=""
-          for ((i = 0; i <= ${#tags[@]}; i++)); do
-            if (( i < ${#tags[@]} )); then
-              tag=${tags[$i]}
+          current_tag="${{ github.ref_name }}"
+
+          # Prefer the curated section for this version. This keeps release
+          # notes user-facing and independent from GitHub API availability.
+          awk -v heading="## $current_tag" '
+            $0 == heading { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > release.md
+
+          # Pre-releases may not have a dedicated changelog section. Fall back
+          # to commit subjects since the nearest preceding tag in local Git.
+          if ! grep -q '[^[:space:]]' release.md; then
+            previous_tag=$(git describe --tags --abbrev=0 "${current_tag}^" 2>/dev/null || true)
+            if [ -n "$previous_tag" ]; then
+              range="$previous_tag..$current_tag"
             else
-              tag=""
+              range="$current_tag"
             fi
-            if [ -n "$currentTag" ]; then
-              if [ "$(echo -e "$currentTag\n$preTag" | sort -V | head -n 1)" == "$currentTag" ]; then
-                break
-              fi
-            fi
-            if [ -n "$currentTag" ]; then
-              if [ -n "$tag" ]; then
-                git log --pretty=format:"%B" "$tag..$currentTag" | awk 'NF {print "- " $0} !NF {print ""}' >> release.md
-              else
-                git log --pretty=format:"%B" "$currentTag" | awk 'NF {print "- " $0} !NF {print ""}' >> release.md
-              fi
-              echo "" >> release.md
-            fi
-            currentTag=$tag
-          done
+            git log --no-merges --pretty=format:'- %s' "$range" \
+              | awk '!/^- chore\(release\): prepare version / { print }' \
+              > release.md
+            echo "" >> release.md
+          fi
 
       - name: Patch release.md
         run: |
