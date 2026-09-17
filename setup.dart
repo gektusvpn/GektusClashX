@@ -89,6 +89,8 @@ class BuildItem {
 }
 
 class Build {
+  static const linuxDescription = "GektusVPN client for secure connections";
+
   static List<BuildItem> get buildItems => [
         BuildItem(
           target: Target.macos,
@@ -419,6 +421,27 @@ class Build {
     final match = RegExp(r'version:\s*(.+)').firstMatch(pubspec);
     return match?.group(1)?.split('+').first ?? "0.0.0";
   }
+
+  static String linuxDesktopEntry(String executable) => [
+        "[Desktop Entry]",
+        "Type=Application",
+        "Name=$appName",
+        "GenericName=VPN Client",
+        "GenericName[ru]=VPN-клиент",
+        "GenericName[ja]=VPNクライアント",
+        "GenericName[zh_CN]=VPN 客户端",
+        "Comment=$linuxDescription",
+        "Comment[ru]=Клиент GektusVPN для безопасного подключения",
+        "Comment[ja]=安全な接続のためのGektusVPNクライアント",
+        "Comment[zh_CN]=用于安全连接的 GektusVPN 客户端",
+        "Exec=$executable",
+        "Icon=$appName",
+        "Terminal=false",
+        "Categories=Network;",
+        "Keywords=GektusClashX;GektusVPN;VPN;Clash;Proxy;",
+        "StartupNotify=true",
+        "",
+      ].join("\n");
 
   static copyFile(String sourceFilePath, String destinationFilePath) {
     final sourceFile = File(sourceFilePath);
@@ -780,17 +803,7 @@ class BuildCommand extends Command {
     File(join(debIconDir, "$appName.png"))
         .writeAsBytesSync(File(iconPath).readAsBytesSync());
     File(join(debDesktopDir, "com.gektus.clashx.desktop")).writeAsStringSync(
-      "[Desktop Entry]\n"
-      "Type=Application\n"
-      "Name=$appName\n"
-      "GenericName=$appName\n"
-      "Comment=$appName\n"
-      "Exec=/opt/$appName/$appName\n"
-      "Icon=$appName\n"
-      "Terminal=false\n"
-      "Categories=Network;\n"
-      "Keywords=GektusClashX;Clash;Proxy;\n"
-      "StartupNotify=true\n",
+      Build.linuxDesktopEntry("/opt/$appName/$appName"),
     );
     File(join(debControlDir, "control")).writeAsStringSync(
       "Package: gektusclashx\n"
@@ -800,7 +813,7 @@ class BuildCommand extends Command {
       "Architecture: $debArch\n"
       "Depends: libayatana-appindicator3-dev, libkeybinder-3.0-dev\n"
       "Maintainer: GektusVPN <noreply@github.com>\n"
-      "Description: $appName\n",
+      "Description: ${Build.linuxDescription}\n",
     );
     final debPath = join(Build.distPath, "$appName-linux-$archName.deb");
     await Build.exec(
@@ -822,17 +835,7 @@ class BuildCommand extends Command {
       File(join(rpmIconDir, "$appName.png"))
           .writeAsBytesSync(File(iconPath).readAsBytesSync());
       File(join(rpmDesktopDir, "com.gektus.clashx.desktop")).writeAsStringSync(
-        "[Desktop Entry]\n"
-        "Type=Application\n"
-        "Name=$appName\n"
-        "GenericName=$appName\n"
-        "Comment=$appName\n"
-        "Exec=/opt/$appName/$appName\n"
-        "Icon=$appName\n"
-        "Terminal=false\n"
-        "Categories=Network;\n"
-        "Keywords=GektusClashX;Clash;Proxy;\n"
-        "StartupNotify=true\n",
+        Build.linuxDesktopEntry("/opt/$appName/$appName"),
       );
 
       final specPath = join(current, "build", "$appName.spec");
@@ -840,14 +843,14 @@ class BuildCommand extends Command {
         "Name: gektusclashx\n"
         "Version: $version\n"
         "Release: 1\n"
-        "Summary: $appName\n"
+        "Summary: ${Build.linuxDescription}\n"
         "License: Other\n"
         "Group: Applications/Internet\n"
         "Packager: GektusVPN <noreply@github.com>\n"
         "AutoReqProv: no\n"
         "\n"
         "%description\n"
-        "$appName proxy client\n"
+        "${Build.linuxDescription}\n"
         "\n"
         "%install\n"
         "cp -r %{_builddir}/root/* %{buildroot}/\n"
@@ -953,17 +956,7 @@ class BuildCommand extends Command {
       Build.copyFile(iconPath, join(appDir, "$appName.png"));
       File(join(appShareDesktop, "com.gektus.clashx.desktop"))
           .writeAsStringSync(
-        "[Desktop Entry]\n"
-        "Type=Application\n"
-        "Name=$appName\n"
-        "GenericName=$appName\n"
-        "Comment=$appName\n"
-        "Exec=$appName\n"
-        "Icon=$appName\n"
-        "Terminal=false\n"
-        "Categories=Network;\n"
-        "Keywords=GektusClashX;Clash;Proxy;\n"
-        "StartupNotify=true\n",
+        Build.linuxDesktopEntry(appName),
       );
       Build.copyFile(join(appShareDesktop, "com.gektus.clashx.desktop"),
           join(appDir, "com.gektus.clashx.desktop"));
