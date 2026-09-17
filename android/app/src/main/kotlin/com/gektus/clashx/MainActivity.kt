@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.gektus.clashx.plugins.AppPlugin
 import com.gektus.clashx.plugins.ServicePlugin
 import com.gektus.clashx.plugins.TilePlugin
@@ -22,6 +23,7 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         applyAppTheme()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         // High refresh rate is driven from Dart via the flutter_displaymode package
         // (see main.dart) — it pins the fastest mode at the current resolution and

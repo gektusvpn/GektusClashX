@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+    <style name="LaunchTheme" parent="Theme.SplashScreen">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">always</item>
-        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/splash_background_dark</item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_animated</item>
+        <item name="windowSplashScreenAnimationDuration">2200</item>
         <item name="postSplashScreenTheme">@style/NormalTheme</item>
     </style>
 </resources>
