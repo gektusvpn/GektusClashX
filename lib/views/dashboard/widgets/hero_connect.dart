@@ -73,9 +73,20 @@ class HeroConnect extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(startButtonSelectorStateProvider);
     if (!state.hasProfile) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: _EmptyHero(),
+      return ValueListenableBuilder<AppUpdateState?>(
+        valueListenable: globalState.appController.appUpdateState,
+        builder: (context, updateState, _) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const _EmptyHero(),
+              if (updateState != null) ...[
+                const SizedBox(height: 12),
+                _AppUpdateBanner(state: updateState),
+              ],
+            ],
+          ),
+        ),
       );
     }
 
