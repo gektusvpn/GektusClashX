@@ -133,11 +133,6 @@ class _TrayContainerState extends ConsumerState<TrayManager>
   }
 
   @override
-  void didChangePlatformBrightness() {
-    unawaited(globalState.appController.updateTray());
-  }
-
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       unawaited(globalState.appController.updateTray());

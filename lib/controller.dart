@@ -1396,7 +1396,7 @@ class AppController {
     FlutterError.onError = (details) {
       commonPrint.log(details.stack.toString());
     };
-    await updateTray(focus: true);
+    await updateTray();
     // Desktop only (clashService is null on Android): on an unexpected core-process
     // death, respawn it AND re-init/re-apply (and re-start the tunnel if it was up).
     clashService?.onCoreCrash = (_) => restartCore();
@@ -1942,10 +1942,9 @@ class AppController {
     });
   }
 
-  Future<void> updateTray({bool focus = false}) async {
+  Future<void> updateTray() async {
     await tray.update(
       trayState: _ref.read(trayStateProvider),
-      focus: focus,
     );
   }
 

@@ -11,20 +11,21 @@ import 'constant.dart';
 import 'window.dart';
 
 class Tray {
+  String? _iconPath;
+
   Future<void> _updateSystemTray({
     required bool isRunning,
-    bool force = false,
   }) async {
     if (Platform.isAndroid || Platform.isMacOS) {
       // Skip tray on Android and macOS (macOS uses native status bar)
       return;
     }
-    if (Platform.isLinux || force) {
-      await trayManager.destroy();
-    }
-    await trayManager.setIcon(
-      utils.getTrayIconPath(isRunning: isRunning),
-    );
+
+    final iconPath = utils.getTrayIconPath(isRunning: isRunning);
+    if (_iconPath == iconPath) return;
+
+    await trayManager.setIcon(iconPath);
+    _iconPath = iconPath;
     if (!Platform.isLinux) {
       await trayManager.setToolTip(
         appName,
@@ -34,7 +35,6 @@ class Tray {
 
   Future<void> update({
     required TrayState trayState,
-    bool focus = false,
   }) async {
     if (Platform.isAndroid || Platform.isMacOS) {
       // Skip tray on Android and macOS (macOS uses native status bar)
@@ -42,7 +42,6 @@ class Tray {
     }
     await _updateSystemTray(
       isRunning: trayState.isStart,
-      force: focus,
     );
     final menuItems = <MenuItem>[];
     final showMenuItem = MenuItem(
