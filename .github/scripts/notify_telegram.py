@@ -21,11 +21,22 @@ def send_telegram_message(bot_token, chat_id, message, parse_mode='HTML'):
         response.raise_for_status()
         return True
     except requests.exceptions.RequestException as error:
-        # Do not log the token, chat identifier, or response body.
-        print(
-            "Error sending message to Telegram chat: "
-            f"{type(error).__name__}"
-        )
+        # Telegram's JSON description explains configuration errors without
+        # exposing the bot token or destination identifier.
+        description = type(error).__name__
+        if error.response is not None:
+            try:
+                description = error.response.json().get(
+                    'description',
+                    description,
+                )
+            except requests.exceptions.JSONDecodeError:
+                description = f"HTTP {error.response.status_code}"
+
+        annotation = str(description).replace('%', '%25')
+        annotation = annotation.replace('\r', '%0D').replace('\n', '%0A')
+        print(f"Error sending message to Telegram chat: {description}")
+        print(f"::error title=Telegram notification failed::{annotation}")
         return False
 
 

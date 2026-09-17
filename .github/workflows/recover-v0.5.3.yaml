@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - ".github/workflows/recover-v0.5.3.yaml"
+      - ".github/scripts/notify_telegram.py"
 
 permissions:
   actions: read
