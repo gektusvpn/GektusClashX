@@ -194,6 +194,14 @@ Usage:
     gektusclashx-newdomain: new.example.com
 ```
 
+- `gektusclashx-fallback`: Optional fallback domain used when a request to the profile's primary URL fails. The client replaces only the domain for that request, preserving the original scheme, path, token, and query parameters. The primary profile URL remains unchanged. A fallback learned from an earlier successful response is retained when the fallback endpoint omits this header.
+
+Usage:
+
+```bash
+    gektusclashx-fallback: fallback.example.com
+```
+
 - gektusclashx-buyplan: Direct subscription purchase/renewal link. The "Renew" button is always displayed in the subscription card on Home. Tapping it opens the given link.
 
 Usage:

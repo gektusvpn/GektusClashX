@@ -39,6 +39,7 @@ export 'request.dart';
 export 'scroll.dart';
 export 'statusbar.dart';
 export 'string.dart';
+export 'subscription_fallback.dart';
 export 'system.dart';
 export 'text.dart';
 export 'tray.dart';

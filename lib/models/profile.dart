@@ -182,11 +182,20 @@ extension ProfileExtension on Profile {
       if (details.model != null) headers['x-device-model'] = details.model;
     }
 
-    final response = await request.getFileResponseForUrl(
-      url,
-      headers: headers.isNotEmpty ? headers : null,
-      githubProxyBase: this.providerHeaders['gektusclashx-gh-proxy'] ?? '',
+    final fetchResult = await fetchSubscriptionWithFallback(
+      primaryUrl: url,
+      fallbackDomain: this.providerHeaders['gektusclashx-fallback'],
+      fetch: (requestUrl) => request.getFileResponseForUrl(
+        requestUrl,
+        headers: headers.isNotEmpty ? headers : null,
+        githubProxyBase: this.providerHeaders['gektusclashx-gh-proxy'] ?? '',
+      ),
     );
+    final response = fetchResult.value;
+
+    if (fetchResult.usedFallback) {
+      commonPrint.log('Primary subscription request failed; fallback used');
+    }
 
     final disposition = response.headers.value("content-disposition");
     final userinfo = response.headers.value('subscription-userinfo');
@@ -229,6 +238,17 @@ extension ProfileExtension on Profile {
     // the current prefix last so it wins when a provider sends both variants.
     collectProviderHeaders('flclashx-');
     collectProviderHeaders('gektusclashx-');
+
+    // A fallback response may omit the header that originally led to it. Keep
+    // that working address for the next primary outage without changing the
+    // profile's primary URL. A successful primary response still replaces the
+    // provider-header map and can therefore remove or change the fallback.
+    if (fetchResult.usedFallback) {
+      providerHeaders.putIfAbsent(
+        'gektusclashx-fallback',
+        () => fetchResult.fallbackDomain!,
+      );
+    }
 
     Duration? durationFromHeader;
     final updateIntervalHeader = providerHeaders['profile-update-interval'];

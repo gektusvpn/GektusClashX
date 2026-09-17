@@ -85,7 +85,7 @@ class Request {
           headers: requestHeaders,
           followRedirects: true,
           maxRedirects: 5,
-          validateStatus: (status) => status != null && status < 500,
+          validateStatus: (status) => status != null && status < 400,
         ),
       );
       return finalResponse;
