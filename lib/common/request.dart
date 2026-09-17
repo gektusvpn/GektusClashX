@@ -127,14 +127,26 @@ class Request {
   Future<void> downloadFile(
     String url,
     String targetPath, {
+    int? expectedSize,
     CancelToken? cancelToken,
     void Function(int received, int total)? onProgress,
   }) async {
-    await _dio.download(
-      globalState.githubUrl(url),
-      targetPath,
+    final preferredUrl = globalState.githubUrl(url);
+    await ResumableDownloader(_dio).download(
+      urls: [preferredUrl, url],
+      targetPath: targetPath,
+      expectedSize: expectedSize,
       cancelToken: cancelToken,
-      onReceiveProgress: onProgress,
+      onProgress: onProgress ?? (_, __) {},
+      onAttemptError: (attempt, sourceIndex, error) {
+        final source = sourceIndex == 0 && preferredUrl != url
+            ? 'configured GitHub proxy'
+            : 'direct GitHub';
+        commonPrint.log(
+          'APK download attempt $attempt via $source failed: '
+          '${error.type.name}, status ${error.response?.statusCode ?? '-'}',
+        );
+      },
     );
   }
 

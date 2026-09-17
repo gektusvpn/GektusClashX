@@ -35,6 +35,7 @@ export 'print.dart';
 export 'protocol.dart';
 export 'proxy.dart';
 export 'render.dart';
+export 'resumable_download.dart';
 export 'request.dart';
 export 'scroll.dart';
 export 'statusbar.dart';

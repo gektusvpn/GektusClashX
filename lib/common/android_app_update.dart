@@ -31,6 +31,7 @@ class AndroidReleaseAsset {
     required this.name,
     required this.downloadUrl,
     this.digest,
+    this.size,
   });
 
   factory AndroidReleaseAsset.fromJson(Map<String, dynamic> json) =>
@@ -38,11 +39,13 @@ class AndroidReleaseAsset {
         name: json['name'] as String? ?? '',
         downloadUrl: json['browser_download_url'] as String? ?? '',
         digest: json['digest'] as String?,
+        size: (json['size'] as num?)?.toInt(),
       );
 
   final String name;
   final String downloadUrl;
   final String? digest;
+  final int? size;
 }
 
 class AndroidAppUpdater {
@@ -86,12 +89,21 @@ class AndroidAppUpdater {
     final partial = File('${target.path}.part');
 
     try {
-      if (partial.existsSync()) {
-        partial.deleteSync();
+      if (await partial.exists() &&
+          asset.size != null &&
+          await partial.length() == asset.size) {
+        final savedHash =
+            (await sha256.bind(partial.openRead()).first).toString();
+        if (savedHash.toLowerCase() == expectedHash) {
+          if (await target.exists()) await target.delete();
+          return partial.rename(target.path);
+        }
+        await partial.delete();
       }
       await request.downloadFile(
         asset.downloadUrl,
         partial.path,
+        expectedSize: asset.size,
         cancelToken: cancelToken,
         onProgress: onProgress,
       );
@@ -99,6 +111,7 @@ class AndroidAppUpdater {
       final actualHash =
           (await sha256.bind(partial.openRead()).first).toString();
       if (actualHash.toLowerCase() != expectedHash) {
+        if (await partial.exists()) await partial.delete();
         throw const AndroidAppUpdateException(
           AndroidAppUpdateError.checksumMismatch,
         );
@@ -125,10 +138,6 @@ class AndroidAppUpdater {
         AndroidAppUpdateError.downloadFailed,
         error,
       );
-    } finally {
-      if (partial.existsSync()) {
-        partial.deleteSync();
-      }
     }
   }
 

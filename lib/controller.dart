@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:archive/archive.dart';
-import 'package:dio/dio.dart' show CancelToken;
+import 'package:dio/dio.dart' show CancelToken, DioException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1253,6 +1253,13 @@ class AppController {
         appUpdateState.value = AppUpdateState.available(current.release);
         return;
       }
+      final cause = error.cause;
+      final causeSummary = cause is DioException
+          ? '${cause.type.name}, status ${cause.response?.statusCode ?? '-'}'
+          : cause?.runtimeType.toString() ?? '-';
+      commonPrint.log(
+        'Android app update failed: ${error.code.name}, cause $causeSummary',
+      );
       final failure = switch (error.code) {
         AndroidAppUpdateError.assetNotFound => AppUpdateFailure.assetNotFound,
         AndroidAppUpdateError.checksumNotFound ||
