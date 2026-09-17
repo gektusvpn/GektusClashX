@@ -1,3 +1,23 @@
+## v0.5.2
+
+- Reworked popup menus and profile creation around Material 3 components,
+  including an anchored Locations menu and a bottom sheet for choosing how to
+  add a profile.
+
+- Replaced the subscription actions with a full-width Material 3 button group
+  for sharing, refreshing, and renewing a profile.
+
+- Moved update notifications into the Home screen on every platform. Android
+  downloads, verifies, and installs the universal APK from the block, while
+  desktop platforms open the matching release package directly.
+
+- Enabled automatic update checks by default on desktop platforms and replaced
+  update dialogs with inline progress, failure states, and non-blocking status
+  messages.
+
+- Improved Android package-installer compatibility and added a branded animated
+  splash screen with independent logo-ring rotation.
+
 ## v0.5.1
 
 - Restored the branded subscription User-Agent and allowed debug Android builds
