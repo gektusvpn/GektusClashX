@@ -811,7 +811,7 @@ class BuildCommand extends Command {
       "Section: x11\n"
       "Priority: optional\n"
       "Architecture: $debArch\n"
-      "Depends: libayatana-appindicator3-dev, libkeybinder-3.0-dev\n"
+      "Depends: libayatana-appindicator3-dev, libkeybinder-3.0-dev, pkexec | policykit-1\n"
       "Maintainer: GektusVPN <noreply@github.com>\n"
       "Description: ${Build.linuxDescription}\n",
     );
@@ -848,6 +848,7 @@ class BuildCommand extends Command {
         "Group: Applications/Internet\n"
         "Packager: GektusVPN <noreply@github.com>\n"
         "AutoReqProv: no\n"
+        "Requires: polkit\n"
         "\n"
         "%description\n"
         "${Build.linuxDescription}\n"

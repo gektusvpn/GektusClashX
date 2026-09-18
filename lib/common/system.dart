@@ -4,8 +4,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/plugins/app.dart';
-import 'package:gektusclashx/state.dart';
-import 'package:gektusclashx/widgets/input.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,7 +57,7 @@ class System {
   }
 
   Future<bool> checkIsAdmin() async {
-    final corePath = appPath.corePath.replaceAll(' ', r'\\ ');
+    final corePath = appPath.corePath;
     if (Platform.isWindows) {
       final result = await windows?.checkService();
       return result == WindowsHelperServiceStatus.running;
@@ -90,7 +88,7 @@ class System {
       return AuthorizeCode.none;
     }
 
-    final corePath = appPath.corePath.replaceAll(' ', r'\\ ');
+    final corePath = appPath.corePath;
     final isAdmin = await checkIsAdmin();
     if (isAdmin) {
       return AuthorizeCode.none;
@@ -110,28 +108,40 @@ class System {
       }
       return AuthorizeCode.error;
     } else if (Platform.isLinux) {
-      final password = await globalState.showCommonDialog<String>(
-        child: InputDialog(
-          title: appLocalizations.pleaseInputAdminPassword,
-          value: '',
-        ),
-      );
-      if (password == null) return AuthorizeCode.error;
-      final proc = await Process.start('sudo', [
-        '-S',
-        'sh',
-        '-c',
-        'chown root:root "\$1" && chmod +sx "\$1"',
-        'sh',
-        corePath,
-      ]);
-      proc.stdin.writeln(password);
-      await proc.stdin.close();
-      final exitCode = await proc.exitCode;
-      if (exitCode != 0) {
+      const pkexecCandidates = ['/usr/bin/pkexec', '/bin/pkexec'];
+      final pkexecPath =
+          pkexecCandidates.where((path) => File(path).existsSync()).firstOrNull;
+      if (pkexecPath == null) {
+        commonPrint.log('Linux authorization failed: pkexec is unavailable');
         return AuthorizeCode.error;
       }
-      return AuthorizeCode.success;
+
+      try {
+        final proc = await Process.start(pkexecPath, [
+          '--disable-internal-agent',
+          '/bin/sh',
+          '-c',
+          r'chown root:root -- "$1" && chmod 4755 -- "$1"',
+          'gektusclashx-authorize-core',
+          corePath,
+        ]);
+        final stdoutDone = proc.stdout.drain<void>();
+        final stderrDone = proc.stderr.drain<void>();
+        final exitCode = await proc.exitCode;
+        await Future.wait([stdoutDone, stderrDone]);
+        if (exitCode != 0) {
+          commonPrint.log(
+            'Linux authorization was cancelled or failed (pkexec exit $exitCode)',
+          );
+          return AuthorizeCode.error;
+        }
+        return await checkIsAdmin()
+            ? AuthorizeCode.success
+            : AuthorizeCode.error;
+      } on ProcessException catch (error) {
+        commonPrint.log('Linux authorization failed: $error');
+        return AuthorizeCode.error;
+      }
     }
     return AuthorizeCode.error;
   }
