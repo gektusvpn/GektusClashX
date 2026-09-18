@@ -53,6 +53,24 @@ class AndroidAppUpdater {
   static final _sha256Pattern = RegExp(r'^[0-9a-fA-F]{64}$');
   static final _digestPattern = RegExp(r'^sha256:([0-9a-fA-F]{64})$');
 
+  Future<void> cleanup({bool includePartial = false}) async {
+    final updateDirectory = Directory(
+      path.join(await appPath.homeDirPath, 'updates'),
+    );
+    if (!await updateDirectory.exists()) return;
+    await for (final entity in updateDirectory.list()) {
+      if (entity is! File) continue;
+      final name = path.basename(entity.path);
+      if (name.endsWith('.apk') || (includePartial && name.endsWith('.part'))) {
+        try {
+          await entity.delete();
+        } catch (_) {
+          // Best effort: the package installer may still hold the file briefly.
+        }
+      }
+    }
+  }
+
   Future<File> download(
     Map<String, dynamic> release, {
     required void Function(int received, int total) onProgress,
@@ -86,9 +104,31 @@ class AndroidAppUpdater {
     );
     await updateDirectory.create(recursive: true);
     final target = File(path.join(updateDirectory.path, asset.name));
-    final partial = File('${target.path}.part');
+    final partial =
+        File('${target.path}.${expectedHash.substring(0, 12)}.part');
 
     try {
+      await for (final entity in updateDirectory.list()) {
+        if (entity is File &&
+            entity.path.endsWith('.part') &&
+            entity.path != partial.path) {
+          try {
+            await entity.delete();
+          } catch (_) {
+            // A concurrent retry can still have the old partial file open.
+          }
+        }
+      }
+      if (await target.exists()) {
+        final targetSizeMatches =
+            asset.size == null || await target.length() == asset.size;
+        if (targetSizeMatches) {
+          final targetHash =
+              (await sha256.bind(target.openRead()).first).toString();
+          if (targetHash.toLowerCase() == expectedHash) return target;
+        }
+        await target.delete();
+      }
       if (await partial.exists() &&
           asset.size != null &&
           await partial.length() == asset.size) {

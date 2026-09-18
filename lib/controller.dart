@@ -1152,6 +1152,9 @@ class AppController {
     if (!_ref.read(appSettingProvider).autoCheckUpdate) return;
     try {
       final res = await request.checkForUpdate();
+      if (Platform.isAndroid && res == null) {
+        await androidAppUpdater.cleanup(includePartial: true);
+      }
       await checkUpdateResultHandle(data: res);
     } catch (error) {
       commonPrint.log('Automatic app update check failed: $error');
@@ -1403,6 +1406,9 @@ class AppController {
     FlutterError.onError = (details) {
       commonPrint.log(details.stack.toString());
     };
+    if (Platform.isAndroid) {
+      await androidAppUpdater.cleanup();
+    }
     await updateTray();
     // Desktop only (clashService is null on Android): on an unexpected core-process
     // death, respawn it AND re-init/re-apply (and re-start the tunnel if it was up).
