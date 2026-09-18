@@ -9,15 +9,17 @@ class CommonPopupBox extends StatelessWidget {
     super.key,
     required this.targetBuilder,
     required this.popup,
+    this.alignmentOffset = const Offset(0, 4),
   });
   final Widget Function(PopupOpen open) targetBuilder;
   final CommonPopupMenu popup;
+  final Offset alignmentOffset;
 
   @override
   Widget build(BuildContext context) => MenuAnchor(
         useRootOverlay: true,
         consumeOutsideTap: true,
-        alignmentOffset: const Offset(0, 4),
+        alignmentOffset: alignmentOffset,
         clipBehavior: Clip.antiAlias,
         style: popup.menuStyle(context),
         menuChildren: popup.buildItems(context),

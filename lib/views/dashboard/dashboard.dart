@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/l10n/l10n.dart';
 import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/views/tools.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
@@ -32,20 +33,23 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
 
   @override
   List<Widget> get actions => [
-        CommonHeaderIconButton(
-          tooltip: appLocalizations.settings,
-          onPressed: _openSettings,
-          icon: const Icon(Icons.settings_rounded),
+        Builder(
+          builder: (context) => CommonHeaderIconButton(
+            tooltip: AppLocalizations.of(context).settings,
+            onPressed: _openSettings,
+            icon: const Icon(Icons.settings_rounded),
+          ),
         ),
       ];
 
   Future<void> _openSettings() async {
+    final localizations = AppLocalizations.of(context);
     await showExtend<void>(
       context,
       props: const ExtendProps(maxWidth: 480),
       builder: (_, type) => AdaptiveSheetScaffold(
         type: type,
-        title: appLocalizations.settings,
+        title: localizations.settings,
         body: const ToolsView(),
       ),
     );

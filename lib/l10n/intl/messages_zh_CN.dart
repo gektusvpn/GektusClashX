@@ -59,6 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "action_tun": MessageLookupByLibrary.simpleMessage("虚拟网卡"),
         "action_view": MessageLookupByLibrary.simpleMessage("显示/隐藏"),
         "add": MessageLookupByLibrary.simpleMessage("添加"),
+        "addProfile": MessageLookupByLibrary.simpleMessage("添加配置"),
         "addRule": MessageLookupByLibrary.simpleMessage("添加规则"),
         "addedOriginRules": MessageLookupByLibrary.simpleMessage("附加到原始规则"),
         "address": MessageLookupByLibrary.simpleMessage("地址"),
@@ -79,10 +80,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "app": MessageLookupByLibrary.simpleMessage("应用"),
         "appAccessControl": MessageLookupByLibrary.simpleMessage("应用访问控制"),
         "appDesc": MessageLookupByLibrary.simpleMessage("处理应用相关设置"),
-        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage("有新版本可用："),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "GitHub 版本中未找到适用于此设备的 APK。",
         ),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage("有新版本可用："),
         "appUpdateDownloadFailed":
             MessageLookupByLibrary.simpleMessage("无法下载更新。"),
         "appUpdateInstallFailed": MessageLookupByLibrary.simpleMessage(
@@ -95,8 +96,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
           "无法在当前版本上安装此更新。请重新安装一次应用，之后即可正常更新。",
         ),
-        "appUpdateReady":
-            MessageLookupByLibrary.simpleMessage("更新已准备好安装。"),
+        "appUpdateReady": MessageLookupByLibrary.simpleMessage("更新已准备好安装。"),
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "无法验证更新的完整性。",
         ),
@@ -293,6 +293,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "infiniteTime": MessageLookupByLibrary.simpleMessage("长期有效"),
         "init": MessageLookupByLibrary.simpleMessage("初始化"),
         "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage("请输入正确的快捷键"),
+        "install": MessageLookupByLibrary.simpleMessage("安装"),
         "intelligentSelected": MessageLookupByLibrary.simpleMessage("智能选择"),
         "internet": MessageLookupByLibrary.simpleMessage("互联网"),
         "interval": MessageLookupByLibrary.simpleMessage("间隔"),
@@ -405,6 +406,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "palette": MessageLookupByLibrary.simpleMessage("调色板"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
         "paste": MessageLookupByLibrary.simpleMessage("粘贴"),
+        "plans": MessageLookupByLibrary.simpleMessage("套餐"),
         "pleaseBindWebDAV": MessageLookupByLibrary.simpleMessage("请绑定WebDAV"),
         "pleaseEnterScriptName":
             MessageLookupByLibrary.simpleMessage("请输入脚本名称"),
@@ -421,6 +423,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用DOH的http/3"),
         "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
         "preview": MessageLookupByLibrary.simpleMessage("预览"),
+        "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "profile": MessageLookupByLibrary.simpleMessage("配置"),
         "profileAutoUpdateIntervalInvalidValidationDesc":
             MessageLookupByLibrary.simpleMessage("请输入有效间隔时间格式"),
@@ -432,6 +435,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "profileNameNullValidationDesc": MessageLookupByLibrary.simpleMessage(
           "请输入配置名称",
         ),
+        "profileOnboardingMessage": MessageLookupByLibrary.simpleMessage(
+          "配置包含使用 VPN 所需的连接设置和可用节点。",
+        ),
+        "profileOnboardingTitle":
+            MessageLookupByLibrary.simpleMessage("添加配置以开始使用"),
         "profileParseErrorDesc":
             MessageLookupByLibrary.simpleMessage("配置文件解析错误"),
         "profileUrlInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
@@ -486,6 +494,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "DNS连接跟随rules,需配置proxy-server-nameserver",
         ),
         "restart": MessageLookupByLibrary.simpleMessage("重启"),
+        "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "routeAddress": MessageLookupByLibrary.simpleMessage("路由地址"),
         "routeAddressDesc": MessageLookupByLibrary.simpleMessage("配置监听路由地址"),
         "routeMode": MessageLookupByLibrary.simpleMessage("路由模式"),
@@ -507,7 +516,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectAll": MessageLookupByLibrary.simpleMessage("全选"),
         "selected": MessageLookupByLibrary.simpleMessage("已选择"),
         "selectedCountTitle": m7,
+        "serverStatus": MessageLookupByLibrary.simpleMessage("服务器状态"),
+        "serviceChannel": MessageLookupByLibrary.simpleMessage("频道"),
+        "serviceLinks": MessageLookupByLibrary.simpleMessage("链接"),
         "settings": MessageLookupByLibrary.simpleMessage("设置"),
+        "share": MessageLookupByLibrary.simpleMessage("分享"),
         "show": MessageLookupByLibrary.simpleMessage("显示"),
         "shrink": MessageLookupByLibrary.simpleMessage("紧凑"),
         "silentLaunch": MessageLookupByLibrary.simpleMessage("静默启动"),
@@ -536,6 +549,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpiresToday": MessageLookupByLibrary.simpleMessage(
           "您的订阅今天到期",
         ),
+        "subscriptionLifetime": MessageLookupByLibrary.simpleMessage("永久"),
+        "subscriptionValidity": MessageLookupByLibrary.simpleMessage("有效期"),
         "support": MessageLookupByLibrary.simpleMessage("支持"),
         "supportMessage": MessageLookupByLibrary.simpleMessage(
           "如有疑问，请联系支持团队，我们会帮助您解决问题。",
@@ -551,6 +566,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tabAnimationDesc": MessageLookupByLibrary.simpleMessage("仅在移动视图中有效"),
         "tcpConcurrent": MessageLookupByLibrary.simpleMessage("TCP并发"),
         "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage("开启后允许TCP并发"),
+        "termsOfService": MessageLookupByLibrary.simpleMessage("服务条款"),
         "testUrl": MessageLookupByLibrary.simpleMessage("测速链接"),
         "textScale": MessageLookupByLibrary.simpleMessage("文本缩放"),
         "thanks": MessageLookupByLibrary.simpleMessage("感谢贡献"),
@@ -579,9 +595,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "unifiedDelay": MessageLookupByLibrary.simpleMessage("统一延迟"),
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage("去除握手等额外延迟"),
-        "install": MessageLookupByLibrary.simpleMessage("安装"),
-        "retry": MessageLookupByLibrary.simpleMessage("重试"),
-        "share": MessageLookupByLibrary.simpleMessage("分享"),
         "unknown": MessageLookupByLibrary.simpleMessage("未知"),
         "unnamed": MessageLookupByLibrary.simpleMessage("未命名"),
         "update": MessageLookupByLibrary.simpleMessage("更新"),

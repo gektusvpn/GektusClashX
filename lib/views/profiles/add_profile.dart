@@ -80,13 +80,12 @@ class AddProfileView extends StatelessWidget {
         future: system.isAndroidTV,
         builder: (context, snapshot) {
           final options = [
-            if (snapshot.data ?? false)
-              _AddProfileOptionData(
-                method: _AddProfileMethod.phone,
-                icon: Icons.phone_android_rounded,
-                title: appLocalizations.addFromPhoneTitle,
-                subtitle: appLocalizations.addFromPhoneSubtitle,
-              ),
+            _AddProfileOptionData(
+              method: _AddProfileMethod.url,
+              icon: Icons.link_rounded,
+              title: appLocalizations.url,
+              subtitle: appLocalizations.urlDesc,
+            ),
             _AddProfileOptionData(
               method: _AddProfileMethod.qrCode,
               icon: Icons.qr_code_scanner_rounded,
@@ -99,12 +98,13 @@ class AddProfileView extends StatelessWidget {
               title: appLocalizations.file,
               subtitle: appLocalizations.fileDesc,
             ),
-            _AddProfileOptionData(
-              method: _AddProfileMethod.url,
-              icon: Icons.link_rounded,
-              title: appLocalizations.url,
-              subtitle: appLocalizations.urlDesc,
-            ),
+            if (snapshot.data ?? false)
+              _AddProfileOptionData(
+                method: _AddProfileMethod.phone,
+                icon: Icons.phone_android_rounded,
+                title: appLocalizations.addFromPhoneTitle,
+                subtitle: appLocalizations.addFromPhoneSubtitle,
+              ),
           ];
 
           return ListView.separated(

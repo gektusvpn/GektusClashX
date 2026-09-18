@@ -61,6 +61,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "action_tun": MessageLookupByLibrary.simpleMessage("TUN"),
         "action_view": MessageLookupByLibrary.simpleMessage("表示/非表示"),
         "add": MessageLookupByLibrary.simpleMessage("追加"),
+        "addProfile": MessageLookupByLibrary.simpleMessage("プロファイルを追加"),
         "addRule": MessageLookupByLibrary.simpleMessage("ルールを追加"),
         "addedOriginRules": MessageLookupByLibrary.simpleMessage("元のルールに追加"),
         "address": MessageLookupByLibrary.simpleMessage("アドレス"),
@@ -84,10 +85,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "app": MessageLookupByLibrary.simpleMessage("アプリ"),
         "appAccessControl": MessageLookupByLibrary.simpleMessage("アプリアクセス制御"),
         "appDesc": MessageLookupByLibrary.simpleMessage("アプリ関連設定の処理"),
-        "appUpdateAvailable":
-            MessageLookupByLibrary.simpleMessage("新しいバージョンがあります："),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "この端末用の APK が GitHub リリースに見つかりませんでした。",
+        ),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
+          "新しいバージョンがあります：",
         ),
         "appUpdateDownloadFailed": MessageLookupByLibrary.simpleMessage(
           "アップデートをダウンロードできませんでした。",
@@ -323,6 +325,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "init": MessageLookupByLibrary.simpleMessage("初期化"),
         "inputCorrectHotkey":
             MessageLookupByLibrary.simpleMessage("正しいホットキーを入力"),
+        "install": MessageLookupByLibrary.simpleMessage("インストール"),
         "intelligentSelected":
             MessageLookupByLibrary.simpleMessage("インテリジェント選択"),
         "internet": MessageLookupByLibrary.simpleMessage("インターネット"),
@@ -454,6 +457,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "palette": MessageLookupByLibrary.simpleMessage("パレット"),
         "password": MessageLookupByLibrary.simpleMessage("パスワード"),
         "paste": MessageLookupByLibrary.simpleMessage("貼り付け"),
+        "plans": MessageLookupByLibrary.simpleMessage("プラン"),
         "pleaseBindWebDAV": MessageLookupByLibrary.simpleMessage(
           "WebDAVをバインドしてください",
         ),
@@ -476,6 +480,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferH3Desc": MessageLookupByLibrary.simpleMessage("DOHのHTTP/3を優先使用"),
         "pressKeyboard": MessageLookupByLibrary.simpleMessage("キーボードを押してください"),
         "preview": MessageLookupByLibrary.simpleMessage("プレビュー"),
+        "privacyPolicy": MessageLookupByLibrary.simpleMessage("プライバシーポリシー"),
         "profile": MessageLookupByLibrary.simpleMessage("プロファイル"),
         "profileAutoUpdateIntervalInvalidValidationDesc":
             MessageLookupByLibrary.simpleMessage("有効な間隔形式を入力してください"),
@@ -486,6 +491,12 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "profileNameNullValidationDesc": MessageLookupByLibrary.simpleMessage(
           "プロファイル名を入力してください",
+        ),
+        "profileOnboardingMessage": MessageLookupByLibrary.simpleMessage(
+          "プロファイルには、VPN への接続に必要な設定とロケーションが含まれます。",
+        ),
+        "profileOnboardingTitle": MessageLookupByLibrary.simpleMessage(
+          "プロファイルを追加して開始",
         ),
         "profileParseErrorDesc": MessageLookupByLibrary.simpleMessage(
           "プロファイル解析エラー",
@@ -550,6 +561,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "DNS接続がルールに従う（proxy-server-nameserverの設定が必要）",
         ),
         "restart": MessageLookupByLibrary.simpleMessage("再起動"),
+        "retry": MessageLookupByLibrary.simpleMessage("再試行"),
         "routeAddress": MessageLookupByLibrary.simpleMessage("ルートアドレス"),
         "routeAddressDesc": MessageLookupByLibrary.simpleMessage("ルートアドレスを設定"),
         "routeMode": MessageLookupByLibrary.simpleMessage("ルートモード"),
@@ -572,7 +584,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectAll": MessageLookupByLibrary.simpleMessage("すべて選択"),
         "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
         "selectedCountTitle": m7,
+        "serverStatus": MessageLookupByLibrary.simpleMessage("サーバーの状態"),
+        "serviceChannel": MessageLookupByLibrary.simpleMessage("チャンネル"),
+        "serviceLinks": MessageLookupByLibrary.simpleMessage("リンク"),
         "settings": MessageLookupByLibrary.simpleMessage("設定"),
+        "share": MessageLookupByLibrary.simpleMessage("共有"),
         "show": MessageLookupByLibrary.simpleMessage("表示"),
         "shrink": MessageLookupByLibrary.simpleMessage("縮小"),
         "silentLaunch": MessageLookupByLibrary.simpleMessage("バックグラウンド起動"),
@@ -604,6 +620,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpiresToday": MessageLookupByLibrary.simpleMessage(
           "サブスクリプションは本日期限切れになります",
         ),
+        "subscriptionLifetime": MessageLookupByLibrary.simpleMessage("無期限"),
+        "subscriptionValidity": MessageLookupByLibrary.simpleMessage("有効期間"),
         "support": MessageLookupByLibrary.simpleMessage("サポート"),
         "supportMessage": MessageLookupByLibrary.simpleMessage(
           "ご質問がある場合は、サポートまでお問い合わせください。解決をお手伝いします。",
@@ -621,6 +639,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tabAnimationDesc": MessageLookupByLibrary.simpleMessage("モバイル表示でのみ有効"),
         "tcpConcurrent": MessageLookupByLibrary.simpleMessage("TCP並列処理"),
         "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage("TCP並列処理を許可"),
+        "termsOfService": MessageLookupByLibrary.simpleMessage("利用規約"),
         "testUrl": MessageLookupByLibrary.simpleMessage("URLテスト"),
         "textScale": MessageLookupByLibrary.simpleMessage("テキストスケーリング"),
         "thanks": MessageLookupByLibrary.simpleMessage("貢献に感謝"),
@@ -652,9 +671,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
           "ハンドシェイクなどの余分な遅延を削除",
         ),
-        "install": MessageLookupByLibrary.simpleMessage("インストール"),
-        "retry": MessageLookupByLibrary.simpleMessage("再試行"),
-        "share": MessageLookupByLibrary.simpleMessage("共有"),
         "unknown": MessageLookupByLibrary.simpleMessage("不明"),
         "unnamed": MessageLookupByLibrary.simpleMessage("無題"),
         "update": MessageLookupByLibrary.simpleMessage("更新"),

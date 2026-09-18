@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/models/models.dart';
@@ -8,14 +11,13 @@ import 'package:gektusclashx/providers/config.dart';
 import 'package:gektusclashx/providers/state.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
 import 'common.dart';
 
 typedef GroupNameProxiesMap = Map<String, List<Proxy>>;
+
+const _proxyGroupExpansionDuration = Duration(milliseconds: 360);
 
 class ProxiesListView extends StatefulWidget {
   const ProxiesListView({super.key});
@@ -75,21 +77,24 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     WidgetRef ref, {
     required List<String> groupNames,
     required int columns,
-    required Set<String> currentUnfoldSet,
     required ProxyCardType type,
     required String query,
   }) {
     final items = <Widget>[];
     final groupNameProxiesMap = <String, List<Proxy>>{};
+    final groups = <Group>[];
     for (final groupName in groupNames) {
       final group = ref.watch(
         groupsProvider.select(
           (state) => state.getGroup(groupName),
         ),
       );
-      if (group == null) {
-        continue;
-      }
+      if (group != null) groups.add(group);
+    }
+
+    for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+      final group = groups[groupIndex];
+      final groupName = group.name;
       final sortedProxies = globalState.appController.getSortProxies(
         group.all
             .where((item) => item.name.toLowerCase().contains(query))
@@ -138,8 +143,15 @@ class _ProxiesListViewState extends State<ProxiesListView> {
             ),
           )
           .toList();
-
-      items.add(ProxyGroupCard(group: group, proxies: rows));
+      items.add(
+        ProxyGroupCard(
+          key: ValueKey(groupName),
+          group: group,
+          proxies: rows,
+          isFirst: groupIndex == 0,
+          isLast: groupIndex == groups.length - 1,
+        ),
+      );
     }
     _lastGroupNameProxiesMap = groupNameProxiesMap;
     return items;
@@ -176,7 +188,6 @@ class _ProxiesListViewState extends State<ProxiesListView> {
           final items = _buildItems(
             ref,
             groupNames: state.groupNames,
-            currentUnfoldSet: state.currentUnfoldSet,
             columns: state.columns,
             type: state.proxyCardType,
             query: state.query,
@@ -192,7 +203,12 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                       child: FocusTraversalGroup(
                         policy: WidgetOrderTraversalPolicy(),
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.fromLTRB(
+                            16,
+                            16,
+                            16,
+                            MediaQuery.paddingOf(context).bottom + 16,
+                          ),
                           controller: _controller,
                           itemCount: items.length,
                           itemBuilder: (_, index) => items[index],
@@ -213,9 +229,13 @@ class ProxyGroupCard extends StatefulWidget {
     super.key,
     required this.group,
     required this.proxies,
+    required this.isFirst,
+    required this.isLast,
   });
   final Group group;
   final List<Widget> proxies;
+  final bool isFirst;
+  final bool isLast;
 
   @override
   State<ProxyGroupCard> createState() => _ProxyGroupCardState();
@@ -230,8 +250,6 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
   String get icon => widget.group.icon;
 
   String get groupName => widget.group.name;
-
-  bool get isExpand => _expansibleController.isExpanded;
 
   @override
   void dispose() {
@@ -327,14 +345,32 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
           // folded group's hidden proxies out of the traversal.
           child: Expansible(
             controller: _expansibleController,
+            animationStyle: const AnimationStyle(
+              duration: _proxyGroupExpansionDuration,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            ),
             headerBuilder: (context, animation) => GestureDetector(
               onTap: () => _toggleExpansion(unfoldSet),
-              child: Container(
+              child: AnimatedContainer(
+                duration: _proxyGroupExpansionDuration,
+                curve: Curves.easeOutCubic,
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerLow.opacity80,
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(widget.isFirst ? 24 : 6),
+                    topRight: Radius.circular(widget.isFirst ? 24 : 6),
+                    bottomLeft: Radius.circular(
+                      shouldExpand ? 6 : (widget.isLast ? 24 : 6),
+                    ),
+                    bottomRight: Radius.circular(
+                      shouldExpand ? 6 : (widget.isLast ? 24 : 6),
+                    ),
+                  ),
                 ),
-                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                margin: EdgeInsets.only(
+                  bottom: widget.isLast && !shouldExpand ? 0 : 2,
+                ),
                 padding: const EdgeInsets.symmetric(
                   vertical: 10.0,
                   horizontal: 16.0,
@@ -397,10 +433,17 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                         // the next/previous group in one press; left/right switches
                         // between ping and expand within the group.
                         IconButton(
+                          tooltip: appLocalizations.testAllDelay,
                           onPressed: _delayTest,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints.tightFor(
-                              width: 40, height: 40),
+                            width: 40,
+                            height: 40,
+                          ),
+                          style: IconButton.styleFrom(
+                            foregroundColor: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.72),
+                          ),
                           icon: const Icon(Icons.network_ping),
                         ),
                         const SizedBox(width: 6),
@@ -409,7 +452,12 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints.tightFor(
                               width: 40, height: 40),
-                          icon: CommonExpandIcon(expand: isExpand),
+                          icon: RotationTransition(
+                            turns: Tween<double>(begin: 0, end: 0.5).animate(
+                              animation,
+                            ),
+                            child: const Icon(Icons.expand_more),
+                          ),
                         ),
                       ],
                     ),
@@ -425,15 +473,21 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
               // skips whole groups. Drop the folded body from focus traversal.
               excluding: !shouldExpand,
               child: RepaintBoundary(
-                child: SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: -1.0,
-                  child: FadeTransition(
-                    opacity: animation,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Column(children: widget.proxies),
+                child: FadeTransition(
+                  opacity: animation,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: widget.isLast ? 0 : 2),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow.opacity80,
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(6),
+                        topRight: const Radius.circular(6),
+                        bottomLeft: Radius.circular(widget.isLast ? 24 : 6),
+                        bottomRight: Radius.circular(widget.isLast ? 24 : 6),
+                      ),
                     ),
+                    child: Column(children: widget.proxies),
                   ),
                 ),
               ),

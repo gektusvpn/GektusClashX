@@ -281,11 +281,11 @@ class ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
         controller: _controller,
         child: GridView.builder(
           controller: _controller,
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             top: 16,
             left: 16,
             right: 16,
-            bottom: 96,
+            bottom: MediaQuery.paddingOf(context).bottom + 16,
           ),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: columns,

@@ -117,11 +117,12 @@ class _ProfilesViewState extends State<ProfilesView> with PageMixin {
           return Align(
             alignment: Alignment.topCenter,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(
+              key: const PageStorageKey('profiles-scroll'),
+              padding: EdgeInsets.only(
                 left: 16,
                 right: 16,
                 top: 16,
-                bottom: 88,
+                bottom: MediaQuery.paddingOf(context).bottom + 88,
               ),
               child: Grid(
                 mainAxisSpacing: 16,

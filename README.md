@@ -294,6 +294,46 @@ gektusclashx-buytraffic: https://example.com/buy-traffic
 ```
 </details>
 
+<details>
+<summary><strong>gektusclashx-channel-url</strong></summary>
+
+Ссылка на канал сервиса. Если заголовок передан, на главной странице в блоке «Ссылки» появляется кнопка «Канал».
+
+```bash
+gektusclashx-channel-url: https://t.me/example
+```
+</details>
+
+<details>
+<summary><strong>gektusclashx-status-url</strong></summary>
+
+Ссылка на страницу состояния серверов. Если заголовок передан, на главной странице появляется кнопка «Статус серверов».
+
+```bash
+gektusclashx-status-url: https://status.example.com
+```
+</details>
+
+<details>
+<summary><strong>gektusclashx-terms-url</strong></summary>
+
+Ссылка на пользовательское соглашение. Если заголовок передан, на главной странице появляется соответствующая кнопка.
+
+```bash
+gektusclashx-terms-url: https://example.com/terms
+```
+</details>
+
+<details>
+<summary><strong>gektusclashx-privacy-url</strong></summary>
+
+Ссылка на политику конфиденциальности. Если заголовок передан, на главной странице появляется соответствующая кнопка. Если ни один из четырёх заголовков ссылок не задан, блок «Ссылки» скрыт целиком.
+
+```bash
+gektusclashx-privacy-url: https://example.com/privacy
+```
+</details>
+
 ### YAML-ключи в конфиге
 
 Эти ключи указываются не в HTTP-заголовках ответа, а прямо в YAML-конфиге подписки (в секции `proxy-groups`).

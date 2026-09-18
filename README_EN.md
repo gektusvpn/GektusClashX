@@ -218,6 +218,22 @@ Usage:
     gektusclashx-buytraffic: https://example.com/buy-traffic
 ```
 
+- `gektusclashx-channel-url`: Service channel URL. Adds a "Channel" action to the Links card on Home.
+- `gektusclashx-status-url`: Server status page URL. Adds a "Server status" action.
+- `gektusclashx-terms-url`: Terms of service URL. Adds a "Terms of service" action.
+- `gektusclashx-privacy-url`: Privacy policy URL. Adds a "Privacy policy" action.
+
+The Links card is hidden when none of these headers are present.
+
+Usage:
+
+```bash
+    gektusclashx-channel-url: https://t.me/example
+    gektusclashx-status-url: https://status.example.com
+    gektusclashx-terms-url: https://example.com/terms
+    gektusclashx-privacy-url: https://example.com/privacy
+```
+
 ### YAML keys in the config
 
 These keys are set directly in the subscription's YAML config (in the `proxy-groups` section), not in HTTP response headers.

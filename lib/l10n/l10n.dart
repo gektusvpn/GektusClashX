@@ -314,10 +314,10 @@ class AppLocalizations {
     return Intl.message('Resources', name: 'resources', desc: '', args: []);
   }
 
-  /// `External resource related info`
+  /// `Manage external resources`
   String get resourcesDesc {
     return Intl.message(
-      'External resource related info',
+      'Manage external resources',
       name: 'resourcesDesc',
       desc: '',
       args: [],
@@ -474,10 +474,10 @@ class AppLocalizations {
     return Intl.message('Theme', name: 'theme', desc: '', args: []);
   }
 
-  /// `Set dark mode,adjust the color`
+  /// `Set dark mode and adjust colors`
   String get themeDesc {
     return Intl.message(
-      'Set dark mode,adjust the color',
+      'Set dark mode and adjust colors',
       name: 'themeDesc',
       desc: '',
       args: [],
@@ -694,40 +694,40 @@ class AppLocalizations {
     );
   }
 
-  /// `AccessControl`
+  /// `Access control`
   String get accessControl {
     return Intl.message(
-      'AccessControl',
+      'Access control',
       name: 'accessControl',
       desc: '',
       args: [],
     );
   }
 
-  /// `Configure application access proxy`
+  /// `Choose which apps use the VPN`
   String get accessControlDesc {
     return Intl.message(
-      'Configure application access proxy',
+      'Choose which apps use the VPN',
       name: 'accessControlDesc',
       desc: '',
       args: [],
     );
   }
 
-  /// `Application Settings`
+  /// `App settings`
   String get application {
     return Intl.message(
-      'Application Settings',
+      'App settings',
       name: 'application',
       desc: '',
       args: [],
     );
   }
 
-  /// `Standard application settings`
+  /// `Startup, updates, and app behavior`
   String get applicationDesc {
     return Intl.message(
-      'Standard application settings',
+      'Startup, updates, and app behavior',
       name: 'applicationDesc',
       desc: '',
       args: [],
@@ -1864,10 +1864,10 @@ class AppLocalizations {
     return Intl.message('Connections', name: 'connections', desc: '', args: []);
   }
 
-  /// `View current connections data`
+  /// `View active connections and traffic`
   String get connectionsDesc {
     return Intl.message(
-      'View current connections data',
+      'View active connections and traffic',
       name: 'connectionsDesc',
       desc: '',
       args: [],
@@ -3114,20 +3114,20 @@ class AppLocalizations {
     return Intl.message('none', name: 'none', desc: '', args: []);
   }
 
-  /// `Basic configuration`
+  /// `Core configuration`
   String get basicConfig {
     return Intl.message(
-      'Basic configuration',
+      'Core configuration',
       name: 'basicConfig',
       desc: '',
       args: [],
     );
   }
 
-  /// `Modify the basic configuration globally`
+  /// `Override network, DNS, and core settings`
   String get basicConfigDesc {
     return Intl.message(
-      'Modify the basic configuration globally',
+      'Override network, DNS, and core settings',
       name: 'basicConfigDesc',
       desc: '',
       args: [],
@@ -3694,6 +3694,26 @@ class AppLocalizations {
     return Intl.message('Add Profile', name: 'addProfile', desc: '', args: []);
   }
 
+  /// `Start with a profile`
+  String get profileOnboardingTitle {
+    return Intl.message(
+      'Start with a profile',
+      name: 'profileOnboardingTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A profile contains the connection settings and locations needed to use the VPN.`
+  String get profileOnboardingMessage {
+    return Intl.message(
+      'A profile contains the connection settings and locations needed to use the VPN.',
+      name: 'profileOnboardingMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Traffic`
   String get traffic {
     return Intl.message('Traffic', name: 'traffic', desc: '', args: []);
@@ -3769,6 +3789,26 @@ class AppLocalizations {
     return Intl.message(
       'Lifetime Subscription',
       name: 'subscriptionEternal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Validity`
+  String get subscriptionValidity {
+    return Intl.message(
+      'Validity',
+      name: 'subscriptionValidity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lifetime`
+  String get subscriptionLifetime {
+    return Intl.message(
+      'Lifetime',
+      name: 'subscriptionLifetime',
       desc: '',
       args: [],
     );
@@ -3949,6 +3989,46 @@ class AppLocalizations {
     return Intl.message('Email', name: 'email', desc: '', args: []);
   }
 
+  /// `Links`
+  String get serviceLinks {
+    return Intl.message('Links', name: 'serviceLinks', desc: '', args: []);
+  }
+
+  /// `Channel`
+  String get serviceChannel {
+    return Intl.message('Channel', name: 'serviceChannel', desc: '', args: []);
+  }
+
+  /// `Server status`
+  String get serverStatus {
+    return Intl.message(
+      'Server status',
+      name: 'serverStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms of service`
+  String get termsOfService {
+    return Intl.message(
+      'Terms of service',
+      name: 'termsOfService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy policy`
+  String get privacyPolicy {
+    return Intl.message(
+      'Privacy policy',
+      name: 'privacyPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Thanks for contribution`
   String get thanks {
     return Intl.message(
@@ -4057,6 +4137,11 @@ class AppLocalizations {
   /// `Renew`
   String get renew {
     return Intl.message('Renew', name: 'renew', desc: '', args: []);
+  }
+
+  /// `Plans`
+  String get plans {
+    return Intl.message('Plans', name: 'plans', desc: '', args: []);
   }
 
   /// `Announcement`

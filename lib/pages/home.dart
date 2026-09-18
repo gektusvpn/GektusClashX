@@ -1,56 +1,96 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/l10n/l10n.dart';
 import 'package:gektusclashx/models/models.dart';
 import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/views/dashboard/widgets/hero_connect.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 typedef OnSelected = void Function(int index);
 
-String _navigationLabel(PageLabel label) => label == PageLabel.proxies
-    ? appLocalizations.locations
-    : Intl.message(label.name);
+String _navigationLabel(
+  PageLabel label,
+  AppLocalizations localizations,
+) =>
+    label == PageLabel.proxies
+        ? localizations.locations
+        : Intl.message(label.name);
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) => HomeBackScope(
-        child: Consumer(
-          builder: (_, ref, child) {
-            final state = ref.watch(homeStateProvider);
-            final viewMode = state.viewMode;
-            final navigationItems = state.navigationItems;
-            final pageLabel = state.pageLabel;
-            final index = navigationItems.lastIndexWhere(
-              (element) => element.label == pageLabel,
-            );
-            final currentIndex = index == -1 ? 0 : index;
-            final navigationBar = CommonNavigationBar(
-              viewMode: viewMode,
-              navigationItems: navigationItems,
-              currentIndex: currentIndex,
-            );
-            final bottomNavigationBar =
-                viewMode == ViewMode.mobile ? navigationBar : null;
-            final sideNavigationBar =
-                viewMode != ViewMode.mobile ? navigationBar : null;
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return HomeBackScope(
+      child: Consumer(
+        builder: (_, ref, child) {
+          final hasProfile = ref.watch(
+            startButtonSelectorStateProvider.select(
+              (state) => state.hasProfile,
+            ),
+          );
+          if (!hasProfile) {
             return CommonScaffold(
               key: globalState.homeScaffoldKey,
-              title: _navigationLabel(pageLabel),
-              sideNavigationBar: sideNavigationBar,
-              body: child!,
-              bottomNavigationBar: bottomNavigationBar,
+              showAppBar: false,
+              appBarStateId: PageLabel.dashboard,
+              body: const HeroConnect(),
             );
-          },
-          child: _HomePageView(),
-        ),
-      );
+          }
+
+          final state = ref.watch(homeStateProvider);
+          final viewMode = state.viewMode;
+          final navigationItems = state.navigationItems;
+          final pageLabel = state.pageLabel;
+          final index = navigationItems.lastIndexWhere(
+            (element) => element.label == pageLabel,
+          );
+          final currentIndex = index == -1 ? 0 : index;
+          final navigationBar = CommonNavigationBar(
+            viewMode: viewMode,
+            navigationItems: navigationItems,
+            currentIndex: currentIndex,
+          );
+          final showHomeActionArea = const {
+            PageLabel.dashboard,
+            PageLabel.proxies,
+            PageLabel.profiles,
+          }.contains(pageLabel);
+          final bottomNavigationBar = viewMode == ViewMode.mobile
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showHomeActionArea) const HomeActionArea(),
+                    navigationBar,
+                  ],
+                )
+              : showHomeActionArea
+                  ? const HomeActionArea()
+                  : null;
+          final sideNavigationBar =
+              viewMode != ViewMode.mobile ? navigationBar : null;
+          return CommonScaffold(
+            key: globalState.homeScaffoldKey,
+            title: _navigationLabel(pageLabel, localizations),
+            appBarStateId: pageLabel,
+            sideNavigationBar: sideNavigationBar,
+            body: child!,
+            bottomNavigationBar: bottomNavigationBar,
+            extendBody: showHomeActionArea,
+            enableAppBarScrolledUnderEffect: true,
+          );
+        },
+        child: const _HomePageView(),
+      ),
+    );
+  }
 }
 
 class _HomePageView extends ConsumerStatefulWidget {
@@ -169,6 +209,7 @@ class CommonNavigationBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final localizations = AppLocalizations.of(context);
     if (viewMode == ViewMode.mobile) {
       return NavigationBarTheme(
         data: _NavigationBarDefaultsM3(context),
@@ -179,7 +220,7 @@ class CommonNavigationBar extends ConsumerWidget {
                 .map(
                   (e) => NavigationDestination(
                     icon: e.icon,
-                    label: _navigationLabel(e.label),
+                    label: _navigationLabel(e.label, localizations),
                   ),
                 )
                 .toList(),
@@ -267,7 +308,7 @@ class CommonNavigationBar extends ConsumerWidget {
                               (e) => NavigationRailDestination(
                                 icon: e.icon,
                                 label: Text(
-                                  _navigationLabel(e.label),
+                                  _navigationLabel(e.label, localizations),
                                 ),
                               ),
                             )

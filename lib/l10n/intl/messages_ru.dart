@@ -43,7 +43,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "about": MessageLookupByLibrary.simpleMessage("О программе"),
+        "about": MessageLookupByLibrary.simpleMessage("О приложении"),
         "accessControl":
             MessageLookupByLibrary.simpleMessage("Контроль доступа"),
         "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
@@ -108,11 +108,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "appDesc": MessageLookupByLibrary.simpleMessage(
           "Обработка настроек, связанных с приложением",
         ),
-        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
-          "Доступна новая версия:",
-        ),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "В выпуске GitHub не найден APK для этого устройства.",
+        ),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
+          "Доступна новая версия:",
         ),
         "appUpdateDownloadFailed": MessageLookupByLibrary.simpleMessage(
           "Не удалось загрузить обновление.",
@@ -488,6 +488,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage(
           "Введите корректную комбинацию клавиш",
         ),
+        "install": MessageLookupByLibrary.simpleMessage("Установить"),
         "intelligentSelected": MessageLookupByLibrary.simpleMessage(
           "Интеллектуальный выбор",
         ),
@@ -669,6 +670,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Пароль"),
         "paste": MessageLookupByLibrary.simpleMessage("Вставить"),
         "pasteFromClipboard": MessageLookupByLibrary.simpleMessage("Вставить"),
+        "plans": MessageLookupByLibrary.simpleMessage("Тарифы"),
         "pleaseBindWebDAV": MessageLookupByLibrary.simpleMessage(
           "Пожалуйста, привяжите WebDAV",
         ),
@@ -695,6 +697,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "pressKeyboard":
             MessageLookupByLibrary.simpleMessage("Нажмите клавишу"),
         "preview": MessageLookupByLibrary.simpleMessage("Предпросмотр"),
+        "privacyPolicy": MessageLookupByLibrary.simpleMessage(
+          "Политика конфиденциальности",
+        ),
         "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
         "profileAutoUpdateIntervalInvalidValidationDesc":
             MessageLookupByLibrary.simpleMessage(
@@ -709,6 +714,12 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "profileNameNullValidationDesc": MessageLookupByLibrary.simpleMessage(
           "Пожалуйста, введите имя профиля",
+        ),
+        "profileOnboardingMessage": MessageLookupByLibrary.simpleMessage(
+          "Профиль содержит настройки подключения и доступные локации для работы VPN.",
+        ),
+        "profileOnboardingTitle": MessageLookupByLibrary.simpleMessage(
+          "Начните с профиля",
         ),
         "profileParseErrorDesc": MessageLookupByLibrary.simpleMessage(
           "Ошибка парсинга профиля",
@@ -806,6 +817,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "restart": MessageLookupByLibrary.simpleMessage("Перезапустить"),
         "restartCore":
             MessageLookupByLibrary.simpleMessage("Перезапустить ядро"),
+        "retry": MessageLookupByLibrary.simpleMessage("Повторить"),
         "routeAddress":
             MessageLookupByLibrary.simpleMessage("Адрес маршрутизации"),
         "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
@@ -850,6 +862,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "sentSuccessfullyMessage": MessageLookupByLibrary.simpleMessage(
           "Отправлено успешно",
         ),
+        "serverStatus": MessageLookupByLibrary.simpleMessage("Статус серверов"),
+        "serviceChannel": MessageLookupByLibrary.simpleMessage("Канал"),
+        "serviceLinks": MessageLookupByLibrary.simpleMessage("Ссылки"),
         "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
         "settingsSendDeviceDataSubtitle": MessageLookupByLibrary.simpleMessage(
           "Отправлять идентификатор устройства, версию приложения и название устройства на сервер прокси-провайдера",
@@ -857,6 +872,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsSendDeviceDataTitle": MessageLookupByLibrary.simpleMessage(
           "Отправлять HWID",
         ),
+        "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
         "show": MessageLookupByLibrary.simpleMessage("Показать"),
         "shrink": MessageLookupByLibrary.simpleMessage("Сжать"),
         "silentLaunch": MessageLookupByLibrary.simpleMessage("Скрытый запуск"),
@@ -900,8 +916,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpiresToday": MessageLookupByLibrary.simpleMessage(
           "Ваша подписка истекает сегодня",
         ),
+        "subscriptionLifetime":
+            MessageLookupByLibrary.simpleMessage("Бессрочно"),
         "subscriptionUnlimited": MessageLookupByLibrary.simpleMessage(
           "Бессрочная подписка",
+        ),
+        "subscriptionValidity": MessageLookupByLibrary.simpleMessage(
+          "Срок действия",
         ),
         "successTitle": MessageLookupByLibrary.simpleMessage("Успешно"),
         "support": MessageLookupByLibrary.simpleMessage("Поддержка"),
@@ -929,6 +950,9 @@ class MessageLookup extends MessageLookupByLibrary {
           "Использовать параллельные TCP-соединения",
         ),
         "terabyteUnit": MessageLookupByLibrary.simpleMessage("ТБ"),
+        "termsOfService": MessageLookupByLibrary.simpleMessage(
+          "Пользовательское соглашение",
+        ),
         "testAllDelay":
             MessageLookupByLibrary.simpleMessage("Проверить задержку"),
         "testUrl": MessageLookupByLibrary.simpleMessage("Тест URL"),
@@ -976,9 +1000,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
           "Не учитывать дополнительные задержки (например, рукопожатие)",
         ),
-        "install": MessageLookupByLibrary.simpleMessage("Установить"),
-        "retry": MessageLookupByLibrary.simpleMessage("Повторить"),
-        "share": MessageLookupByLibrary.simpleMessage("Поделиться"),
         "unknown": MessageLookupByLibrary.simpleMessage("Неизвестно"),
         "unnamed": MessageLookupByLibrary.simpleMessage("Без имени"),
         "untilDate": MessageLookupByLibrary.simpleMessage("до"),

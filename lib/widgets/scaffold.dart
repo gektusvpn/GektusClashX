@@ -28,6 +28,10 @@ class CommonScaffold extends ConsumerStatefulWidget {
     this.appBarEditState,
     this.floatingActionButton,
     this.disableBackground = false,
+    this.extendBody = false,
+    this.showAppBar = true,
+    this.appBarStateId,
+    this.enableAppBarScrolledUnderEffect = false,
   });
 
   CommonScaffold.open({
@@ -64,6 +68,10 @@ class CommonScaffold extends ConsumerStatefulWidget {
   final AppBarEditState? appBarEditState;
   final FloatingActionButton? floatingActionButton;
   final bool disableBackground;
+  final bool extendBody;
+  final bool showAppBar;
+  final Object? appBarStateId;
+  final bool enableAppBarScrolledUnderEffect;
 
   @override
   ConsumerState<CommonScaffold> createState() => CommonScaffoldState();
@@ -74,6 +82,8 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
   final ValueNotifier<Widget?> _floatingActionButton = ValueNotifier(null);
   final ValueNotifier<List<String>> _keywordsNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _loading = ValueNotifier(false);
+  final ValueNotifier<bool> _appBarScrolledUnder = ValueNotifier(false);
+  final Map<Object?, bool> _appBarScrolledUnderByPage = {};
 
   final _textController = TextEditingController();
 
@@ -211,23 +221,53 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
     _floatingActionButton.dispose();
     _keywordsNotifier.dispose();
     _loading.dispose();
+    _appBarScrolledUnder.dispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(CommonScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.title != widget.title) {
+    final hasAppBarStateId =
+        oldWidget.appBarStateId != null || widget.appBarStateId != null;
+    final didChangePage = hasAppBarStateId
+        ? oldWidget.appBarStateId != widget.appBarStateId
+        : oldWidget.title != widget.title;
+    if (didChangePage) {
       _appBarState.value = const AppBarState();
       _floatingActionButton.value = null;
       _textController.text = "";
       _keywordsNotifier.value = [];
       _onKeywordsUpdate = null;
+      _appBarScrolledUnder.value = widget.enableAppBarScrolledUnderEffect
+          ? _appBarScrolledUnderByPage[widget.appBarStateId] ?? false
+          : false;
     } else if (oldWidget.appBarEditState != widget.appBarEditState) {
       _appBarState.value = _appBarState.value.copyWith(
         editState: widget.appBarEditState,
       );
     }
+    if (!widget.enableAppBarScrolledUnderEffect && _appBarScrolledUnder.value) {
+      _appBarScrolledUnder.value = false;
+    }
+  }
+
+  bool _handleBodyScrollNotification(ScrollNotification notification) {
+    if (!widget.enableAppBarScrolledUnderEffect ||
+        notification.metrics.axis != Axis.vertical) {
+      return false;
+    }
+
+    final isScrolledUnder = switch (notification.metrics.axisDirection) {
+      AxisDirection.up => notification.metrics.extentAfter > 0,
+      AxisDirection.down => notification.metrics.extentBefore > 0,
+      AxisDirection.left || AxisDirection.right => false,
+    };
+    _appBarScrolledUnderByPage[widget.appBarStateId] = isScrolledUnder;
+    if (_appBarScrolledUnder.value != isScrolledUnder) {
+      _appBarScrolledUnder.value = isScrolledUnder;
+    }
+    return false;
   }
 
   void addKeyword(String keyword) {
@@ -373,23 +413,44 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
           alignment: Alignment.bottomCenter,
           children: [
             widget.appBar ??
-                ValueListenableBuilder<AppBarState>(
-                  valueListenable: _appBarState,
-                  builder: (_, state, __) => _buildAppBarWrap(
-                    AppBar(
-                      backgroundColor:
-                          isTransparent ? Colors.transparent : null,
-                      elevation: isTransparent ? 0 : null,
-                      centerTitle: widget.centerTitle ?? false,
-                      automaticallyImplyLeading:
-                          widget.automaticallyImplyLeading,
-                      leading: _buildLeading(),
-                      title: _buildTitle(state.searchState),
-                      actions: _buildActions(
-                        state.searchState,
-                        state.actions.isNotEmpty
-                            ? state.actions
-                            : widget.actions ?? [],
+                ValueListenableBuilder<bool>(
+                  valueListenable: _appBarScrolledUnder,
+                  builder: (_, isScrolledUnder, __) =>
+                      ValueListenableBuilder<AppBarState>(
+                    valueListenable: _appBarState,
+                    builder: (_, state, __) => _buildAppBarWrap(
+                      AppBar(
+                        backgroundColor: widget.enableAppBarScrolledUnderEffect
+                            ? isScrolledUnder
+                                ? context.colorScheme.surfaceContainer
+                                    .withValues(alpha: 0.96)
+                                : isTransparent
+                                    ? Colors.transparent
+                                    : context.colorScheme.surface
+                            : isTransparent
+                                ? Colors.transparent
+                                : null,
+                        elevation: widget.enableAppBarScrolledUnderEffect ||
+                                isTransparent
+                            ? 0
+                            : null,
+                        scrolledUnderElevation:
+                            widget.enableAppBarScrolledUnderEffect ? 0 : null,
+                        surfaceTintColor: widget.enableAppBarScrolledUnderEffect
+                            ? Colors.transparent
+                            : null,
+                        animateColor: true,
+                        centerTitle: widget.centerTitle ?? false,
+                        automaticallyImplyLeading:
+                            widget.automaticallyImplyLeading,
+                        leading: _buildLeading(),
+                        title: _buildTitle(state.searchState),
+                        actions: _buildActions(
+                          state.searchState,
+                          state.actions.isNotEmpty
+                              ? state.actions
+                              : widget.actions ?? [],
+                        ),
                       ),
                     ),
                   ),
@@ -455,11 +516,14 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    assert(widget.appBar != null || widget.title != null);
+    assert(
+      !widget.showAppBar || widget.appBar != null || widget.title != null,
+    );
     final backgroundUrl =
         widget.disableBackground ? null : ref.watch(backgroundUrlProvider);
 
     final body = SafeArea(
+      bottom: !widget.extendBody,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -497,15 +561,38 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
             },
           ),
           Expanded(
-            child: widget.body,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: _handleBodyScrollNotification,
+              child: widget.body,
+            ),
           ),
         ],
       ),
     );
 
+    final scaffoldBody = widget.showAppBar
+        ? body
+        : Stack(
+            children: [
+              body,
+              ValueListenableBuilder(
+                valueListenable: _loading,
+                builder: (_, value, __) => value == true
+                    ? const Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: LinearProgressIndicator(),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          );
+
     final scaffold = Scaffold(
-      appBar: _buildAppBar(),
-      body: body,
+      appBar: widget.showAppBar ? _buildAppBar() : null,
+      body: scaffoldBody,
+      extendBody: widget.extendBody,
       resizeToAvoidBottomInset: true,
       backgroundColor:
           backgroundUrl != null ? Colors.transparent : widget.backgroundColor,

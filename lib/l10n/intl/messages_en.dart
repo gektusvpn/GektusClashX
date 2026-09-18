@@ -45,12 +45,12 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("About"),
-        "accessControl": MessageLookupByLibrary.simpleMessage("AccessControl"),
+        "accessControl": MessageLookupByLibrary.simpleMessage("Access control"),
         "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
           "Only allow selected app to enter VPN",
         ),
         "accessControlDesc": MessageLookupByLibrary.simpleMessage(
-          "Configure application access proxy",
+          "Choose which apps use the VPN",
         ),
         "accessControlNotAllowDesc": MessageLookupByLibrary.simpleMessage(
           "The selected application will be excluded from VPN",
@@ -107,11 +107,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "appDesc": MessageLookupByLibrary.simpleMessage(
           "Processing app related settings",
         ),
-        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
-          "A new version is available:",
-        ),
         "appUpdateAssetNotFound": MessageLookupByLibrary.simpleMessage(
           "No APK for this device was found in the GitHub release.",
+        ),
+        "appUpdateAvailable": MessageLookupByLibrary.simpleMessage(
+          "A new version is available:",
         ),
         "appUpdateDownloadFailed": MessageLookupByLibrary.simpleMessage(
           "The update could not be downloaded.",
@@ -132,10 +132,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "The update integrity could not be verified.",
         ),
-        "application":
-            MessageLookupByLibrary.simpleMessage("Application Settings"),
+        "application": MessageLookupByLibrary.simpleMessage("App settings"),
         "applicationDesc": MessageLookupByLibrary.simpleMessage(
-          "Standard application settings",
+          "Startup, updates, and app behavior",
         ),
         "auto": MessageLookupByLibrary.simpleMessage("Auto"),
         "autoCheckUpdate": MessageLookupByLibrary.simpleMessage(
@@ -178,9 +177,9 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "backupSuccess": MessageLookupByLibrary.simpleMessage("Backup success"),
         "basicConfig":
-            MessageLookupByLibrary.simpleMessage("Basic configuration"),
+            MessageLookupByLibrary.simpleMessage("Core configuration"),
         "basicConfigDesc": MessageLookupByLibrary.simpleMessage(
-          "Modify the basic configuration globally",
+          "Override network, DNS, and core settings",
         ),
         "batteryOptimization": MessageLookupByLibrary.simpleMessage(
           "Battery optimization",
@@ -240,7 +239,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connections": MessageLookupByLibrary.simpleMessage("Connections"),
         "connectionsActive": MessageLookupByLibrary.simpleMessage("Active"),
         "connectionsDesc": MessageLookupByLibrary.simpleMessage(
-          "View current connections data",
+          "View active connections and traffic",
         ),
         "connectionsLog": MessageLookupByLibrary.simpleMessage("Log"),
         "connectivity": MessageLookupByLibrary.simpleMessage("Connectivity："),
@@ -462,6 +461,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage(
           "Please enter the correct hotkey",
         ),
+        "install": MessageLookupByLibrary.simpleMessage("Install"),
         "intelligentSelected": MessageLookupByLibrary.simpleMessage(
           "Intelligent selection",
         ),
@@ -630,6 +630,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "paste": MessageLookupByLibrary.simpleMessage("Paste"),
         "pasteFromClipboard": MessageLookupByLibrary.simpleMessage("Paste"),
+        "plans": MessageLookupByLibrary.simpleMessage("Plans"),
         "pleaseBindWebDAV": MessageLookupByLibrary.simpleMessage(
           "Please bind WebDAV",
         ),
@@ -657,6 +658,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Please press the keyboard.",
         ),
         "preview": MessageLookupByLibrary.simpleMessage("Preview"),
+        "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "profileAutoUpdateIntervalInvalidValidationDesc":
             MessageLookupByLibrary.simpleMessage(
@@ -671,6 +673,12 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "profileNameNullValidationDesc": MessageLookupByLibrary.simpleMessage(
           "Please input the profile name",
+        ),
+        "profileOnboardingMessage": MessageLookupByLibrary.simpleMessage(
+          "A profile contains the connection settings and locations needed to use the VPN.",
+        ),
+        "profileOnboardingTitle": MessageLookupByLibrary.simpleMessage(
+          "Start with a profile",
         ),
         "profileParseErrorDesc": MessageLookupByLibrary.simpleMessage(
           "profile parse error",
@@ -752,7 +760,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetTip": MessageLookupByLibrary.simpleMessage("Make sure to reset"),
         "resources": MessageLookupByLibrary.simpleMessage("Resources"),
         "resourcesDesc": MessageLookupByLibrary.simpleMessage(
-          "External resource related info",
+          "Manage external resources",
         ),
         "respectRules": MessageLookupByLibrary.simpleMessage("Respect rules"),
         "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
@@ -760,6 +768,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "restart": MessageLookupByLibrary.simpleMessage("Restart"),
         "restartCore": MessageLookupByLibrary.simpleMessage("Restart core"),
+        "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "routeAddress": MessageLookupByLibrary.simpleMessage("Route address"),
         "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
           "Config listen route address",
@@ -798,6 +807,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "sentSuccessfullyMessage": MessageLookupByLibrary.simpleMessage(
           "Sent successfully",
         ),
+        "serverStatus": MessageLookupByLibrary.simpleMessage("Server status"),
+        "serviceChannel": MessageLookupByLibrary.simpleMessage("Channel"),
+        "serviceLinks": MessageLookupByLibrary.simpleMessage("Links"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsSendDeviceDataSubtitle": MessageLookupByLibrary.simpleMessage(
           "Send device identifier, app version and device name to proxy provider server",
@@ -805,6 +817,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsSendDeviceDataTitle": MessageLookupByLibrary.simpleMessage(
           "Send HWID",
         ),
+        "share": MessageLookupByLibrary.simpleMessage("Share"),
         "show": MessageLookupByLibrary.simpleMessage("Show"),
         "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
         "silentLaunch": MessageLookupByLibrary.simpleMessage("SilentLaunch"),
@@ -848,9 +861,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpiresToday": MessageLookupByLibrary.simpleMessage(
           "Your subscription expires today",
         ),
+        "subscriptionLifetime":
+            MessageLookupByLibrary.simpleMessage("Lifetime"),
         "subscriptionUnlimited": MessageLookupByLibrary.simpleMessage(
           "Lifetime Subscription",
         ),
+        "subscriptionValidity":
+            MessageLookupByLibrary.simpleMessage("Validity"),
         "successTitle": MessageLookupByLibrary.simpleMessage("Success"),
         "support": MessageLookupByLibrary.simpleMessage("Support"),
         "supportMessage": MessageLookupByLibrary.simpleMessage(
@@ -874,6 +891,8 @@ class MessageLookup extends MessageLookupByLibrary {
           "Enabling it will allow TCP concurrency",
         ),
         "terabyteUnit": MessageLookupByLibrary.simpleMessage("TB"),
+        "termsOfService":
+            MessageLookupByLibrary.simpleMessage("Terms of service"),
         "testAllDelay": MessageLookupByLibrary.simpleMessage("Test latency"),
         "testUrl": MessageLookupByLibrary.simpleMessage("Test url"),
         "textScale": MessageLookupByLibrary.simpleMessage("Text Scaling"),
@@ -882,7 +901,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "theme": MessageLookupByLibrary.simpleMessage("Theme"),
         "themeColor": MessageLookupByLibrary.simpleMessage("Theme color"),
         "themeDesc": MessageLookupByLibrary.simpleMessage(
-          "Set dark mode,adjust the color",
+          "Set dark mode and adjust colors",
         ),
         "themeMode": MessageLookupByLibrary.simpleMessage("Theme mode"),
         "threeColumns": MessageLookupByLibrary.simpleMessage("Three columns"),
@@ -915,9 +934,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
           "Remove extra delays such as handshaking",
         ),
-        "install": MessageLookupByLibrary.simpleMessage("Install"),
-        "retry": MessageLookupByLibrary.simpleMessage("Retry"),
-        "share": MessageLookupByLibrary.simpleMessage("Share"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "unnamed": MessageLookupByLibrary.simpleMessage("Unnamed"),
         "untilDate": MessageLookupByLibrary.simpleMessage("until"),

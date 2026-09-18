@@ -38,6 +38,7 @@ export 'render.dart';
 export 'resumable_download.dart';
 export 'request.dart';
 export 'scroll.dart';
+export 'service_logo_cache.dart';
 export 'statusbar.dart';
 export 'string.dart';
 export 'subscription_fallback.dart';

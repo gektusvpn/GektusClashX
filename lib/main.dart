@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/plugins/app.dart';
 import 'package:gektusclashx/plugins/tile.dart';
 import 'package:gektusclashx/plugins/vpn.dart';
 import 'package:gektusclashx/state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'application.dart';
 import 'clash/core.dart';
@@ -37,6 +37,12 @@ Future<void> main(List<String> args) async {
   final version = await system.version;
   await clashCore.preload();
   await globalState.initApp(version);
+  await serviceLogoCache.preload(
+    decodeServiceLogoUrl(
+      globalState
+          .config.currentProfile?.providerHeaders['gektusclashx-servicelogo'],
+    ),
+  );
   await android?.init();
   await window?.init(version);
 
@@ -132,7 +138,7 @@ String _buildNotificationTitle(Profile? profile) {
   if (profile == null) return 'GektusClashX';
   final profileName = profile.label ?? profile.id;
 
-  String serviceName = '';
+  var serviceName = '';
   final svc = profile.providerHeaders['gektusclashx-servicename'];
   if (svc != null && svc.isNotEmpty) {
     try {
