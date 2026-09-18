@@ -1,3 +1,27 @@
+## v0.5.4
+
+- Completed the Material 3 Expressive refresh across Home, Locations, Profiles,
+  profile setup, support actions, and Settings, including animated location
+  expansion and scrolled-under app bars.
+
+- Added provider-configurable service branding and a conditional Links card for
+  the channel, server status, terms of service, and privacy policy, with logo
+  caching to prevent startup flicker.
+
+- Redesigned the empty-profile experience and fixed it remaining visible after
+  a profile is added. Profile import methods now prioritize URL, QR code, then
+  file.
+
+- Improved application updates with a clearer fixed-height status card,
+  resumable Android APK downloads, automatic installer-file cleanup, and update
+  availability before a profile is configured.
+
+- Fixed Home actions and provider links after changing the application language
+  without restarting or switching tabs.
+
+- Replaced the in-app Linux administrator-password prompt with the native
+  Polkit authentication dialog and added the required package dependencies.
+
 ## v0.5.3
 
 - Added an expressive Home identity with a slanted provider logo, a responsive
