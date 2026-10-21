@@ -1,4 +1,8 @@
 {
+  "appUpdatePromptTitle": "Update available",
+  "appUpdatePromptDescription": "You can keep using the app while the update downloads. Download progress and installation will appear in the update card on the home screen.",
+  "appUpdatePromptDesktopDescription": "Download the latest version of the app. The update button opens the installer download in your browser.",
+  "appUpdateLater": "Later",
   "includeInVpn": "Include in VPN",
   "excludeFromVpn": "Exclude from VPN",
   "whitelistModeDesc": "Only the selected apps are routed through the VPN; all others connect directly.",

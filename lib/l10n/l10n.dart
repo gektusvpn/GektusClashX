@@ -54,6 +54,41 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
+  /// `Update available`
+  String get appUpdatePromptTitle {
+    return Intl.message(
+      'Update available',
+      name: 'appUpdatePromptTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can keep using the app while the update downloads. Download progress and installation will appear in the update card on the home screen.`
+  String get appUpdatePromptDescription {
+    return Intl.message(
+      'You can keep using the app while the update downloads. Download progress and installation will appear in the update card on the home screen.',
+      name: 'appUpdatePromptDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download the latest version of the app. The update button opens the installer download in your browser.`
+  String get appUpdatePromptDesktopDescription {
+    return Intl.message(
+      'Download the latest version of the app. The update button opens the installer download in your browser.',
+      name: 'appUpdatePromptDesktopDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Later`
+  String get appUpdateLater {
+    return Intl.message('Later', name: 'appUpdateLater', desc: '', args: []);
+  }
+
   /// `Include in VPN`
   String get includeInVpn {
     return Intl.message(

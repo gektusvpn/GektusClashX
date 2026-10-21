@@ -1,4 +1,8 @@
 {
+  "appUpdatePromptTitle": "アップデートがあります",
+  "appUpdatePromptDescription": "ダウンロード中もアプリを使用できます。進行状況とインストールはホーム画面の更新カードに表示されます。",
+  "appUpdatePromptDesktopDescription": "アプリの最新バージョンをダウンロードしてください。更新ボタンを押すと、ブラウザーでインストーラーのダウンロードが開きます。",
+  "appUpdateLater": "後で",
   "rule": "ルールに従って",
   "global": "グローバル",
   "direct": "ダイレクト",

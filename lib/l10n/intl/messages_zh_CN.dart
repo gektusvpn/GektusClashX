@@ -101,6 +101,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
           "无法在当前版本上安装此更新。请重新安装一次应用，之后即可正常更新。",
         ),
+        "appUpdateLater": MessageLookupByLibrary.simpleMessage("稍后"),
+        "appUpdatePromptDescription": MessageLookupByLibrary.simpleMessage(
+          "下载更新时，您可以继续使用应用。下载进度和安装操作将显示在主页的更新卡片中。",
+        ),
+        "appUpdatePromptDesktopDescription":
+            MessageLookupByLibrary.simpleMessage(
+          "下载应用的最新版本。点击更新按钮将在浏览器中打开安装程序下载。",
+        ),
+        "appUpdatePromptTitle": MessageLookupByLibrary.simpleMessage("有可用更新"),
         "appUpdateReady": MessageLookupByLibrary.simpleMessage("更新已准备好安装。"),
         "appUpdateVerificationFailed": MessageLookupByLibrary.simpleMessage(
           "无法验证更新的完整性。",

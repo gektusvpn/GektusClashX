@@ -1,4 +1,8 @@
 {
+  "appUpdatePromptTitle": "有可用更新",
+  "appUpdatePromptDescription": "下载更新时，您可以继续使用应用。下载进度和安装操作将显示在主页的更新卡片中。",
+  "appUpdatePromptDesktopDescription": "下载应用的最新版本。点击更新按钮将在浏览器中打开安装程序下载。",
+  "appUpdateLater": "稍后",
   "rule": "按规则",
   "global": "全局",
   "direct": "直连",

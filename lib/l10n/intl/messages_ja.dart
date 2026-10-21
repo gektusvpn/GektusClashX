@@ -111,6 +111,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
           "現在のビルドにはこのアップデートを上書きインストールできません。一度アプリを再インストールすると、以降は通常どおり更新できます。",
         ),
+        "appUpdateLater": MessageLookupByLibrary.simpleMessage("後で"),
+        "appUpdatePromptDescription": MessageLookupByLibrary.simpleMessage(
+          "ダウンロード中もアプリを使用できます。進行状況とインストールはホーム画面の更新カードに表示されます。",
+        ),
+        "appUpdatePromptDesktopDescription":
+            MessageLookupByLibrary.simpleMessage(
+          "アプリの最新バージョンをダウンロードしてください。更新ボタンを押すと、ブラウザーでインストーラーのダウンロードが開きます。",
+        ),
+        "appUpdatePromptTitle":
+            MessageLookupByLibrary.simpleMessage("アップデートがあります"),
         "appUpdateReady": MessageLookupByLibrary.simpleMessage(
           "アップデートをインストールできます。",
         ),

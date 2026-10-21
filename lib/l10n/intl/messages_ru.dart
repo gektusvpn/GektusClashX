@@ -129,6 +129,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
           "Это обновление нельзя установить поверх текущей сборки. Один раз переустановите приложение — следующие обновления будут устанавливаться обычно.",
         ),
+        "appUpdateLater": MessageLookupByLibrary.simpleMessage("Позже"),
+        "appUpdatePromptDescription": MessageLookupByLibrary.simpleMessage(
+          "Вы можете пользоваться приложением во время загрузки. Ход загрузки и установка будут доступны в блоке обновления на главной странице.",
+        ),
+        "appUpdatePromptDesktopDescription":
+            MessageLookupByLibrary.simpleMessage(
+          "Скачайте новую версию приложения. Кнопка обновления откроет загрузку установочного файла в браузере.",
+        ),
+        "appUpdatePromptTitle": MessageLookupByLibrary.simpleMessage(
+          "Доступно обновление",
+        ),
         "appUpdateReady": MessageLookupByLibrary.simpleMessage(
           "Обновление готово к установке.",
         ),

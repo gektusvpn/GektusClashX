@@ -128,6 +128,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "appUpdateInvalidPackage": MessageLookupByLibrary.simpleMessage(
           "This update cannot be installed over the current build. Reinstall the app once; future updates will then install normally.",
         ),
+        "appUpdateLater": MessageLookupByLibrary.simpleMessage("Later"),
+        "appUpdatePromptDescription": MessageLookupByLibrary.simpleMessage(
+          "You can keep using the app while the update downloads. Download progress and installation will appear in the update card on the home screen.",
+        ),
+        "appUpdatePromptDesktopDescription":
+            MessageLookupByLibrary.simpleMessage(
+          "Download the latest version of the app. The update button opens the installer download in your browser.",
+        ),
+        "appUpdatePromptTitle": MessageLookupByLibrary.simpleMessage(
+          "Update available",
+        ),
         "appUpdateReady": MessageLookupByLibrary.simpleMessage(
           "The update is ready to install.",
         ),
