@@ -1,4 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/models/models.dart';
@@ -6,9 +9,6 @@ import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/widgets/fade_box.dart';
 import 'package:gektusclashx/widgets/pop_scope.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'chip.dart';
 
@@ -252,22 +252,34 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
     }
   }
 
-  bool _handleBodyScrollNotification(ScrollNotification notification) {
+  bool _updateAppBarScrolledUnder(ScrollMetrics metrics) {
     if (!widget.enableAppBarScrolledUnderEffect ||
-        notification.metrics.axis != Axis.vertical) {
+        metrics.axis != Axis.vertical) {
       return false;
     }
 
-    final isScrolledUnder = switch (notification.metrics.axisDirection) {
-      AxisDirection.up => notification.metrics.extentAfter > 0,
-      AxisDirection.down => notification.metrics.extentBefore > 0,
-      AxisDirection.left || AxisDirection.right => false,
-    };
+    final isScrollable = metrics.maxScrollExtent > metrics.minScrollExtent;
+    final isScrolledUnder = isScrollable &&
+        switch (metrics.axisDirection) {
+          AxisDirection.up => metrics.extentAfter > 0,
+          AxisDirection.down => metrics.extentBefore > 0,
+          AxisDirection.left || AxisDirection.right => false,
+        };
     _appBarScrolledUnderByPage[widget.appBarStateId] = isScrolledUnder;
     if (_appBarScrolledUnder.value != isScrolledUnder) {
       _appBarScrolledUnder.value = isScrolledUnder;
     }
     return false;
+  }
+
+  bool _handleBodyScrollNotification(ScrollNotification notification) {
+    return _updateAppBarScrolledUnder(notification.metrics);
+  }
+
+  bool _handleBodyScrollMetricsNotification(
+    ScrollMetricsNotification notification,
+  ) {
+    return _updateAppBarScrolledUnder(notification.metrics);
   }
 
   void addKeyword(String keyword) {
@@ -386,6 +398,7 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
     final backgroundUrl =
         widget.disableBackground ? null : ref.watch(backgroundUrlProvider);
     final isTransparent = backgroundUrl != null;
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -420,6 +433,10 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
                     valueListenable: _appBarState,
                     builder: (_, state, __) => _buildAppBarWrap(
                       AppBar(
+                        toolbarHeight: isAndroidTV ? 72 : null,
+                        actionsPadding: isAndroidTV
+                            ? const EdgeInsetsDirectional.only(end: 32)
+                            : null,
                         backgroundColor: widget.enableAppBarScrolledUnderEffect
                             ? isScrolledUnder
                                 ? context.colorScheme.surfaceContainer
@@ -441,9 +458,10 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
                             : null,
                         animateColor: true,
                         centerTitle: widget.centerTitle ?? false,
-                        automaticallyImplyLeading:
-                            widget.automaticallyImplyLeading,
-                        leading: _buildLeading(),
+                        automaticallyImplyLeading: isAndroidTV
+                            ? false
+                            : widget.automaticallyImplyLeading,
+                        leading: isAndroidTV ? null : _buildLeading(),
                         title: _buildTitle(state.searchState),
                         actions: _buildActions(
                           state.searchState,
@@ -521,6 +539,17 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
     );
     final backgroundUrl =
         widget.disableBackground ? null : ref.watch(backgroundUrlProvider);
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+    final tvContentPadding = isAndroidTV
+        ? EdgeInsets.only(
+            left: _sideNavigationBar == null ? 32 : 0,
+            right: 32,
+          )
+        : EdgeInsets.zero;
+    final content = Padding(
+      padding: tvContentPadding,
+      child: widget.body,
+    );
 
     final body = SafeArea(
       bottom: !widget.extendBody,
@@ -561,9 +590,12 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
             },
           ),
           Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: _handleBodyScrollNotification,
-              child: widget.body,
+            child: NotificationListener<ScrollMetricsNotification>(
+              onNotification: _handleBodyScrollMetricsNotification,
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _handleBodyScrollNotification,
+                child: content,
+              ),
             ),
           ),
         ],
@@ -596,17 +628,22 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
       resizeToAvoidBottomInset: true,
       backgroundColor:
           backgroundUrl != null ? Colors.transparent : widget.backgroundColor,
-      floatingActionButton: widget.floatingActionButton ??
-          ValueListenableBuilder<Widget?>(
-            valueListenable: _floatingActionButton,
-            builder: (_, value, __) => IntrinsicWidth(
-              child: IntrinsicHeight(
-                child: FadeScaleBox(
-                  child: value ?? const SizedBox(),
+      floatingActionButton: Padding(
+        padding: isAndroidTV
+            ? const EdgeInsets.only(right: 32, bottom: 8)
+            : EdgeInsets.zero,
+        child: widget.floatingActionButton ??
+            ValueListenableBuilder<Widget?>(
+              valueListenable: _floatingActionButton,
+              builder: (_, value, __) => IntrinsicWidth(
+                child: IntrinsicHeight(
+                  child: FadeScaleBox(
+                    child: value ?? const SizedBox(),
+                  ),
                 ),
               ),
             ),
-          ),
+      ),
       bottomNavigationBar: widget.bottomNavigationBar,
     );
 
@@ -625,18 +662,41 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
           )
         : scaffold;
 
-    return _sideNavigationBar != null
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _sideNavigationBar!,
-              Expanded(
-                flex: 1,
-                child: scaffoldWithBackground,
-              ),
-            ],
-          )
-        : scaffoldWithBackground;
+    if (_sideNavigationBar == null) return scaffoldWithBackground;
+
+    // A TV drawer expands over the page. Keeping the page viewport fixed avoids
+    // resizing the PageView (and briefly revealing an adjacent destination)
+    // while the drawer animates between its rail and expanded states.
+    if (isAndroidTV) {
+      return Stack(
+        children: [
+          PositionedDirectional(
+            top: 0,
+            bottom: 0,
+            start: 80,
+            end: 0,
+            child: scaffoldWithBackground,
+          ),
+          PositionedDirectional(
+            top: 0,
+            bottom: 0,
+            start: 0,
+            child: _sideNavigationBar!,
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _sideNavigationBar!,
+        Expanded(
+          flex: 1,
+          child: scaffoldWithBackground,
+        ),
+      ],
+    );
   }
 }
 

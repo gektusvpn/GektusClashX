@@ -103,7 +103,7 @@ enum TransportProtocol { udp, tcp }
 
 enum TrafficUnit { B, KB, MB, GB, TB }
 
-enum NavigationItemMode { mobile, desktop, more }
+enum NavigationItemMode { mobile, desktop, tv, more }
 
 enum Network { tcp, udp }
 

@@ -82,11 +82,14 @@ NavigationItemsState navigationsState(Ref ref) {
 @riverpod
 NavigationItemsState currentNavigationsState(Ref ref) {
   final viewWidth = ref.watch(viewWidthProvider);
+  final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
   final navigationItemsState = ref.watch(navigationsStateProvider);
-  final navigationItemMode = switch (viewWidth <= maxMobileWidth) {
-    true => NavigationItemMode.mobile,
-    false => NavigationItemMode.desktop,
-  };
+  final navigationItemMode = isAndroidTV
+      ? NavigationItemMode.tv
+      : switch (viewWidth <= maxMobileWidth) {
+          true => NavigationItemMode.mobile,
+          false => NavigationItemMode.desktop,
+        };
   return NavigationItemsState(
     value: navigationItemsState.value
         .where(

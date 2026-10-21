@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -18,9 +19,11 @@ String _navigationLabel(
   PageLabel label,
   AppLocalizations localizations,
 ) =>
-    label == PageLabel.proxies
-        ? localizations.locations
-        : Intl.message(label.name);
+    switch (label) {
+      PageLabel.proxies => localizations.locations,
+      PageLabel.tools => localizations.settings,
+      _ => Intl.message(label.name),
+    };
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -31,6 +34,8 @@ class HomePage extends StatelessWidget {
     return HomeBackScope(
       child: Consumer(
         builder: (_, ref, child) {
+          final isAndroidTV =
+              ref.watch(isAndroidTVProvider).valueOrNull ?? false;
           final hasProfile = ref.watch(
             startButtonSelectorStateProvider.select(
               (state) => state.hasProfile,
@@ -58,24 +63,26 @@ class HomePage extends StatelessWidget {
             navigationItems: navigationItems,
             currentIndex: currentIndex,
           );
-          final showHomeActionArea = const {
-            PageLabel.dashboard,
-            PageLabel.proxies,
-            PageLabel.profiles,
-          }.contains(pageLabel);
-          final bottomNavigationBar = viewMode == ViewMode.mobile
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (showHomeActionArea) const HomeActionArea(),
-                    navigationBar,
-                  ],
-                )
-              : showHomeActionArea
-                  ? const HomeActionArea()
-                  : null;
+          final showHomeActionArea = !isAndroidTV &&
+              const {
+                PageLabel.dashboard,
+                PageLabel.proxies,
+                PageLabel.profiles,
+              }.contains(pageLabel);
+          final bottomNavigationBar =
+              !isAndroidTV && viewMode == ViewMode.mobile
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (showHomeActionArea) const HomeActionArea(),
+                        navigationBar,
+                      ],
+                    )
+                  : showHomeActionArea
+                      ? const HomeActionArea()
+                      : null;
           final sideNavigationBar =
-              viewMode != ViewMode.mobile ? navigationBar : null;
+              isAndroidTV || viewMode != ViewMode.mobile ? navigationBar : null;
           return CommonScaffold(
             key: globalState.homeScaffoldKey,
             title: _navigationLabel(pageLabel, localizations),
@@ -84,7 +91,8 @@ class HomePage extends StatelessWidget {
             body: child!,
             bottomNavigationBar: bottomNavigationBar,
             extendBody: showHomeActionArea,
-            enableAppBarScrolledUnderEffect: true,
+            showAppBar: !isAndroidTV,
+            enableAppBarScrolledUnderEffect: !isAndroidTV,
           );
         },
         child: const _HomePageView(),
@@ -102,6 +110,7 @@ class _HomePageView extends ConsumerStatefulWidget {
 
 class _HomePageViewState extends ConsumerState<_HomePageView> {
   late PageController _pageController;
+  final _visitedTVPages = <PageLabel>{};
 
   @override
   void initState() {
@@ -124,13 +133,14 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
 
   int get _pageIndex {
     final navigationItems = ref.read(currentNavigationsStateProvider).value;
-    return navigationItems.indexWhere(
+    final index = navigationItems.indexWhere(
       (item) => item.label == globalState.appState.pageLabel,
     );
+    return index < 0 ? 0 : index;
   }
 
   _toPage(PageLabel pageLabel, [bool ignoreAnimateTo = false]) async {
-    if (!mounted) {
+    if (!mounted || (ref.read(isAndroidTVProvider).valueOrNull ?? false)) {
       return;
     }
     final navigationItems = ref.read(currentNavigationsStateProvider).value;
@@ -156,7 +166,13 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       if (!mounted) {
         return;
       }
-      FocusManager.instance.primaryFocus?.unfocus();
+      unawaited(
+        system.isAndroidTV.then((isAndroidTV) {
+          if (!isAndroidTV && mounted) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
+        }),
+      );
     });
   }
 
@@ -175,6 +191,37 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
   Widget build(BuildContext context) {
     final navigationItems = ref.watch(currentNavigationsStateProvider).value;
     final currentLabel = ref.watch(currentPageLabelProvider);
+    if (ref.watch(isAndroidTVProvider).valueOrNull ?? false) {
+      if (navigationItems.isEmpty) return const SizedBox.shrink();
+      final index =
+          navigationItems.indexWhere((item) => item.label == currentLabel);
+      final activeLabel = navigationItems[index < 0 ? 0 : index].label;
+      _visitedTVPages.add(activeLabel);
+      if (activeLabel != currentLabel) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || ref.read(currentPageLabelProvider) != currentLabel) {
+            return;
+          }
+          ref.read(currentPageLabelProvider.notifier).value = activeLabel;
+        });
+      }
+      return IndexedStack(
+        index: index < 0 ? 0 : index,
+        children: [
+          for (final item in navigationItems)
+            TVPageFocus(
+              key: ValueKey(item.label),
+              active: item.label == activeLabel,
+              child: TickerMode(
+                enabled: item.label == activeLabel,
+                child: _visitedTVPages.contains(item.label)
+                    ? item.view
+                    : const SizedBox.shrink(),
+              ),
+            ),
+        ],
+      );
+    }
     return PageView.builder(
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
@@ -210,6 +257,13 @@ class CommonNavigationBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final localizations = AppLocalizations.of(context);
+    if (ref.watch(isAndroidTVProvider).valueOrNull ?? false) {
+      return TVNavigationDrawer(
+        navigationItems: navigationItems,
+        currentIndex: currentIndex,
+        labelBuilder: (label) => _navigationLabel(label, localizations),
+      );
+    }
     if (viewMode == ViewMode.mobile) {
       return NavigationBarTheme(
         data: _NavigationBarDefaultsM3(context),
@@ -402,22 +456,35 @@ class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
                       : _colors.onSurfaceVariant));
 }
 
-class HomeBackScope extends StatelessWidget {
-  final Widget child;
-
+class HomeBackScope extends ConsumerWidget {
   const HomeBackScope({super.key, required this.child});
 
+  final Widget child;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (Platform.isAndroid) {
+      final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
       return CommonPopScope(
         onPop: () async {
           final canPop = Navigator.canPop(context);
           if (canPop) {
             Navigator.pop(context);
-          } else {
-            await globalState.appController.handleBackOrExit();
+            return false;
           }
+          if (isAndroidTV && focusTVNavigationDrawer()) {
+            return false;
+          }
+          if (isAndroidTV &&
+              globalState.appState.pageLabel != PageLabel.dashboard) {
+            globalState.appController.toPage(PageLabel.dashboard);
+            return false;
+          }
+          if (isAndroidTV) {
+            await system.back();
+            return false;
+          }
+          await globalState.appController.handleBackOrExit();
           return false;
         },
         child: child,

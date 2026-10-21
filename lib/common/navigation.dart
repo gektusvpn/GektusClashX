@@ -24,6 +24,11 @@ class Navigation {
           view: DashboardView(
             key: GlobalObjectKey(PageLabel.dashboard),
           ),
+          modes: [
+            NavigationItemMode.mobile,
+            NavigationItemMode.desktop,
+            NavigationItemMode.tv,
+          ],
         ),
         NavigationItem(
           icon: const Icon(Icons.travel_explore_rounded),
@@ -34,7 +39,11 @@ class Navigation {
             ),
           ),
           modes: hasProxies
-              ? [NavigationItemMode.mobile, NavigationItemMode.desktop]
+              ? [
+                  NavigationItemMode.mobile,
+                  NavigationItemMode.desktop,
+                  NavigationItemMode.tv,
+                ]
               : [],
         ),
         const NavigationItem(
@@ -45,6 +54,14 @@ class Navigation {
               PageLabel.profiles,
             ),
           ),
+        ),
+        const NavigationItem(
+          icon: Icon(Icons.settings_rounded),
+          label: PageLabel.tools,
+          view: ToolsView(
+            key: GlobalObjectKey(PageLabel.tools),
+          ),
+          modes: [NavigationItemMode.tv],
         ),
         const NavigationItem(
           icon: Icon(Icons.swap_horiz_rounded),
