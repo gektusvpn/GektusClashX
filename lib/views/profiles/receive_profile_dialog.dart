@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:gektusclashx/common/common.dart';
-import 'package:gektusclashx/state.dart';
 import 'package:flutter/material.dart';
-import 'package:network_info_plus/network_info_plus.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/common/profile_import.dart';
+import 'package:gektusclashx/state.dart';
+import 'package:gektusclashx/widgets/tv_controls.dart';
+import 'package:gektusclashx/widgets/tv_navigation_drawer.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
@@ -14,17 +15,40 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 /// Apply lifecycle shared between the TV UI and the phone (over `GET /status`).
 enum _SyncStatus { waiting, applying, success, error }
 
-class ReceiveProfileDialog extends StatefulWidget {
+class ReceiveProfileDialog extends StatelessWidget {
   const ReceiveProfileDialog({super.key});
 
   @override
-  State<ReceiveProfileDialog> createState() => _ReceiveProfileDialogState();
+  Widget build(BuildContext context) => Dialog(
+        backgroundColor: context.colorScheme.surfaceContainerHigh,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 48, vertical: 28),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: const ReceiveProfileView(),
+      );
 }
 
-class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
+/// Shared receiver for a dialog or the TV's first-profile screen.
+class ReceiveProfileView extends StatefulWidget {
+  const ReceiveProfileView({super.key, this.onOtherMethods});
+
+  // The empty TV dashboard already exposes the receiver. Other entry points
+  // should offer URL/file instead of binding a second server to the same port.
+  static int _activeViews = 0;
+  static Future<void> _pendingShutdown = Future.value();
+  static bool get isActive => _activeViews > 0;
+
+  final VoidCallback? onOtherMethods;
+
+  @override
+  State<ReceiveProfileView> createState() => _ReceiveProfileViewState();
+}
+
+class _ReceiveProfileViewState extends State<ReceiveProfileView> {
   static const _syncPort = 8899;
 
   HttpServer? _server;
+  Future<void>? _activeTransfer;
+  Future<void>? _startingFuture;
   String? _qrData;
   bool _isLoading = true;
   _SyncStatus _status = _SyncStatus.waiting;
@@ -33,14 +57,29 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
   @override
   void initState() {
     super.initState();
-    _startServerAndGenerateQr();
+    ReceiveProfileView._activeViews++;
+    _startingFuture = _startServerAndGenerateQr();
+    unawaited(_startingFuture);
   }
 
   Future<void> _startServerAndGenerateQr() async {
     try {
-      final ip = await NetworkInfo().getWifiIP();
-      if (ip == null || ip.isEmpty) {
-        throw StateError('Could not get IP address');
+      // A previous view may still be serving the phone's final status poll.
+      await ReceiveProfileView._pendingShutdown;
+      if (!mounted) return;
+      // TV sets commonly use Ethernet. Select a LAN interface directly rather
+      // than requiring Wi-Fi information (and its Android permissions).
+      final interfaces = await NetworkInterface.list(
+        type: InternetAddressType.IPv4,
+        includeLinkLocal: false,
+      );
+      final lanInterface = interfaces
+          .where((item) =>
+              item.isWifi || item.name.toLowerCase().startsWith('eth'))
+          .firstOrNull;
+      final ip = lanInterface?.addresses.firstOrNull?.address;
+      if (ip == null) {
+        throw StateError(appLocalizations.noNetwork);
       }
 
       final router = shelf_router.Router();
@@ -62,63 +101,53 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
         '/status',
         (shelf.Request request) => shelf.Response.ok(
           jsonEncode({'status': _status.name, 'message': _statusMessage}),
-          headers: {'content-type': 'application/json'},
+          headers: {
+            'content-type': 'application/json',
+            'cache-control': 'no-store',
+          },
         ),
       );
 
-      router.post('/add-profile', (shelf.Request request) async {
-        if (_status == _SyncStatus.applying) {
-          return shelf.Response(
-            HttpStatus.conflict,
-            body: jsonEncode({'ok': false, 'status': 'applying'}),
-            headers: {'content-type': 'application/json'},
-          );
-        }
-        final url = await _readProfileUrl(request);
-        if (url == null) {
-          return shelf.Response.badRequest(
-            body: jsonEncode({'ok': false, 'error': 'invalid url'}),
-            headers: {'content-type': 'application/json'},
-          );
-        }
-        _setStatus(_SyncStatus.applying);
-        // Apply in the background; the phone watches progress via /status.
-        unawaited(_applyReceivedUrl(url));
-        return shelf.Response.ok(
-          jsonEncode({'ok': true}),
-          headers: {'content-type': 'application/json'},
-        );
-      });
+      router.post(
+        '/add-profile',
+        createProfileImportHandler(
+          isAvailable: () => mounted,
+          isBusy: () =>
+              _status == _SyncStatus.applying || _status == _SyncStatus.success,
+          onReceive: (url) {
+            _setStatus(_SyncStatus.applying);
+            // Apply in the background; the phone watches progress via /status.
+            _activeTransfer = _applyReceivedUrl(url);
+            unawaited(_activeTransfer);
+          },
+          onInvalidRequest: (error) =>
+              commonPrint.log('Invalid TV sync request: $error'),
+        ),
+      );
 
-      _server = await shelf_io.serve(router.call, ip, _syncPort);
+      final server = await shelf_io.serve(router.call, ip, _syncPort);
+      if (!mounted) {
+        await server.close(force: true);
+        return;
+      }
+      _server = server;
       commonPrint.log(
         'TV sync server started at http://${_server?.address.host}:${_server?.port}',
       );
 
-      if (!mounted) return;
-      // Plain URL so the native phone camera offers to open it. The app's
-      // scanner also understands this form (extracts host:port).
+      // A plain URL lets the native phone camera open the browser directly.
       setState(() {
         _qrData = 'http://$ip:$_syncPort/';
         _isLoading = false;
       });
     } catch (e) {
       commonPrint.log('Error starting TV sync server: $e');
-      if (mounted) Navigator.of(context).pop();
-    }
-  }
-
-  Future<String?> _readProfileUrl(shelf.Request request) async {
-    try {
-      final body = await request.readAsString();
-      final payload = jsonDecode(body);
-      if (payload is! Map<String, dynamic>) return null;
-      final url = payload['url'];
-      if (url is! String || url.trim().isEmpty) return null;
-      return url.trim();
-    } catch (e) {
-      commonPrint.log('Invalid TV sync request: $e');
-      return null;
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _status = _SyncStatus.error;
+        _statusMessage = e is StateError ? e.message.toString() : e.toString();
+      });
     }
   }
 
@@ -128,7 +157,7 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
       _setStatus(_SyncStatus.success);
       // Let the phone's poll and the TV both show success briefly, then close.
       await Future.delayed(const Duration(milliseconds: 1600));
-      if (mounted) Navigator.of(context).pop();
+      if (mounted && widget.onOtherMethods == null) Navigator.of(context).pop();
     } catch (e) {
       commonPrint.log('TV sync apply failed: $e');
       // Keep the server alive so the phone sees the error and can retry.
@@ -148,32 +177,88 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
     });
   }
 
+  Future<void> _closeServer() async {
+    await _server?.close(force: true);
+    commonPrint.log('TV sync server stopped');
+  }
+
   @override
   void dispose() {
-    _server?.close(force: true);
-    commonPrint.log('TV sync server stopped');
+    ReceiveProfileView._activeViews--;
+    // Adding the first profile replaces onboarding immediately. Let the phone
+    // read the successful /status response before shutting down its server.
+    final transfer = _activeTransfer;
+    final shutdown = Future.wait<void>([
+      ReceiveProfileView._pendingShutdown,
+      if (_startingFuture != null) _startingFuture!,
+      if (transfer != null) transfer,
+    ]).then((_) => _closeServer());
+    ReceiveProfileView._pendingShutdown = shutdown.catchError((Object error) {
+      commonPrint.log('Unable to close TV sync server: $error');
+    });
+    unawaited(ReceiveProfileView._pendingShutdown);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(appLocalizations.receiveSubscriptionTitle),
-      content: SizedBox(
-        width: 300,
-        height: 320,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _qrData == null
-                ? const Center(child: Text('Could not get IP address'))
-                : _buildBody(context),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(appLocalizations.cancel),
+    final embedded = widget.onOtherMethods != null;
+    final action = TVActionButton(
+      autofocus: true,
+      icon: embedded ? Icons.more_horiz_rounded : Icons.close_rounded,
+      label: embedded
+          ? appLocalizations.otherAddMethods
+          : MaterialLocalizations.of(context).closeButtonLabel,
+      onPressed: widget.onOtherMethods ?? () => Navigator.of(context).pop(),
+    );
+    return SizedBox(
+      width: 680,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              embedded
+                  ? appLocalizations.addFromPhoneTitle
+                  : appLocalizations.receiveSubscriptionTitle,
+              style: context.textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 24),
+            if (_isLoading)
+              const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              SizedBox(height: 200, child: _buildBody(context)),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (embedded) TVDrawerEdge(child: action) else action,
+                if (_status == _SyncStatus.error && _server == null) ...[
+                  const SizedBox(width: 12),
+                  TVActionButton(
+                    icon: Icons.refresh_rounded,
+                    label: appLocalizations.retry,
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                        _status = _SyncStatus.waiting;
+                        _statusMessage = null;
+                      });
+                      _startingFuture = _startServerAndGenerateQr();
+                      unawaited(_startingFuture);
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -189,57 +274,32 @@ class _ReceiveProfileDialogState extends State<ReceiveProfileDialog> {
             height: 48,
             child: CircularProgressIndicator(),
           ),
-          'Получаю профиль с телефона…',
+          appLocalizations.receivingProfile,
         );
       case _SyncStatus.success:
         return _buildStatus(
           context,
           Icon(Icons.check_circle_outline,
               size: 56, color: context.colorScheme.primary),
-          'Профиль добавлен',
+          appLocalizations.profileReceived,
         );
       case _SyncStatus.error:
         return _buildStatus(
           context,
           Icon(Icons.error_outline, size: 56, color: context.colorScheme.error),
-          'Не удалось добавить профиль',
+          appLocalizations.profileReceiveFailed,
           detail: _statusMessage,
         );
     }
   }
 
-  Widget _buildQr(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+  Widget _buildQr(BuildContext context) => Row(children: [
+        TVQrCode(data: _qrData!),
+        const SizedBox(width: 28),
         Expanded(
-          child: QrImageView(
-            data: _qrData!,
-            version: QrVersions.auto,
-            size: 240.0,
-            backgroundColor: Colors.transparent,
-            dataModuleStyle: QrDataModuleStyle(
-              color: theme.colorScheme.onSurface,
-              dataModuleShape: QrDataModuleShape.square,
-            ),
-            eyeStyle: QrEyeStyle(
-              color: theme.colorScheme.onSurface,
-              eyeShape: QrEyeShape.square,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Отсканируйте код камерой телефона',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
+            child: Text(appLocalizations.scanProfileWithPhone,
+                style: context.textTheme.bodyLarge?.copyWith(height: 1.4))),
+      ]);
 
   Widget _buildStatus(
     BuildContext context,
