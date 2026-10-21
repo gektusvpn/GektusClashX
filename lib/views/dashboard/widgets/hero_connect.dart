@@ -16,6 +16,7 @@ import 'package:gektusclashx/models/models.dart';
 import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/profiles/add_profile.dart';
+import 'package:gektusclashx/views/profiles/receive_profile_dialog.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:share_plus/share_plus.dart';
@@ -74,6 +75,7 @@ class HeroConnect extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context);
     final state = ref.watch(startButtonSelectorStateProvider);
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     if (!state.hasProfile) {
       final bottomPadding = bottomInset + 16;
@@ -90,8 +92,23 @@ class HeroConnect extends ConsumerWidget {
             ),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 440),
-                child: const _EmptyHero(),
+                constraints: BoxConstraints(maxWidth: isAndroidTV ? 680 : 440),
+                child: isAndroidTV
+                    ? Container(
+                        decoration: ShapeDecoration(
+                          color: context.colorScheme.surfaceContainerHigh
+                              .withValues(alpha: 0.9),
+                          shape: const RoundedSuperellipseBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(32)),
+                          ),
+                        ),
+                        child: ReceiveProfileView(
+                          onOtherMethods: () => unawaited(
+                            showAddProfileSheet(context, includePhone: false),
+                          ),
+                        ),
+                      )
+                    : const _EmptyHero(),
               ),
             ),
           ),
