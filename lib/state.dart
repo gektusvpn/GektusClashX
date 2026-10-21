@@ -13,6 +13,7 @@ import 'package:gektusclashx/l10n/l10n.dart';
 import 'package:gektusclashx/plugins/service.dart';
 import 'package:gektusclashx/widgets/dialog.dart';
 import 'package:gektusclashx/widgets/scaffold.dart';
+import 'package:gektusclashx/widgets/tv_external_link_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:material_color_utilities/palettes/core_palette.dart';
@@ -323,16 +324,18 @@ class GlobalState {
   Future<T?> showCommonDialog<T>({
     required Widget child,
     bool dismissible = true,
-  }) async =>
-      showModal<T>(
-        context: navigatorKey.currentState!.context,
-        configuration: FadeScaleTransitionConfiguration(
-          barrierColor: Colors.black38,
-          barrierDismissible: dismissible,
-        ),
-        builder: (_) => child,
-        filter: commonFilter,
-      );
+  }) async {
+    final isTV = await system.isAndroidTV;
+    return showModal<T>(
+      context: navigatorKey.currentState!.context,
+      configuration: FadeScaleTransitionConfiguration(
+        barrierColor: isTV ? Colors.black54 : Colors.black38,
+        barrierDismissible: dismissible,
+      ),
+      builder: (_) => child,
+      filter: isTV ? null : commonFilter,
+    );
+  }
 
   Future<T?> safeRun<T>(
     FutureOr<T> Function() futureFunction, {
@@ -366,6 +369,22 @@ class GlobalState {
   }
 
   Future<void> openUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null || !uri.hasScheme) {
+      showNotifier(appLocalizations.openLinkFailed);
+      return;
+    }
+    final isAndroidTV = await system.isAndroidTV;
+    if (isAndroidTV) {
+      final context = navigatorKey.currentContext;
+      if (context == null || !context.mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierColor: Colors.black54,
+        builder: (_) => TVExternalLinkDialog(uri: uri),
+      );
+      return;
+    }
     final res = await showMessage(
       message: TextSpan(text: url),
       title: appLocalizations.externalLink,
@@ -374,7 +393,16 @@ class GlobalState {
     if (res != true) {
       return;
     }
-    launchUrl(Uri.parse(url));
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.platformDefault,
+      );
+      if (!launched) showNotifier(appLocalizations.openLinkFailed);
+    } catch (error) {
+      commonPrint.log('Unable to open external link: $error');
+      showNotifier(appLocalizations.openLinkFailed);
+    }
   }
 
   Future<void> migrateOldData(Config config) async {
