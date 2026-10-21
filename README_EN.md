@@ -43,6 +43,12 @@ on Mobile:
 - Added a "Paste" button to the menu for adding a subscription via a link.
 - Added a profile selection button.
 - Added the ability to transfer a profile from the mobile app via a QR code.
+- Dedicated TV layouts for Home, Locations, and profile selection.
+- The drawer expands over content; arrows move focus and OK opens a destination.
+- Routing group tabs select on focus; Back returns to the drawer.
+- External links offer a QR code for a phone, or can open in an installed TV app.
+- With no profiles, the TV shows a phone-import QR code immediately, with URL and file alternatives.
+- Delete appears under the focused profile; deleting the last profile returns to onboarding.
 
 🪪 Redesigned the profile card and the Home subscription section:
 
@@ -65,6 +71,9 @@ on Mobile:
 | `layout` | Layout                        | `loose`,`standard`,`tight`        |
 |  `icon`  | Icon style (for list display) | `none`,`icon`          |
 |  `card`  | Card size                     | `expand`,`shrink`,`min`,`oneline` |
+
+On Android TV, only `card` is applied from this header. The `type`, `layout`,
+`icon` and `sort` parameters do not change the TV tabs, three-column grid or sorting.
 
 Usage:
 
