@@ -132,6 +132,10 @@ Usage:
 
 > Note: `closeconnections` is enabled by default in the app itself, but when `gektusclashx-settings` is used the state is set explicitly — if you don't pass the token, the option will be disabled.
 
+On new desktop installations, closing the window minimizes the application to
+the tray by default. A saved user choice is preserved; the
+`gektusclashx-settings` header still controls this explicitly with `minimize`.
+
 On Android, automatic update checks are enabled by default unless the provider manages this setting. An available update is downloaded from GitHub Releases inside the app. The client verifies its SHA-256, package version, and signing certificate before opening the Android system installer.
 
 On Windows and Linux, the update prompt downloads the matching GitHub Release asset for the current operating system and CPU architecture. On Linux it also distinguishes between AppImage, DEB, and RPM packages.

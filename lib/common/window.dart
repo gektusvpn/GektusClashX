@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/state.dart';
-import 'package:flutter/material.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -14,9 +14,10 @@ class Window {
       exit(0);
     }
     if (Platform.isWindows) {
-      protocol.register("clashx");
-      protocol.register("flclash");
-      protocol.register("gektusclashx");
+      protocol
+        ..register("clashx")
+        ..register("flclash")
+        ..register("gektusclashx");
     }
 
     // On macOS, the app runs in status bar with popover - no window manager needed
@@ -86,7 +87,15 @@ class Window {
   }
 
   Future<void> close() async {
-    exit(0);
+    try {
+      // exit(0) bypasses the native window destruction callback that normally
+      // removes the tray icon, leaving a stale icon in the Windows taskbar.
+      await tray.destroy().timeout(const Duration(seconds: 2));
+    } catch (error) {
+      commonPrint.log('Failed to remove tray icon before exit: $error');
+    } finally {
+      exit(0);
+    }
   }
 
   Future<void> hide() async {

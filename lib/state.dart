@@ -145,8 +145,12 @@ class GlobalState {
 
   Future<void> init() async {
     packageInfo = await PackageInfo.fromPlatform();
-    config = await preferences.getConfig() ??
-        const Config(
+    final storedConfig = await preferences.getConfig();
+    config = storedConfig ??
+        Config(
+          appSetting: system.isDesktop
+              ? const AppSettingProps(minimizeOnExit: true)
+              : defaultAppSettingProps,
           themeProps: defaultThemeProps,
         );
     await globalState.migrateOldData(config);
