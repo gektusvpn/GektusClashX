@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/models/models.dart';
@@ -5,8 +9,6 @@ import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/proxies/common.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProxyCard extends StatelessWidget {
   const ProxyCard({
@@ -16,19 +18,23 @@ class ProxyCard extends StatelessWidget {
     required this.proxy,
     required this.groupType,
     required this.type,
+    this.isAndroidTV = false,
   });
   final String groupName;
   final Proxy proxy;
   final GroupType groupType;
   final ProxyCardType type;
   final String? testUrl;
+  final bool isAndroidTV;
 
   Measure get measure => globalState.measure;
 
   void _handleTestCurrentDelay() {
-    proxyDelayTest(
-      proxy,
-      testUrl,
+    unawaited(
+      proxyDelayTest(
+        proxy,
+        testUrl,
+      ),
     );
   }
 
@@ -48,11 +54,14 @@ class ProxyCard extends StatelessWidget {
                         ? const CircularProgressIndicator(
                             strokeWidth: 2,
                           )
-                        : IconButton(
-                            icon: const Icon(Icons.bolt),
-                            iconSize: globalState.measure.labelSmallHeight,
-                            padding: EdgeInsets.zero,
-                            onPressed: _handleTestCurrentDelay,
+                        : ExcludeFocus(
+                            excluding: isAndroidTV,
+                            child: IconButton(
+                              icon: const Icon(Icons.bolt),
+                              iconSize: globalState.measure.labelSmallHeight,
+                              padding: EdgeInsets.zero,
+                              onPressed: _handleTestCurrentDelay,
+                            ),
                           ),
                   )
                 : GestureDetector(
@@ -136,12 +145,12 @@ class ProxyCard extends StatelessWidget {
         true => currentProxyName == proxy.name ? "" : proxy.name,
         false => proxy.name,
       };
-      final appController = globalState.appController;
-      appController.updateCurrentSelectedMap(
-        groupName,
-        nextProxyName,
-      );
-      appController.changeProxyDebounce(groupName, nextProxyName);
+      globalState.appController
+        ..updateCurrentSelectedMap(
+          groupName,
+          nextProxyName,
+        )
+        ..changeProxyDebounce(groupName, nextProxyName);
       return;
     }
     globalState.showNotifier(
@@ -153,21 +162,30 @@ class ProxyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final measure = globalState.measure;
     final delayText = _buildDelayText();
-    final proxyNameText = _buildProxyNameText(context);
+    final proxyNameText = Padding(
+      padding: EdgeInsets.only(right: isAndroidTV ? 24 : 0),
+      child: _buildProxyNameText(context),
+    );
     return Stack(
       children: [
         Consumer(
           builder: (_, ref, child) {
             final selectedProxyName =
                 ref.watch(getSelectedProxyNameProvider(groupName));
-            return CommonCard(
-              key: key,
-              onPressed: () {
-                _changeProxy(ref);
-              },
-              isSelected: selectedProxyName == proxy.name,
-              child: child!,
-            );
+            return Semantics(
+                selected: isAndroidTV ? selectedProxyName == proxy.name : null,
+                child: TVFocusEffect(
+                    enabled: isAndroidTV,
+                    scrollAlignment: 0.5,
+                    borderRadius: BorderRadius.circular(12),
+                    child: CommonCard(
+                      key: key,
+                      onPressed: () {
+                        unawaited(_changeProxy(ref));
+                      },
+                      isSelected: selectedProxyName == proxy.name,
+                      child: child!,
+                    )));
           },
           child: Container(
             alignment: Alignment.centerLeft,
@@ -212,7 +230,21 @@ class ProxyCard extends StatelessWidget {
             ),
           ),
         ),
-        if (groupType.isComputedSelected)
+        if (isAndroidTV)
+          PositionedDirectional(
+            top: 10,
+            end: 10,
+            child: Consumer(builder: (context, ref, _) {
+              final selected =
+                  ref.watch(getSelectedProxyNameProvider(groupName)) ==
+                      proxy.name;
+              return selected
+                  ? Icon(Icons.check_circle_rounded,
+                      size: 18, color: context.colorScheme.primary)
+                  : const SizedBox.shrink();
+            }),
+          ),
+        if (!isAndroidTV && groupType.isComputedSelected)
           Positioned(
             top: 0,
             right: 0,

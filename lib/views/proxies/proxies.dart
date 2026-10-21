@@ -163,6 +163,49 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+    if (isAndroidTV) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 28, 16, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    appLocalizations.locations,
+                    style: context.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                TVDrawerEdge(
+                  child: TVFocusEffect(
+                    enabled: true,
+                    borderRadius: BorderRadius.circular(24),
+                    child: SizedBox(
+                      height: 48,
+                      child: FilledButton.tonalIcon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor:
+                              context.colorScheme.surfaceContainerHigh,
+                          foregroundColor: context.colorScheme.onSurfaceVariant,
+                        ),
+                        onPressed: () => unawaited(_pingAllGroups()),
+                        icon: const Icon(Icons.network_ping_rounded),
+                        label: Text(appLocalizations.testAllDelay),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Expanded(child: ProxiesTabView(isAndroidTV: true)),
+        ],
+      );
+    }
     final proxiesType = ref.watch(
       proxiesStyleSettingProvider.select(
         (state) => state.type,
