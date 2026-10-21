@@ -1,3 +1,27 @@
+## v0.5.5
+
+- Added a dedicated Android TV interface with an overlay navigation drawer,
+  remote-friendly focus, profile switching, and an expressive Home layout.
+
+- Adapted routing-group tabs and location cards for D-pad navigation, with
+  immediate tab selection and a labeled latency test action.
+
+- Added QR onboarding when no profiles exist, phone-based subscription import,
+  and QR codes for opening external links on a phone.
+
+- Improved TV profile deletion and return to onboarding after deleting the last
+  profile. Prevented overlapping phone imports and preserved completion status.
+
+- Isolated provider settings during profile switches and limited TV location
+  overrides to card layout and size.
+
+- Made desktop windows minimize to the tray by default and removed stale tray
+  icons when the application actually exits.
+
+- Added a dismissible update reminder for phones, desktop, and TV. Reminders
+  appear at most once per session and once a day for the same version; Android
+  downloads and installation continue through the existing Home update card.
+
 ## v0.5.4
 
 - Completed the Material 3 Expressive refresh across Home, Locations, Profiles,
