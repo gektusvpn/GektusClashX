@@ -47,6 +47,14 @@ class HomePage extends StatelessWidget {
               showAppBar: false,
               appBarStateId: PageLabel.dashboard,
               body: const HeroConnect(),
+              bottomNavigationBar: globalState.isAppControllerReady
+                  ? ValueListenableBuilder<AppUpdateState?>(
+                      valueListenable: globalState.appController.appUpdateState,
+                      builder: (_, update, __) => update == null
+                          ? const SizedBox.shrink()
+                          : const HomeActionArea(),
+                    )
+                  : null,
             );
           }
 

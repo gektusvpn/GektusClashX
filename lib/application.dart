@@ -15,8 +15,11 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'common/app_update_reminder.dart';
 import 'controller.dart';
+import 'enum/enum.dart';
 import 'pages/pages.dart';
+import 'widgets/app_update_prompt.dart';
 
 class Application extends ConsumerStatefulWidget {
   const Application({
@@ -29,6 +32,7 @@ class Application extends ConsumerStatefulWidget {
 
 class ApplicationState extends ConsumerState<Application> {
   Timer? _autoUpdateProfilesTaskTimer;
+  final _updateReminder = AppUpdateReminder();
 
   final _pageTransitionsTheme = const PageTransitionsTheme(
     builders: <TargetPlatform, PageTransitionsBuilder>{
@@ -262,7 +266,27 @@ class ApplicationState extends ConsumerState<Application> {
                 home: child,
               );
             },
-            child: const HomePage(),
+            child: Consumer(
+              builder: (_, ref, child) => AppUpdatePromptHost(
+                updates: ref.watch(initProvider)
+                    ? globalState.appController.appUpdateState
+                    : null,
+                reminder: _updateReminder,
+                isAndroid: Platform.isAndroid,
+                isTV: ref.watch(isAndroidTVProvider).valueOrNull ?? false,
+                onUpdate: () async {
+                  final controller = globalState.appController
+                    ..toPage(PageLabel.dashboard);
+                  if (Platform.isAndroid) {
+                    await controller.downloadAndroidAppUpdate();
+                  } else {
+                    await controller.openAppUpdateDownload();
+                  }
+                },
+                child: child!,
+              ),
+              child: const HomePage(),
+            ),
           ),
         ),
       );

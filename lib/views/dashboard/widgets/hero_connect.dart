@@ -358,7 +358,11 @@ class HomeActionArea extends ConsumerWidget {
                   if (state.hasProfile) _ConnectButton(isReady: state.isInit),
                   if (state.hasProfile && updateState != null)
                     const SizedBox(height: 12),
-                  if (updateState != null) _AppUpdateBanner(state: updateState),
+                  if (updateState != null)
+                    _AppUpdateBanner(
+                      state: updateState,
+                      isAndroidTV: isAndroidTV,
+                    ),
                 ],
               ),
             ),
