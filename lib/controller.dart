@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/clash/clash.dart';
 import 'package:gektusclashx/common/archive.dart';
+import 'package:gektusclashx/common/proxies_style.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/plugins/app.dart';
 import 'package:gektusclashx/providers/providers.dart';
@@ -310,7 +311,8 @@ class AppController {
     }
   }
 
-  void _applyAllHeaderSettings(Profile profile, {required bool isNewProfile}) {
+  Future<void> _applyAllHeaderSettings(Profile profile,
+      {required bool isNewProfile}) async {
     final headers = profile.providerHeaders;
     if (headers.isEmpty) return;
 
@@ -324,9 +326,14 @@ class AppController {
 
     if (!shouldApply) return;
 
+    // Await detection so the first import also uses the TV header allowlist.
+    final isAndroidTV = await _ref.read(isAndroidTVProvider.future);
+    if (!isNewProfile && _ref.read(currentProfileIdProvider) != profile.id) {
+      return;
+    }
     _applyProviderSettings(headers);
     _applyThemeColor(headers);
-    _applyCustomViewSettings(profile);
+    _applyCustomViewSettings(profile, isAndroidTV: isAndroidTV);
   }
 
   void _applyProviderSettings(Map<String, String> headers) {
@@ -452,7 +459,7 @@ class AppController {
       // A background profile must not overwrite settings of the active one.
       if (responseHeaders.isNotEmpty &&
           profile.id == _ref.read(currentProfileIdProvider)) {
-        _applyAllHeaderSettings(updatedProfile, isNewProfile: false);
+        await _applyAllHeaderSettings(updatedProfile, isNewProfile: false);
       }
 
       final showHwidLimit =
@@ -777,23 +784,20 @@ class AppController {
     unawaited(_persistColdStartParams());
   }
 
-  void handleChangeProfile() {
+  Future<void> handleChangeProfile() async {
     _ref.read(delayDataSourceProvider.notifier).value = {};
 
     final currentProfileId = _ref.read(currentProfileIdProvider);
     if (currentProfileId != null) {
-      final profiles = _ref.read(profilesProvider);
-      var currentProfile = profiles.firstWhere(
-        (p) => p.id == currentProfileId,
-        orElse: () => profiles.first,
-      );
-
-      if (currentProfile.providerHeaders.isNotEmpty) {
-        _applyAllHeaderSettings(currentProfile, isNewProfile: false);
+      final currentProfile =
+          _ref.read(profilesProvider).getProfile(currentProfileId);
+      if (currentProfile != null && currentProfile.providerHeaders.isNotEmpty) {
+        await _applyAllHeaderSettings(currentProfile, isNewProfile: false);
       }
     }
 
-    applyProfile();
+    if (_ref.read(currentProfileIdProvider) != currentProfileId) return;
+    unawaited(applyProfile());
     _ref.read(logsProvider.notifier).value = FixedList(maxLength);
     _ref.read(requestsProvider.notifier).value = FixedList(maxLength);
     globalState.cacheHeightMap = {};
@@ -1546,7 +1550,7 @@ class AppController {
       );
 
       if (profile != null) {
-        _applyAllHeaderSettings(profile, isNewProfile: true);
+        await _applyAllHeaderSettings(profile, isNewProfile: true);
 
         final headers = profile.providerHeaders;
         final showHwidLimit =
@@ -1577,7 +1581,7 @@ class AppController {
     final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
     final profile =
         await Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
-    _applyAllHeaderSettings(profile, isNewProfile: true);
+    await _applyAllHeaderSettings(profile, isNewProfile: true);
     final headers = profile.providerHeaders;
     final showHwidLimit =
         headers['x-hwid-max-devices-reached']?.toLowerCase() == 'true';
@@ -1710,100 +1714,16 @@ class AppController {
         );
   }
 
-  void _applyCustomViewSettings(Profile profile) {
-    final headers = profile.providerHeaders;
-
-    final proxiesView = headers['gektusclashx-view'];
-    if (proxiesView != null && proxiesView.isNotEmpty) {
-      final proxiesStyleNotifier =
-          _ref.read(proxiesStyleSettingProvider.notifier);
-      proxiesStyleNotifier.updateState((currentState) {
-        var newState = currentState;
-        final settings = proxiesView.split(';');
-        for (final setting in settings) {
-          final parts = setting.split(':');
-          if (parts.length == 2) {
-            final key = parts[0].trim().toLowerCase();
-            final value = parts[1].trim().toLowerCase();
-            switch (key) {
-              case 'type':
-                switch (value) {
-                  case 'list':
-                    newState = newState.copyWith(type: ProxiesType.list);
-                    break;
-                  case 'tab':
-                    newState = newState.copyWith(type: ProxiesType.tab);
-                    break;
-                }
-                break;
-              case 'sort':
-                switch (value) {
-                  case 'none':
-                    newState =
-                        newState.copyWith(sortType: ProxiesSortType.none);
-                    break;
-                  case 'delay':
-                    newState =
-                        newState.copyWith(sortType: ProxiesSortType.delay);
-                    break;
-                  case 'name':
-                    newState =
-                        newState.copyWith(sortType: ProxiesSortType.name);
-                    break;
-                }
-                break;
-              case 'layout':
-                switch (value) {
-                  case 'loose':
-                    newState = newState.copyWith(layout: ProxiesLayout.loose);
-                    break;
-                  case 'standard':
-                    newState =
-                        newState.copyWith(layout: ProxiesLayout.standard);
-                    break;
-                  case 'tight':
-                    newState = newState.copyWith(layout: ProxiesLayout.tight);
-                    break;
-                }
-                break;
-              case 'icon':
-                switch (value) {
-                  case 'standard':
-                  case 'icon':
-                    newState =
-                        newState.copyWith(iconStyle: ProxiesIconStyle.icon);
-                    break;
-                  case 'none':
-                    newState =
-                        newState.copyWith(iconStyle: ProxiesIconStyle.none);
-                    break;
-                }
-                break;
-              case 'card':
-                switch (value) {
-                  case 'expand':
-                    newState =
-                        newState.copyWith(cardType: ProxyCardType.expand);
-                    break;
-                  case 'shrink':
-                    newState =
-                        newState.copyWith(cardType: ProxyCardType.shrink);
-                    break;
-                  case 'min':
-                    newState = newState.copyWith(cardType: ProxyCardType.min);
-                    break;
-                  case 'oneline':
-                    newState =
-                        newState.copyWith(cardType: ProxyCardType.oneline);
-                    break;
-                }
-                break;
-            }
-          }
-        }
-        return newState;
-      });
-    }
+  void _applyCustomViewSettings(Profile profile, {required bool isAndroidTV}) {
+    final proxiesView = profile.providerHeaders['gektusclashx-view'];
+    if (proxiesView == null || proxiesView.isEmpty) return;
+    _ref.read(proxiesStyleSettingProvider.notifier).updateState(
+          (current) => applyProxiesViewHeader(
+            current,
+            proxiesView,
+            isAndroidTV: isAndroidTV,
+          ),
+        );
   }
 
   Future<List<Package>> getPackages() async {
