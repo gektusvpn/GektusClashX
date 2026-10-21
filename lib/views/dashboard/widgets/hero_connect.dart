@@ -21,6 +21,8 @@ import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:share_plus/share_plus.dart';
 
+import 'tv_dashboard.dart';
+
 const _smallButtonHeight = 40.0;
 const _smallButtonIconSize = 20.0;
 const _smallProgressIndicatorSize = 16.0;
@@ -172,14 +174,87 @@ class HeroConnect extends ConsumerWidget {
         ),
     ];
 
+    Widget buyTrafficButton() => TVFocusEffect(
+          enabled: isAndroidTV,
+          borderRadius: BorderRadius.circular(24),
+          scrollAlignment: 0.55,
+          child: SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: () => unawaited(globalState.openUrl(buyTrafficUrl!)),
+              icon: const Icon(Icons.add_rounded),
+              label: Text(appLocalizations.buyMoreTraffic),
+            ),
+          ),
+        );
+
+    if (isAndroidTV) {
+      return TVDashboard(
+        identity: _ServiceIdentity(
+          name: serviceName,
+          logoUrl: logoUrl,
+          isAndroidTV: true,
+        ),
+        connection: _ConnectButton(isReady: state.isInit),
+        subscription: hasSub
+            ? _SubscriptionCard(
+                sub: sub,
+                isAndroidTV: true,
+                isUpdating: profile.isUpdating,
+                onUpdate: () =>
+                    globalState.appController.updateProfile(profile),
+                buyPlanUrl: buyPlanUrl,
+                shareUrl: profile.url,
+              )
+            : null,
+        support: hasSupport
+            ? _SupportCard(
+                supportUrl: supportUrl,
+                supportEmail: supportEmail,
+                imageUrl: supportImageUrl,
+              )
+            : null,
+        linksBuilder: serviceLinks.isEmpty
+            ? null
+            : ({required bool drawerAtLeft}) => _ServiceLinksCard(
+                  links: serviceLinks,
+                  isAndroidTV: true,
+                  drawerAtLeft: drawerAtLeft,
+                ),
+        announcement: announce != null && announce.isNotEmpty
+            ? _AnnounceBanner(text: announce)
+            : null,
+        buyTraffic: showBuyTraffic ? buyTrafficButton() : null,
+        update: ValueListenableBuilder<AppUpdateState?>(
+          valueListenable: globalState.appController.appUpdateState,
+          builder: (context, updateState, _) => updateState == null
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsets.only(top: 24),
+                  child: _AppUpdateBanner(
+                    state: updateState,
+                    isAndroidTV: true,
+                  ),
+                ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       key: const PageStorageKey('dashboard-scroll'),
-      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomInset + 12),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        bottomInset + 12,
+      ),
       child: Column(
         children: [
           _ServiceIdentity(
             name: serviceName,
             logoUrl: logoUrl,
+            isAndroidTV: isAndroidTV,
           ),
           if (announce != null && announce.isNotEmpty) ...[
             const SizedBox(height: 16),
@@ -189,6 +264,7 @@ class HeroConnect extends ConsumerWidget {
             const SizedBox(height: 18),
             _SubscriptionCard(
               sub: sub,
+              isAndroidTV: false,
               isUpdating: profile.isUpdating,
               onUpdate: () => globalState.appController.updateProfile(profile),
               buyPlanUrl: buyPlanUrl,
@@ -205,19 +281,14 @@ class HeroConnect extends ConsumerWidget {
           ],
           if (serviceLinks.isNotEmpty) ...[
             const SizedBox(height: 12),
-            _ServiceLinksCard(links: serviceLinks),
+            _ServiceLinksCard(
+              links: serviceLinks,
+              isAndroidTV: false,
+            ),
           ],
           if (showBuyTraffic) ...[
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: OutlinedButton.icon(
-                onPressed: () => unawaited(globalState.openUrl(buyTrafficUrl!)),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(appLocalizations.buyMoreTraffic),
-              ),
-            ),
+            buyTrafficButton(),
           ],
         ],
       ),
@@ -231,6 +302,7 @@ class HomeActionArea extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(startButtonSelectorStateProvider);
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     return ValueListenableBuilder<AppUpdateState?>(
       valueListenable: globalState.appController.appUpdateState,
       builder: (context, updateState, _) {
@@ -274,7 +346,12 @@ class HomeActionArea extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                0,
+                isAndroidTV ? 48 : 16,
+                isAndroidTV ? 24 : 16,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -296,115 +373,63 @@ class _ServiceIdentity extends StatelessWidget {
   const _ServiceIdentity({
     required this.name,
     required this.logoUrl,
+    required this.isAndroidTV,
   });
 
   final String name;
   final String? logoUrl;
+  final bool isAndroidTV;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
-          final logoSize = (constraints.maxWidth * 0.34).clamp(112.0, 136.0);
-          return SizedBox(
-            height: logoSize,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox.square(
-                  dimension: logoSize,
-                  child: _ExpressiveLogo(logoUrl: logoUrl),
+          final logoSize = isAndroidTV
+              ? 88.0
+              : (constraints.maxWidth * 0.34).clamp(112.0, 136.0);
+          return Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: isAndroidTV ? 360 : constraints.maxWidth,
+              ),
+              child: SizedBox(
+                height: logoSize,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox.square(
+                      dimension: logoSize,
+                      child: _ExpressiveLogo(logoUrl: logoUrl),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _ExpressiveServiceName(name: name),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _ExpressiveServiceName(name: name),
-                ),
-              ],
+              ),
             ),
           );
         },
       );
 }
 
-class _ExpressiveLogo extends StatefulWidget {
+class _ExpressiveLogo extends StatelessWidget {
   const _ExpressiveLogo({required this.logoUrl});
 
   final String? logoUrl;
 
   @override
-  State<_ExpressiveLogo> createState() => _ExpressiveLogoState();
-}
-
-class _ExpressiveLogoState extends State<_ExpressiveLogo> {
-  Future<Uint8List?>? _loadFuture;
-  Uint8List? _initialBytes;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _ExpressiveLogo oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.logoUrl != widget.logoUrl) _load();
-  }
-
-  void _load() {
-    final url = widget.logoUrl;
-    _initialBytes = url == null ? null : serviceLogoCache.get(url);
-    _loadFuture = url == null ? null : serviceLogoCache.load(url);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final fallback = Image.asset(
-      'assets/images/icon.png',
-      fit: BoxFit.cover,
-    );
-    final url = widget.logoUrl;
-    final logo = url == null || url.isEmpty
-        ? fallback
-        : FutureBuilder<Uint8List?>(
-            future: _loadFuture,
-            initialData: _initialBytes,
-            builder: (_, snapshot) {
-              final bytes = snapshot.data ?? _initialBytes;
-              if (bytes == null) {
-                return snapshot.connectionState == ConnectionState.done
-                    ? fallback
-                    : const SizedBox.expand();
-              }
-              final isSvg =
-                  Uri.tryParse(url)?.path.toLowerCase().endsWith('.svg') ??
-                      false;
-              if (isSvg) {
-                return SvgPicture.memory(
-                  bytes,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => fallback,
-                );
-              }
-              return Image.memory(
-                bytes,
-                fit: BoxFit.cover,
-                gaplessPlayback: true,
-                errorBuilder: (_, __, ___) => fallback,
-              );
-            },
-          );
-
-    return ExcludeSemantics(
-      child: ClipPath(
-        clipper: const _SlantedClipper(),
-        clipBehavior: Clip.antiAlias,
-        child: ColoredBox(
-          color: context.colorScheme.primaryContainer,
-          child: logo,
+  Widget build(BuildContext context) => ExcludeSemantics(
+        child: ClipPath(
+          clipper: const _SlantedClipper(),
+          clipBehavior: Clip.antiAlias,
+          child: ColoredBox(
+            color: context.colorScheme.primaryContainer,
+            child: ServiceLogoImage(url: logoUrl),
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class _SlantedClipper extends CustomClipper<Path> {
@@ -548,6 +573,7 @@ class _ExpressiveServiceName extends StatelessWidget {
 class _SubscriptionCard extends StatelessWidget {
   const _SubscriptionCard({
     required this.sub,
+    required this.isAndroidTV,
     required this.isUpdating,
     required this.onUpdate,
     required this.buyPlanUrl,
@@ -555,6 +581,7 @@ class _SubscriptionCard extends StatelessWidget {
   });
 
   final SubscriptionInfo sub;
+  final bool isAndroidTV;
   final bool isUpdating;
   final VoidCallback? onUpdate;
   final String? buyPlanUrl;
@@ -594,7 +621,7 @@ class _SubscriptionCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isAndroidTV ? 20 : 24),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         color: colorScheme.surfaceContainer,
@@ -652,91 +679,118 @@ class _SubscriptionCard extends StatelessWidget {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            height: _smallButtonHeight,
+            height: isAndroidTV ? 48 : _smallButtonHeight,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Builder(
-                  builder: (buttonContext) => Tooltip(
-                    message: appLocalizations.share,
-                    child: SizedBox(
-                      width: _smallButtonHeight,
-                      child: OutlinedButton(
-                        style: _outlinedGroupButtonStyle(
-                          context,
-                          const BorderRadius.horizontal(
-                            left: Radius.circular(_smallButtonHeight / 2),
-                            right: Radius.circular(8),
-                          ),
-                        ).copyWith(
-                          padding:
-                              const WidgetStatePropertyAll(EdgeInsets.zero),
+                if (!isAndroidTV) ...[
+                  Builder(
+                    builder: (buttonContext) => Tooltip(
+                      message: appLocalizations.share,
+                      child: TVFocusEffect(
+                        enabled: isAndroidTV,
+                        borderRadius: const BorderRadius.horizontal(
+                          left: Radius.circular(_smallButtonHeight / 2),
+                          right: Radius.circular(8),
                         ),
-                        onPressed: (shareUrl?.trim().isNotEmpty ?? false)
-                            ? () => unawaited(_share(buttonContext))
-                            : null,
-                        child: const Icon(
-                          Icons.share_rounded,
-                          size: _smallButtonIconSize,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 2),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: _outlinedGroupButtonStyle(
-                      context,
-                      canRenew
-                          ? BorderRadius.circular(8)
-                          : const BorderRadius.horizontal(
-                              left: Radius.circular(8),
-                              right: Radius.circular(_smallButtonHeight / 2),
-                            ),
-                    ),
-                    onPressed: isUpdating ? null : onUpdate,
-                    icon: SizedBox.square(
-                      dimension: _smallButtonIconSize,
-                      child: isUpdating
-                          ? Center(
-                              child: SizedBox.square(
-                                dimension: _smallProgressIndicatorSize,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
+                        child: SizedBox(
+                          width: _smallButtonHeight,
+                          child: OutlinedButton(
+                            style: _outlinedGroupButtonStyle(
+                              context,
+                              const BorderRadius.horizontal(
+                                left: Radius.circular(_smallButtonHeight / 2),
+                                right: Radius.circular(8),
                               ),
-                            )
-                          : const Icon(
-                              Icons.refresh_rounded,
+                            ).copyWith(
+                              padding:
+                                  const WidgetStatePropertyAll(EdgeInsets.zero),
+                            ),
+                            onPressed: (shareUrl?.trim().isNotEmpty ?? false)
+                                ? () => unawaited(_share(buttonContext))
+                                : null,
+                            child: const Icon(
+                              Icons.share_rounded,
                               size: _smallButtonIconSize,
                             ),
-                    ),
-                    label: Text(appLocalizations.update),
-                  ),
-                ),
-                if (canRenew) ...[
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: FilledButton.tonalIcon(
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        shape: const StadiumBorder(),
-                        textStyle: context.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                      onPressed: () =>
-                          unawaited(globalState.openUrl(buyPlanUrl!)),
-                      icon: const Icon(
-                        Icons.credit_card_rounded,
-                        size: _smallButtonIconSize,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                ],
+                Expanded(
+                  child: Builder(builder: (context) {
+                    final updateRadius = isAndroidTV
+                        ? BorderRadius.circular(24)
+                        : canRenew
+                            ? BorderRadius.circular(8)
+                            : const BorderRadius.horizontal(
+                                left: Radius.circular(8),
+                                right: Radius.circular(_smallButtonHeight / 2),
+                              );
+                    final button = TVFocusEffect(
+                      enabled: isAndroidTV,
+                      borderRadius: updateRadius,
+                      scrollAlignment: 0.5,
+                      child: OutlinedButton.icon(
+                        style: _outlinedGroupButtonStyle(
+                          context,
+                          updateRadius,
+                        ),
+                        onPressed: isUpdating ? null : onUpdate,
+                        icon: SizedBox.square(
+                          dimension: _smallButtonIconSize,
+                          child: isUpdating
+                              ? Center(
+                                  child: SizedBox.square(
+                                    dimension: _smallProgressIndicatorSize,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.refresh_rounded,
+                                  size: _smallButtonIconSize,
+                                ),
+                        ),
+                        label: Text(appLocalizations.update),
                       ),
-                      label: Text(
-                        isLifetime
-                            ? appLocalizations.plans
-                            : appLocalizations.renew,
+                    );
+                    return isAndroidTV ? TVDrawerEdge(child: button) : button;
+                  }),
+                ),
+                if (canRenew) ...[
+                  SizedBox(width: isAndroidTV ? 8 : 2),
+                  Expanded(
+                    child: TVFocusEffect(
+                      enabled: isAndroidTV,
+                      borderRadius: BorderRadius.circular(
+                        isAndroidTV ? 24 : _smallButtonHeight / 2,
+                      ),
+                      scrollAlignment: 0.5,
+                      child: FilledButton.tonalIcon(
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          shape: const StadiumBorder(),
+                          textStyle: context.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onPressed: () =>
+                            unawaited(globalState.openUrl(buyPlanUrl!)),
+                        icon: const Icon(
+                          Icons.credit_card_rounded,
+                          size: _smallButtonIconSize,
+                        ),
+                        label: Text(
+                          isLifetime
+                              ? appLocalizations.plans
+                              : appLocalizations.renew,
+                        ),
                       ),
                     ),
                   ),
@@ -848,7 +902,15 @@ class _ConnectButton extends ConsumerStatefulWidget {
 }
 
 class _ConnectButtonState extends ConsumerState<_ConnectButton> {
+  final FocusNode _focusNode = FocusNode(debugLabel: 'TV connect button');
   bool _isChanging = false;
+  bool _hasRequestedTVFocus = false;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _toggle(bool isStart) async {
     if (_isChanging) return;
@@ -871,7 +933,19 @@ class _ConnectButtonState extends ConsumerState<_ConnectButton> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     final runTime = ref.watch(runTimeProvider);
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     final isStart = runTime != null;
+
+    if (isAndroidTV && widget.isReady && !_hasRequestedTVFocus) {
+      _hasRequestedTVFocus = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted &&
+            !isTVNavigationDrawerFocused &&
+            _focusNode.canRequestFocus) {
+          _focusNode.requestFocus();
+        }
+      });
+    }
 
     final Color bg;
     final Color fg;
@@ -889,65 +963,72 @@ class _ConnectButtonState extends ConsumerState<_ConnectButton> {
     return SizedBox(
       width: double.infinity,
       height: 56,
-      child: FilledButton(
-        autofocus: true,
-        style: FilledButton.styleFrom(
-          backgroundColor: bg,
-          foregroundColor: fg,
-          disabledBackgroundColor: bg,
-          disabledForegroundColor: fg,
-          shape: const StadiumBorder(),
+      child: TVFocusEffect(
+        enabled: isAndroidTV,
+        borderRadius: BorderRadius.circular(28),
+        scrollAlignment: 0,
+        child: FilledButton(
+          focusNode: _focusNode,
+          autofocus: !isAndroidTV,
+          style: FilledButton.styleFrom(
+            backgroundColor: bg,
+            foregroundColor: fg,
+            disabledBackgroundColor: bg,
+            disabledForegroundColor: fg,
+            shape: const StadiumBorder(),
+          ),
+          onPressed: widget.isReady && !_isChanging
+              ? () => unawaited(_toggle(isStart))
+              : null,
+          child: isStart
+              ? Row(
+                  children: [
+                    const Icon(Icons.pause_rounded, size: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      appLocalizations.disableVpn,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: fg,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      utils.getTimeText(runTime),
+                      style: context.textTheme.titleSmall?.copyWith(
+                        color: fg,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        fontFamily: FontFamily.jetBrainsMono.value,
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.play_arrow_rounded, size: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      appLocalizations.enableVpn,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: fg,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
         ),
-        onPressed: widget.isReady && !_isChanging
-            ? () => unawaited(_toggle(isStart))
-            : null,
-        child: isStart
-            ? Row(
-                children: [
-                  const Icon(Icons.pause_rounded, size: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    appLocalizations.disableVpn,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      color: fg,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    utils.getTimeText(runTime),
-                    style: context.textTheme.titleSmall?.copyWith(
-                      color: fg,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                      fontFamily: FontFamily.jetBrainsMono.value,
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.play_arrow_rounded, size: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    appLocalizations.enableVpn,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      color: fg,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
       ),
     );
   }
 }
 
 class _AppUpdateBanner extends StatelessWidget {
-  const _AppUpdateBanner({required this.state});
+  const _AppUpdateBanner({required this.state, this.isAndroidTV = false});
 
   final AppUpdateState state;
+  final bool isAndroidTV;
 
   String _message() => switch (state.phase) {
         AppUpdatePhase.available => appLocalizations.appUpdateAvailable,
@@ -1011,6 +1092,30 @@ class _AppUpdateBanner extends StatelessWidget {
     final isAvailable = state.phase == AppUpdatePhase.available;
     final isDownloading = state.phase == AppUpdatePhase.downloading;
     final isInstalling = state.phase == AppUpdatePhase.installing;
+    final action = OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colorScheme.onTertiaryContainer,
+        minimumSize: Size(0, isAndroidTV ? 48 : 40),
+        padding: EdgeInsets.symmetric(horizontal: isAndroidTV ? 20 : 14),
+        side: BorderSide(
+          color: colorScheme.onTertiaryContainer.withValues(alpha: 0.48),
+        ),
+        shape: const StadiumBorder(),
+        textStyle: context.textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onPressed: _action(),
+      child: isInstalling
+          ? SizedBox.square(
+              dimension: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colorScheme.onTertiaryContainer,
+              ),
+            )
+          : Text(_actionLabel()),
+    );
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 72),
@@ -1032,7 +1137,10 @@ class _AppUpdateBanner extends StatelessWidget {
                     if (isAvailable) ...[
                       Text(
                         _message(),
-                        style: context.textTheme.bodySmall?.copyWith(
+                        style: (isAndroidTV
+                                ? context.textTheme.bodyMedium
+                                : context.textTheme.bodySmall)
+                            ?.copyWith(
                           color: colorScheme.onTertiaryContainer,
                           fontWeight: FontWeight.w500,
                         ),
@@ -1069,31 +1177,16 @@ class _AppUpdateBanner extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colorScheme.onTertiaryContainer,
-                  minimumSize: const Size(0, 40),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  side: BorderSide(
-                    color:
-                        colorScheme.onTertiaryContainer.withValues(alpha: 0.48),
+              if (isAndroidTV)
+                TVDrawerEdge(
+                  child: TVFocusEffect(
+                    enabled: true,
+                    borderRadius: BorderRadius.circular(24),
+                    child: action,
                   ),
-                  shape: const StadiumBorder(),
-                  textStyle: context.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                onPressed: _action(),
-                child: isInstalling
-                    ? SizedBox.square(
-                        dimension: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: colorScheme.onTertiaryContainer,
-                        ),
-                      )
-                    : Text(_actionLabel()),
-              ),
+                )
+              else
+                action,
             ],
           ),
         ],
@@ -1220,16 +1313,22 @@ class _ServiceLink {
 }
 
 class _ServiceLinksCard extends StatelessWidget {
-  const _ServiceLinksCard({required this.links});
+  const _ServiceLinksCard({
+    required this.links,
+    required this.isAndroidTV,
+    this.drawerAtLeft = false,
+  });
 
   final List<_ServiceLink> links;
+  final bool isAndroidTV;
+  final bool drawerAtLeft;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isAndroidTV ? 20 : 24),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHigh,
@@ -1238,24 +1337,47 @@ class _ServiceLinksCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 14),
-            child: Text(
-              appLocalizations.serviceLinks,
-              style: context.textTheme.titleLarge?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+          Text(
+            appLocalizations.serviceLinks,
+            style: context.textTheme.titleLarge?.copyWith(
+              fontSize: 20,
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          for (var index = 0; index < links.length; index++) ...[
-            _ServiceLinkButton(
-              link: links[index],
-              isFirst: index == 0,
-              isLast: index == links.length - 1,
-            ),
-            if (index != links.length - 1) const SizedBox(height: 2),
-          ],
+          const SizedBox(height: 12),
+          if (isAndroidTV)
+            LayoutBuilder(builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 640 ? 2 : 1;
+              final width =
+                  (constraints.maxWidth - 12 * (columns - 1)) / columns;
+              return Wrap(spacing: 12, runSpacing: 2, children: [
+                for (var index = 0; index < links.length; index++)
+                  SizedBox(
+                      width: width,
+                      child: Builder(builder: (_) {
+                        final button = _ServiceLinkButton(
+                          link: links[index],
+                          isFirst: index < columns,
+                          isLast: index + columns >= links.length,
+                          isAndroidTV: true,
+                        );
+                        return drawerAtLeft && index % columns == 0
+                            ? TVDrawerEdge(child: button)
+                            : button;
+                      })),
+              ]);
+            })
+          else
+            for (var index = 0; index < links.length; index++) ...[
+              _ServiceLinkButton(
+                link: links[index],
+                isFirst: index == 0,
+                isLast: index == links.length - 1,
+                isAndroidTV: false,
+              ),
+              if (index != links.length - 1) const SizedBox(height: 2),
+            ],
         ],
       ),
     );
@@ -1267,11 +1389,13 @@ class _ServiceLinkButton extends StatefulWidget {
     required this.link,
     required this.isFirst,
     required this.isLast,
+    required this.isAndroidTV,
   });
 
   final _ServiceLink link;
   final bool isFirst;
   final bool isLast;
+  final bool isAndroidTV;
 
   @override
   State<_ServiceLinkButton> createState() => _ServiceLinkButtonState();
@@ -1292,55 +1416,62 @@ class _ServiceLinkButtonState extends State<_ServiceLinkButton> {
       bottomRight: widget.isLast ? outerRadius : innerRadius,
     );
 
-    return AnimatedScale(
-      scale: _isPressed ? 0.985 : 1,
-      duration: const Duration(milliseconds: 120),
-      curve: Curves.easeOutCubic,
-      child: Material(
-        color: colorScheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(borderRadius: borderRadius),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => unawaited(globalState.openUrl(widget.link.url)),
-          onHighlightChanged: (value) {
-            if (_isPressed != value) setState(() => _isPressed = value);
-          },
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 60),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(13),
-                    ),
-                    child: Icon(
-                      widget.link.icon,
-                      size: 22,
-                      color: colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      widget.link.label,
-                      style: context.textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurface,
+    return TVFocusEffect(
+      enabled: widget.isAndroidTV,
+      borderRadius: borderRadius,
+      scrollAlignment: 0.55,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.985 : 1,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        child: Material(
+          color: colorScheme.surfaceContainerHighest,
+          shape: RoundedRectangleBorder(borderRadius: borderRadius),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            focusColor: colorScheme.primary.withValues(alpha: 0.24),
+            onTap: () => unawaited(globalState.openUrl(widget.link.url)),
+            onHighlightChanged: (value) {
+              if (_isPressed != value) setState(() => _isPressed = value);
+            },
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 60),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      child: Icon(
+                        widget.link.icon,
+                        size: 22,
+                        color: colorScheme.onSecondaryContainer,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Icon(
-                    Icons.open_in_new_rounded,
-                    size: 20,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ],
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        widget.link.label,
+                        style: context.textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.open_in_new_rounded,
+                      size: 20,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1368,9 +1499,11 @@ class _SupportCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = context.colorScheme;
     final isMobileView = ref.watch(isMobileViewProvider);
+    final isTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(isTV ? 20 : 14),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHigh,
@@ -1412,15 +1545,15 @@ class _SupportCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _buildAction(context, isMobileView),
+          _buildAction(context, isMobileView || isTV),
         ],
       ),
     );
   }
 
-  Widget _buildAction(BuildContext context, bool isMobileView) {
+  Widget _buildAction(BuildContext context, bool useMethodsSheet) {
     if (_hasUrl && _hasEmail) {
-      if (isMobileView) {
+      if (useMethodsSheet) {
         return _SupportButton(
           icon: const Icon(
             Icons.edit_rounded,
@@ -1496,6 +1629,7 @@ class _SupportCard extends ConsumerWidget {
       context: context,
       props: const SheetProps(
         maxWidth: 420,
+        maxHeight: 280,
         isScrollControlled: true,
       ),
       builder: (_, type) => AdaptiveSheetScaffold(
@@ -1517,7 +1651,7 @@ class _SupportCard extends ConsumerWidget {
   }
 }
 
-class _SupportButton extends StatelessWidget {
+class _SupportButton extends ConsumerWidget {
   const _SupportButton({
     required this.icon,
     required this.onPressed,
@@ -1529,9 +1663,16 @@ class _SupportButton extends StatelessWidget {
   final bool showMenuIndicator;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+    return TVFocusEffect(
+      enabled: isAndroidTV,
+      borderRadius:
+          BorderRadius.circular(isAndroidTV ? 24 : _smallButtonHeight / 2),
+      scrollAlignment: 0.55,
+      child: SizedBox(
         width: double.infinity,
-        height: _smallButtonHeight,
+        height: isAndroidTV ? 48 : _smallButtonHeight,
         child: FilledButton.tonal(
           onPressed: onPressed,
           child: Row(
@@ -1547,17 +1688,20 @@ class _SupportButton extends StatelessWidget {
             ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
-class _SupportMethodList extends StatelessWidget {
+class _SupportMethodList extends ConsumerWidget {
   const _SupportMethodList({required this.supportUrl});
 
   final String supportUrl;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isTelegram = _isTelegramUrl(supportUrl);
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     final methods = [
       (
         method: _SupportMethod.website,
@@ -1585,6 +1729,7 @@ class _SupportMethodList extends StatelessWidget {
           title: method.title,
           isFirst: index == 0,
           isLast: index == methods.length - 1,
+          isAndroidTV: isAndroidTV,
           onPressed: () => Navigator.of(context).pop(method.method),
         );
       },
@@ -1598,6 +1743,7 @@ class _SupportMethodOption extends StatelessWidget {
     required this.title,
     required this.isFirst,
     required this.isLast,
+    required this.isAndroidTV,
     required this.onPressed,
   });
 
@@ -1605,6 +1751,7 @@ class _SupportMethodOption extends StatelessWidget {
   final String title;
   final bool isFirst;
   final bool isLast;
+  final bool isAndroidTV;
   final VoidCallback onPressed;
 
   @override
@@ -1619,48 +1766,54 @@ class _SupportMethodOption extends StatelessWidget {
       bottomRight: isLast ? outerRadius : innerRadius,
     );
 
-    return Material(
-      color: colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(borderRadius: borderRadius),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onPressed,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 72),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: IconTheme(
-                    data: IconThemeData(
-                      color: colorScheme.onSecondaryContainer,
+    return TVFocusEffect(
+      enabled: isAndroidTV,
+      borderRadius: borderRadius,
+      child: Material(
+        color: colorScheme.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(borderRadius: borderRadius),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          autofocus: isAndroidTV && isFirst,
+          focusColor: colorScheme.primary.withValues(alpha: 0.24),
+          onTap: onPressed,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 72),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: icon,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    child: IconTheme(
+                      data: IconThemeData(
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                      child: icon,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
