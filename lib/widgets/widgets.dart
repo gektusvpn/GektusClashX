@@ -26,6 +26,7 @@ export 'pop_scope.dart';
 export 'popup.dart';
 export 'scaffold.dart';
 export 'scroll.dart';
+export 'service_logo.dart';
 export 'setting.dart';
 export 'sheet.dart';
 export 'side_sheet.dart';
