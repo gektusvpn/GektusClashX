@@ -37,6 +37,14 @@ class ToolsView extends ConsumerStatefulWidget {
 }
 
 class _ToolboxViewState extends ConsumerState<ToolsView> {
+  final _firstTVFocusNode = FocusNode(debugLabel: 'TV settings first item');
+
+  @override
+  void dispose() {
+    _firstTVFocusNode.dispose();
+    super.dispose();
+  }
+
   ListItem<dynamic> _buildNavigationMenuItem(NavigationItem navigationItem) =>
       ListItem.open(
         leading: _SettingsLeading(child: navigationItem.icon),
@@ -76,14 +84,15 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
               item.label != PageLabel.resources,
         )
         .toList();
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
 
-    return ListView(
+    final content = ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
         _SettingsSection(
           title: appLocale.app,
           children: [
-            const _LocaleItem(),
+            _LocaleItem(focusNode: _firstTVFocusNode),
             const _ThemeItem(),
             const _SettingItem(),
             if (system.isDesktop) const _HotkeyItem(),
@@ -113,19 +122,44 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
         ),
       ],
     );
+    if (!isAndroidTV) return content;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 28, 16, 4),
+          child: Text(
+            appLocale.settings,
+            style: context.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Align(
+            alignment: AlignmentDirectional.topStart,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: TVDrawerEdge(child: content),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
-class _SettingsSection extends StatelessWidget {
+class _SettingsSection extends ConsumerWidget {
   const _SettingsSection({this.title, required this.children});
 
   final String? title;
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const outerRadius = Radius.circular(24);
     const innerRadius = Radius.circular(6);
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
@@ -142,34 +176,47 @@ class _SettingsSection extends StatelessWidget {
                 ),
               ),
             ),
-          for (var index = 0; index < children.length; index++)
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: index == children.length - 1 ? 0 : 2,
-              ),
-              child: Material(
-                color: context.colorScheme.surfaceContainerHigh
-                    .withValues(alpha: 0.88),
-                shape: RoundedSuperellipseBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: index == 0 ? outerRadius : innerRadius,
-                    topRight: index == 0 ? outerRadius : innerRadius,
-                    bottomLeft: index == children.length - 1
-                        ? outerRadius
-                        : innerRadius,
-                    bottomRight: index == children.length - 1
-                        ? outerRadius
-                        : innerRadius,
+          for (var index = 0; index < children.length; index++) ...[
+            Builder(
+              builder: (context) {
+                final borderRadius = isAndroidTV
+                    ? BorderRadius.circular(16)
+                    : BorderRadius.only(
+                        topLeft: index == 0 ? outerRadius : innerRadius,
+                        topRight: index == 0 ? outerRadius : innerRadius,
+                        bottomLeft: index == children.length - 1
+                            ? outerRadius
+                            : innerRadius,
+                        bottomRight: index == children.length - 1
+                            ? outerRadius
+                            : innerRadius,
+                      );
+                return TVFocusEffect(
+                  enabled: isAndroidTV,
+                  scrollAlignment: 0.5,
+                  borderRadius: borderRadius,
+                  child: Material(
+                    color: isAndroidTV
+                        ? context.colorScheme.surfaceContainerLow
+                            .withValues(alpha: 0.94)
+                        : context.colorScheme.surfaceContainerHigh
+                            .withValues(alpha: 0.88),
+                    shape: RoundedSuperellipseBorder(
+                      borderRadius: borderRadius,
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: ListTileTheme.merge(
+                      minTileHeight: isAndroidTV ? 64 : 72,
+                      titleAlignment: ListTileTitleAlignment.center,
+                      child: children[index],
+                    ),
                   ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: ListTileTheme.merge(
-                  minTileHeight: 72,
-                  titleAlignment: ListTileTitleAlignment.center,
-                  child: children[index],
-                ),
-              ),
+                );
+              },
             ),
+            if (index != children.length - 1)
+              SizedBox(height: isAndroidTV ? 4 : 2),
+          ],
         ],
       ),
     );
@@ -211,7 +258,9 @@ class _SettingsChevron extends StatelessWidget {
 }
 
 class _LocaleItem extends ConsumerWidget {
-  const _LocaleItem();
+  const _LocaleItem({this.focusNode});
+
+  final FocusNode? focusNode;
 
   String _getLocaleString(BuildContext context, Locale? locale) {
     if (locale == null) return AppLocalizations.of(context).defaultText;
@@ -226,6 +275,7 @@ class _LocaleItem extends ConsumerWidget {
     final subTitle = locale ?? appLocale.defaultText;
     final currentLocale = utils.getLocaleForString(locale);
     return ListItem<Locale?>.options(
+      focusNode: focusNode,
       leading: const _SettingsLeading(
         child: Icon(Icons.language_rounded),
       ),

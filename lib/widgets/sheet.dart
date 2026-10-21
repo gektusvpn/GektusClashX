@@ -1,10 +1,12 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/models/models.dart';
+import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
-import 'package:flutter/material.dart';
 
 import 'scaffold.dart';
 import 'side_sheet.dart';
@@ -14,12 +16,16 @@ class SheetProps {
   const SheetProps({
     this.maxWidth,
     this.maxHeight,
+    this.fitContent = false,
     this.useSafeArea = true,
     this.isScrollControlled = false,
     this.blur = true,
   });
   final double? maxWidth;
   final double? maxHeight;
+
+  /// Let TV dialogs shrink to their contents within [maxHeight].
+  final bool fitContent;
   final bool isScrollControlled;
   final bool useSafeArea;
   final bool blur;
@@ -41,6 +47,7 @@ enum SheetType {
   page,
   bottomSheet,
   sideSheet,
+  tvDialog,
 }
 
 typedef SheetBuilder = Widget Function(BuildContext context, SheetType type);
@@ -49,7 +56,14 @@ Future<T?> showSheet<T>({
   required BuildContext context,
   required SheetBuilder builder,
   SheetProps props = const SheetProps(),
-}) {
+}) async {
+  final isTV = await ProviderScope.containerOf(context, listen: false)
+      .read(isAndroidTVProvider.future);
+  if (!context.mounted) return null;
+  if (isTV) {
+    return _showTVSheet(context, builder, props.maxWidth,
+        height: props.maxHeight ?? 440, fitContent: props.fitContent);
+  }
   final isMobile = globalState.appState.viewMode == ViewMode.mobile;
   return switch (isMobile) {
     true => showModalBottomSheet<T>(
@@ -82,7 +96,13 @@ Future<T?> showExtend<T>(
   BuildContext context, {
   required SheetBuilder builder,
   ExtendProps props = const ExtendProps(),
-}) {
+}) async {
+  final isTV = await ProviderScope.containerOf(context, listen: false)
+      .read(isAndroidTVProvider.future);
+  if (!context.mounted) return null;
+  if (isTV) {
+    return _showTVSheet(context, builder, props.maxWidth);
+  }
   final isMobile = globalState.appState.viewMode == ViewMode.mobile;
   return switch (isMobile) {
     true => BaseNavigator.push(
@@ -101,7 +121,28 @@ Future<T?> showExtend<T>(
   };
 }
 
-class AdaptiveSheetScaffold extends StatefulWidget {
+Future<T?> _showTVSheet<T>(
+        BuildContext context, SheetBuilder builder, double? maxWidth,
+        {double height = 440, bool fitContent = false}) =>
+    showDialog<T>(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (context) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 48, vertical: 28),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: SizedBox(
+          width: (maxWidth ?? 640).clamp(480.0, 800.0),
+          height: fitContent ? null : height,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: height),
+            child: builder(context, SheetType.tvDialog),
+          ),
+        ),
+      ),
+    );
+
+class AdaptiveSheetScaffold extends ConsumerStatefulWidget {
   const AdaptiveSheetScaffold({
     super.key,
     required this.type,
@@ -109,21 +150,72 @@ class AdaptiveSheetScaffold extends StatefulWidget {
     required this.title,
     this.actions = const [],
     this.disableBackground = true,
+    this.fitContent = false,
   });
   final SheetType type;
   final Widget body;
   final String title;
   final List<Widget> actions;
   final bool disableBackground;
+  final bool fitContent;
 
   @override
-  State<AdaptiveSheetScaffold> createState() => _AdaptiveSheetScaffoldState();
+  ConsumerState<AdaptiveSheetScaffold> createState() =>
+      _AdaptiveSheetScaffoldState();
 }
 
-class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
+class _AdaptiveSheetScaffoldState extends ConsumerState<AdaptiveSheetScaffold> {
+  final _tvScope = FocusScopeNode(debugLabel: 'TV sheet content');
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.type == SheetType.tvDialog) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ReadingOrderTraversalPolicy()
+            .findFirstFocus(_tvScope, ignoreCurrentFocus: true)
+            ?.requestFocus();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _tvScope.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    if (widget.type == SheetType.tvDialog) {
+      return Material(
+        color: colorScheme.surfaceContainerHigh,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+              mainAxisSize:
+                  widget.fitContent ? MainAxisSize.min : MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+                  child: Row(children: [
+                    Expanded(
+                        child: Text(widget.title,
+                            style: context.textTheme.headlineSmall)),
+                    ...widget.actions,
+                  ]),
+                ),
+                Flexible(
+                  fit: widget.fitContent ? FlexFit.loose : FlexFit.tight,
+                  child: FocusScope(node: _tvScope, child: widget.body),
+                ),
+              ]),
+        ),
+      );
+    }
+    final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     final bottomSheet = widget.type == SheetType.bottomSheet;
     final sideSheet = widget.type == SheetType.sideSheet;
     final backgroundColor = sideSheet
@@ -131,11 +223,13 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
         : colorScheme.surface.withValues(alpha: 0.92);
     final appBar = AppBar(
       forceMaterialTransparency: bottomSheet ? true : false,
-      automaticallyImplyLeading: bottomSheet
+      automaticallyImplyLeading: isAndroidTV
           ? false
-          : widget.actions.isEmpty && sideSheet
+          : bottomSheet
               ? false
-              : true,
+              : widget.actions.isEmpty && sideSheet
+                  ? false
+                  : true,
       centerTitle: bottomSheet,
       backgroundColor: backgroundColor,
       title: Text(
@@ -145,7 +239,8 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
         ),
       ),
       actions: genActions([
-        if (widget.actions.isEmpty && sideSheet) const CloseButton(),
+        if (!isAndroidTV && widget.actions.isEmpty && sideSheet)
+          const CloseButton(),
         ...widget.actions,
       ]),
     );

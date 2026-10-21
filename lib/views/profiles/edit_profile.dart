@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -11,6 +12,7 @@ import 'package:gektusclashx/pages/editor_window.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({
@@ -30,6 +32,10 @@ class _EditProfileViewState extends State<EditProfileView> {
   late TextEditingController urlController;
   late TextEditingController autoUpdateDurationController;
   late bool autoUpdate;
+  late final FocusNode _labelFocus;
+  late final FocusNode _urlFocus;
+  late final FocusNode _intervalFocus;
+  bool _isAndroidTV = false;
   String? rawText;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final fileInfoNotifier = ValueNotifier<FileInfo?>(null);
@@ -40,6 +46,14 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
     super.initState();
+    _labelFocus = FocusNode(onKeyEvent: _handleFieldNavigation);
+    _urlFocus = FocusNode(onKeyEvent: _handleFieldNavigation);
+    _intervalFocus = FocusNode(onKeyEvent: _handleFieldNavigation);
+    unawaited(system.isAndroidTV.then((isTV) {
+      if (mounted && _isAndroidTV != isTV) {
+        setState(() => _isAndroidTV = isTV);
+      }
+    }));
     labelController = TextEditingController(text: widget.profile.label);
     urlController = TextEditingController(text: widget.profile.url);
     autoUpdate = widget.profile.autoUpdate;
@@ -47,8 +61,38 @@ class _EditProfileViewState extends State<EditProfileView> {
       text: widget.profile.autoUpdateDuration.inMinutes.toString(),
     );
     appPath.getProfilePath(widget.profile.id).then((path) async {
-      fileInfoNotifier.value = await _getFileInfo(path);
+      final info = await _getFileInfo(path);
+      if (mounted) fileInfoNotifier.value = info;
     });
+  }
+
+  KeyEventResult _handleFieldNavigation(FocusNode node, KeyEvent event) {
+    if (!_isAndroidTV || (event is! KeyDownEvent && event is! KeyRepeatEvent)) {
+      return KeyEventResult.ignored;
+    }
+    // After dismissing the TV keyboard, Up/Down should leave the field rather
+    // than moving its caret. Left/Right remain available for editing text.
+    final direction = switch (event.logicalKey) {
+      LogicalKeyboardKey.arrowUp => TraversalDirection.up,
+      LogicalKeyboardKey.arrowDown => TraversalDirection.down,
+      _ => null,
+    };
+    if (direction != null && node.focusInDirection(direction)) {
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  void dispose() {
+    _labelFocus.dispose();
+    _urlFocus.dispose();
+    _intervalFocus.dispose();
+    labelController.dispose();
+    urlController.dispose();
+    autoUpdateDurationController.dispose();
+    fileInfoNotifier.dispose();
+    super.dispose();
   }
 
   Future<void> _handleConfirm() async {
@@ -222,7 +266,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       globalState.homeScaffoldKey.currentContext!,
       editorPage,
     );
-    if (data == null) {
+    if (!mounted || data == null) {
       return;
     }
     rawText = data;
@@ -252,6 +296,7 @@ class _EditProfileViewState extends State<EditProfileView> {
     final items = [
       ListItem(
         title: TextFormField(
+          focusNode: _labelFocus,
           textInputAction: TextInputAction.next,
           controller: labelController,
           decoration: InputDecoration(
@@ -269,6 +314,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       if (widget.profile.type == ProfileType.url) ...[
         ListItem(
           title: TextFormField(
+            focusNode: _urlFocus,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.url,
             controller: urlController,
@@ -299,6 +345,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         if (autoUpdate)
           ListItem(
             title: TextFormField(
+              focusNode: _intervalFocus,
               textInputAction: TextInputAction.next,
               controller: autoUpdateDurationController,
               decoration: InputDecoration(
@@ -346,10 +393,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                         runSpacing: 6,
                         spacing: 12,
                         children: [
-                          CommonChip(
-                            avatar: const Icon(Icons.edit),
-                            label: appLocalizations.edit,
-                            onPressed: _editProfileFile,
+                          TVFocusEffect(
+                            enabled: _isAndroidTV,
+                            borderRadius: BorderRadius.circular(8),
+                            child: CommonChip(
+                              avatar: const Icon(Icons.edit),
+                              label: appLocalizations.edit,
+                              onPressed: _editProfileFile,
+                            ),
                           ),
                         ],
                       ),
@@ -369,11 +420,15 @@ class _EditProfileViewState extends State<EditProfileView> {
       },
       child: FloatLayout(
         floatingWidget: FloatWrapper(
-          child: FloatingActionButton.extended(
-            heroTag: null,
-            onPressed: _handleConfirm,
-            label: Text(appLocalizations.save),
-            icon: const Icon(Icons.save),
+          child: TVFocusEffect(
+            enabled: _isAndroidTV,
+            borderRadius: BorderRadius.circular(16),
+            child: FloatingActionButton.extended(
+              heroTag: null,
+              onPressed: _handleConfirm,
+              label: Text(appLocalizations.save),
+              icon: const Icon(Icons.save),
+            ),
           ),
         ),
         child: Form(
