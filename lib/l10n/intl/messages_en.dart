@@ -23,24 +23,26 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(label) =>
       "Are you sure you want to delete the selected ${label}?";
 
-  static String m1(label) =>
+  static String m1(name) => "Delete profile “${name}”?";
+
+  static String m2(label) =>
       "Are you sure you want to delete the current ${label}?";
 
-  static String m2(label) => "${label} cannot be empty";
+  static String m3(label) => "${label} cannot be empty";
 
-  static String m3(label) => "Current ${label} already exists";
+  static String m4(label) => "Current ${label} already exists";
 
-  static String m4(label) => "No ${label} at the moment";
+  static String m5(label) => "No ${label} at the moment";
 
-  static String m5(label) => "${label} must be a number";
+  static String m6(label) => "${label} must be a number";
 
-  static String m6(label) => "${label} must be between 1024 and 49151";
+  static String m7(label) => "${label} must be between 1024 and 49151";
 
-  static String m7(count) => "${count} items have been selected";
+  static String m8(count) => "${count} items have been selected";
 
-  static String m8(days) => "Your subscription expires in ${days} day(s)";
+  static String m9(days) => "Your subscription expires in ${days} day(s)";
 
-  static String m9(label) => "${label} must be a url";
+  static String m10(label) => "${label} must be a url";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -298,7 +300,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "delaySort": MessageLookupByLibrary.simpleMessage("Sort by delay"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "deleteMultipTip": m0,
-        "deleteTip": m1,
+        "deleteProfileConfirmation": m1,
+        "deleteTip": m2,
         "desc": MessageLookupByLibrary.simpleMessage(
           "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
         ),
@@ -342,7 +345,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "edit": MessageLookupByLibrary.simpleMessage("Edit"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
-        "emptyTip": m2,
+        "emptyTip": m3,
         "en": MessageLookupByLibrary.simpleMessage("English"),
         "enableOverride":
             MessageLookupByLibrary.simpleMessage("Enable override"),
@@ -356,7 +359,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "excludeFromVpn":
             MessageLookupByLibrary.simpleMessage("Exclude from VPN"),
-        "existsTip": m3,
+        "existsTip": m4,
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
         "expand": MessageLookupByLibrary.simpleMessage("Standard"),
         "expandAll": MessageLookupByLibrary.simpleMessage("Expand all"),
@@ -575,8 +578,8 @@ class MessageLookup extends MessageLookupByLibrary {
           "No profile, Please add a profile",
         ),
         "nullScriptTip": MessageLookupByLibrary.simpleMessage("No scripts"),
-        "nullTip": m4,
-        "numberTip": m5,
+        "nullTip": m5,
+        "numberTip": m6,
         "oneColumn": MessageLookupByLibrary.simpleMessage("One column"),
         "oneline": MessageLookupByLibrary.simpleMessage("Oneline"),
         "onlyIcon": MessageLookupByLibrary.simpleMessage("Icon"),
@@ -589,14 +592,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
           "When turned on, only proxy traffic will be counted in statistics",
         ),
+        "openLinkFailed": MessageLookupByLibrary.simpleMessage(
+          "Could not open the link on this device",
+        ),
         "openLogsFolder":
             MessageLookupByLibrary.simpleMessage("Open logs folder"),
+        "openOnPhone":
+            MessageLookupByLibrary.simpleMessage("Open on your phone"),
+        "openOnTV": MessageLookupByLibrary.simpleMessage("Open on TV"),
         "openPanel": MessageLookupByLibrary.simpleMessage("Open panel"),
         "options": MessageLookupByLibrary.simpleMessage("Options"),
         "originalRepository": MessageLookupByLibrary.simpleMessage(
           "Original Repository",
         ),
         "other": MessageLookupByLibrary.simpleMessage("Other"),
+        "otherAddMethods": MessageLookupByLibrary.simpleMessage("Another way"),
         "otherContributors":
             MessageLookupByLibrary.simpleMessage("Contributors"),
         "outboundMode": MessageLookupByLibrary.simpleMessage("Outbound mode"),
@@ -650,7 +660,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "portConflictTip": MessageLookupByLibrary.simpleMessage(
           "Please enter a different port",
         ),
-        "portTip": m6,
+        "portTip": m7,
         "preferH3Desc": MessageLookupByLibrary.simpleMessage(
           "Prioritize the use of DOH\'s http/3",
         ),
@@ -683,6 +693,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "profileParseErrorDesc": MessageLookupByLibrary.simpleMessage(
           "profile parse error",
         ),
+        "profileReceiveFailed": MessageLookupByLibrary.simpleMessage(
+          "Could not add the profile",
+        ),
+        "profileReceived":
+            MessageLookupByLibrary.simpleMessage("Profile added"),
         "profileUrlInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
           "Please input a valid profile URL",
         ),
@@ -718,6 +733,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
         "receiveSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
           "Receive Subscription",
+        ),
+        "receivingProfile": MessageLookupByLibrary.simpleMessage(
+          "Receiving profile…",
         ),
         "recovery": MessageLookupByLibrary.simpleMessage("Recovery"),
         "recoveryAll":
@@ -795,13 +813,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveTip": MessageLookupByLibrary.simpleMessage(
           "Are you sure you want to save?",
         ),
+        "scanLinkWithPhone": MessageLookupByLibrary.simpleMessage(
+          "Scan this code with your phone camera to open the link.",
+        ),
+        "scanProfileWithPhone": MessageLookupByLibrary.simpleMessage(
+          "Scan this code with your phone camera. Keep both devices on the same network, then paste your subscription link on the phone.",
+        ),
         "script": MessageLookupByLibrary.simpleMessage("Script"),
         "search": MessageLookupByLibrary.simpleMessage("Search"),
         "seconds": MessageLookupByLibrary.simpleMessage("Seconds"),
         "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
         "selectProfile": MessageLookupByLibrary.simpleMessage("Select Profile"),
         "selected": MessageLookupByLibrary.simpleMessage("Selected"),
-        "selectedCountTitle": m7,
+        "selectedCountTitle": m8,
         "sendToTv": MessageLookupByLibrary.simpleMessage("Send to TV"),
         "sendToTvTitle": MessageLookupByLibrary.simpleMessage("Send to TV"),
         "sentSuccessfullyMessage": MessageLookupByLibrary.simpleMessage(
@@ -854,7 +878,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpiredStatus": MessageLookupByLibrary.simpleMessage(
           "Expired",
         ),
-        "subscriptionExpiresInDays": m8,
+        "subscriptionExpiresInDays": m9,
         "subscriptionExpiresSoon": MessageLookupByLibrary.simpleMessage(
           "Subscription expires soon",
         ),
@@ -873,6 +897,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "supportMessage": MessageLookupByLibrary.simpleMessage(
           "Have questions? Contact support and we’ll help you find a solution.",
         ),
+        "switchProfile": MessageLookupByLibrary.simpleMessage("Switch profile"),
         "sync": MessageLookupByLibrary.simpleMessage("Sync"),
         "system": MessageLookupByLibrary.simpleMessage("System"),
         "systemApp": MessageLookupByLibrary.simpleMessage("System APP"),
@@ -947,7 +972,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "urlDesc": MessageLookupByLibrary.simpleMessage(
           "Obtain profile through URL",
         ),
-        "urlTip": m9,
+        "urlTip": m10,
         "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
         "useSystemHosts":
             MessageLookupByLibrary.simpleMessage("Use system hosts"),

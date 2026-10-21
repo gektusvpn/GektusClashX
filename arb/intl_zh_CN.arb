@@ -478,5 +478,25 @@
   "zashboardInAppDesc": "使用内置浏览器显示控制面板，无需跳转到外部浏览器",
   "openPanel": "打开面板",
   "downloadingZashboard": "正在下载 Zashboard…",
-  "buyMoreTraffic": "购买更多流量"
+  "buyMoreTraffic": "购买更多流量",
+  "otherAddMethods": "其他方式",
+  "addFromPhoneTitle": "从手机添加",
+  "addFromPhoneSubtitle": "使用手机扫描二维码",
+  "selectProfile": "选择配置",
+  "receiveSubscriptionTitle": "接收订阅",
+  "switchProfile": "切换配置",
+  "deleteProfileConfirmation": "要删除配置“{name}”吗？",
+  "@deleteProfileConfirmation": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "openLinkFailed": "无法在此设备上打开链接",
+  "openOnPhone": "在手机上打开",
+  "openOnTV": "在电视上打开",
+  "scanLinkWithPhone": "使用手机相机扫描此码以打开链接。",
+  "scanProfileWithPhone": "请使用手机相机扫描此二维码。将两台设备连接到同一网络，然后在手机上粘贴订阅链接。",
+  "receivingProfile": "正在接收配置…",
+  "profileReceived": "配置已添加",
+  "profileReceiveFailed": "无法添加配置"
 }

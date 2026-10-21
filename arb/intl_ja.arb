@@ -478,5 +478,25 @@
   "zashboardInAppDesc": "外部ブラウザに切り替えず、内蔵ブラウザでパネルを表示します",
   "openPanel": "パネルを開く",
   "downloadingZashboard": "Zashboard をダウンロード中…",
-  "buyMoreTraffic": "追加トラフィックを購入"
+  "buyMoreTraffic": "追加トラフィックを購入",
+  "otherAddMethods": "別の方法",
+  "addFromPhoneTitle": "スマートフォンから追加",
+  "addFromPhoneSubtitle": "スマートフォンでQRコードをスキャン",
+  "selectProfile": "プロファイルを選択",
+  "receiveSubscriptionTitle": "サブスクリプションを受信",
+  "switchProfile": "プロファイルを切り替える",
+  "deleteProfileConfirmation": "プロファイル「{name}」を削除しますか？",
+  "@deleteProfileConfirmation": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "openLinkFailed": "この端末でリンクを開けませんでした",
+  "openOnPhone": "スマートフォンで開く",
+  "openOnTV": "テレビで開く",
+  "scanLinkWithPhone": "スマートフォンのカメラでコードをスキャンしてリンクを開きます。",
+  "scanProfileWithPhone": "スマートフォンのカメラでコードを読み取ってください。両方のデバイスを同じネットワークに接続し、スマートフォンにサブスクリプションのリンクを貼り付けてください。",
+  "receivingProfile": "プロファイルを受信中…",
+  "profileReceived": "プロファイルを追加しました",
+  "profileReceiveFailed": "プロファイルを追加できませんでした"
 }

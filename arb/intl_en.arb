@@ -498,12 +498,21 @@
   "errorTitle": "Error",
   "invalidQrMessage": "Invalid QR code",
   "sendToTvTitle": "Send to TV",
+  "otherAddMethods": "Another way",
   "addFromPhoneTitle": "Add from Phone",
   "addFromPhoneSubtitle": "Scan QR code with phone",
   "pasteFromClipboard": "Paste",
   "subscriptionUnlimited": "Lifetime Subscription",
   "updated": "Updated",
   "selectProfile": "Select Profile",
+  "switchProfile": "Switch profile",
+  "deleteProfileConfirmation": "Delete profile “{name}”?",
+  "@deleteProfileConfirmation": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "openLinkFailed": "Could not open the link on this device",
   "sendToTv": "Send to TV",
   "support": "Support",
   "supportMessage": "Have questions? Contact support and we’ll help you find a solution.",
@@ -537,5 +546,12 @@
   "zashboardInAppDesc": "Show the control panel in the built-in browser instead of switching to an external one",
   "openPanel": "Open panel",
   "downloadingZashboard": "Downloading Zashboard…",
-  "buyMoreTraffic": "Buy more traffic"
+  "buyMoreTraffic": "Buy more traffic",
+  "openOnPhone": "Open on your phone",
+  "openOnTV": "Open on TV",
+  "scanLinkWithPhone": "Scan this code with your phone camera to open the link.",
+  "scanProfileWithPhone": "Scan this code with your phone camera. Keep both devices on the same network, then paste your subscription link on the phone.",
+  "receivingProfile": "Receiving profile…",
+  "profileReceived": "Profile added",
+  "profileReceiveFailed": "Could not add the profile"
 }

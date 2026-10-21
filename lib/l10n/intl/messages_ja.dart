@@ -22,23 +22,25 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(label) => "選択された${label}を削除してもよろしいですか？";
 
-  static String m1(label) => "現在の${label}を削除してもよろしいですか？";
+  static String m1(name) => "プロファイル「${name}」を削除しますか？";
 
-  static String m2(label) => "${label}は空欄にできません";
+  static String m2(label) => "現在の${label}を削除してもよろしいですか？";
 
-  static String m3(label) => "現在の${label}は既に存在しています";
+  static String m3(label) => "${label}は空欄にできません";
 
-  static String m4(label) => "現在${label}はありません";
+  static String m4(label) => "現在の${label}は既に存在しています";
 
-  static String m5(label) => "${label}は数字でなければなりません";
+  static String m5(label) => "現在${label}はありません";
 
-  static String m6(label) => "${label} は 1024 から 49151 の間でなければなりません";
+  static String m6(label) => "${label}は数字でなければなりません";
 
-  static String m7(count) => "${count} 項目が選択されています";
+  static String m7(label) => "${label} は 1024 から 49151 の間でなければなりません";
 
-  static String m8(days) => "サブスクリプションは${days}日後に期限切れになります";
+  static String m8(count) => "${count} 項目が選択されています";
 
-  static String m9(label) => "${label}はURLである必要があります";
+  static String m9(days) => "サブスクリプションは${days}日後に期限切れになります";
+
+  static String m10(label) => "${label}はURLである必要があります";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -61,6 +63,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "action_tun": MessageLookupByLibrary.simpleMessage("TUN"),
         "action_view": MessageLookupByLibrary.simpleMessage("表示/非表示"),
         "add": MessageLookupByLibrary.simpleMessage("追加"),
+        "addFromPhoneSubtitle": MessageLookupByLibrary.simpleMessage(
+          "スマートフォンでQRコードをスキャン",
+        ),
+        "addFromPhoneTitle":
+            MessageLookupByLibrary.simpleMessage("スマートフォンから追加"),
         "addProfile": MessageLookupByLibrary.simpleMessage("プロファイルを追加"),
         "addRule": MessageLookupByLibrary.simpleMessage("ルールを追加"),
         "addedOriginRules": MessageLookupByLibrary.simpleMessage("元のルールに追加"),
@@ -217,7 +224,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "delaySort": MessageLookupByLibrary.simpleMessage("遅延順"),
         "delete": MessageLookupByLibrary.simpleMessage("削除"),
         "deleteMultipTip": m0,
-        "deleteTip": m1,
+        "deleteProfileConfirmation": m1,
+        "deleteTip": m2,
         "desc": MessageLookupByLibrary.simpleMessage(
           "ClashMetaベースのマルチプラットフォームプロキシクライアント。シンプルで使いやすく、オープンソースで広告なし。",
         ),
@@ -250,7 +258,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "edit": MessageLookupByLibrary.simpleMessage("編集"),
         "email": MessageLookupByLibrary.simpleMessage("メール"),
-        "emptyTip": m2,
+        "emptyTip": m3,
         "en": MessageLookupByLibrary.simpleMessage("英語"),
         "enableOverride": MessageLookupByLibrary.simpleMessage("上書きを有効化"),
         "enableVpn": MessageLookupByLibrary.simpleMessage("有効にする"),
@@ -259,7 +267,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "excludeDesc": MessageLookupByLibrary.simpleMessage(
           "アプリがバックグラウンド時に最近のタスクから非表示",
         ),
-        "existsTip": m3,
+        "existsTip": m4,
         "exit": MessageLookupByLibrary.simpleMessage("終了"),
         "expand": MessageLookupByLibrary.simpleMessage("標準"),
         "expirationTime": MessageLookupByLibrary.simpleMessage("有効期限"),
@@ -415,8 +423,8 @@ class MessageLookup extends MessageLookupByLibrary {
           "プロファイルがありません。追加してください",
         ),
         "nullScriptTip": MessageLookupByLibrary.simpleMessage("スクリプトはありません"),
-        "nullTip": m4,
-        "numberTip": m5,
+        "nullTip": m5,
+        "numberTip": m6,
         "oneColumn": MessageLookupByLibrary.simpleMessage("1列"),
         "oneline": MessageLookupByLibrary.simpleMessage("オンライン"),
         "onlyIcon": MessageLookupByLibrary.simpleMessage("アイコンのみ"),
@@ -425,12 +433,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
           "有効化するとプロキシトラフィックのみ統計",
         ),
+        "openLinkFailed":
+            MessageLookupByLibrary.simpleMessage("この端末でリンクを開けませんでした"),
         "openLogsFolder": MessageLookupByLibrary.simpleMessage("ログフォルダを開く"),
+        "openOnPhone": MessageLookupByLibrary.simpleMessage("スマートフォンで開く"),
+        "openOnTV": MessageLookupByLibrary.simpleMessage("テレビで開く"),
         "openPanel": MessageLookupByLibrary.simpleMessage("パネルを開く"),
         "options": MessageLookupByLibrary.simpleMessage("オプション"),
         "originalRepository":
             MessageLookupByLibrary.simpleMessage("オリジナルリポジトリ"),
         "other": MessageLookupByLibrary.simpleMessage("その他"),
+        "otherAddMethods": MessageLookupByLibrary.simpleMessage("別の方法"),
         "otherContributors": MessageLookupByLibrary.simpleMessage("貢献者"),
         "outboundMode": MessageLookupByLibrary.simpleMessage("アウトバウンドモード"),
         "override": MessageLookupByLibrary.simpleMessage("上書き"),
@@ -476,7 +489,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "port": MessageLookupByLibrary.simpleMessage("ポート"),
         "portConflictTip":
             MessageLookupByLibrary.simpleMessage("別のポートを入力してください"),
-        "portTip": m6,
+        "portTip": m7,
         "preferH3Desc": MessageLookupByLibrary.simpleMessage("DOHのHTTP/3を優先使用"),
         "pressKeyboard": MessageLookupByLibrary.simpleMessage("キーボードを押してください"),
         "preview": MessageLookupByLibrary.simpleMessage("プレビュー"),
@@ -501,6 +514,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "profileParseErrorDesc": MessageLookupByLibrary.simpleMessage(
           "プロファイル解析エラー",
         ),
+        "profileReceiveFailed": MessageLookupByLibrary.simpleMessage(
+          "プロファイルを追加できませんでした",
+        ),
+        "profileReceived":
+            MessageLookupByLibrary.simpleMessage("プロファイルを追加しました"),
         "profileUrlInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
           "有効なプロファイルURLを入力してください",
         ),
@@ -527,6 +545,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "qrcodeDesc":
             MessageLookupByLibrary.simpleMessage("QRコードをスキャンしてプロファイルを取得"),
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
+        "receiveSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
+          "サブスクリプションを受信",
+        ),
+        "receivingProfile": MessageLookupByLibrary.simpleMessage("プロファイルを受信中…"),
         "recovery": MessageLookupByLibrary.simpleMessage("復元"),
         "recoveryAll": MessageLookupByLibrary.simpleMessage("全データ復元"),
         "recoveryProfiles": MessageLookupByLibrary.simpleMessage("プロファイルのみ復元"),
@@ -578,12 +600,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "save": MessageLookupByLibrary.simpleMessage("保存"),
         "saveChanges": MessageLookupByLibrary.simpleMessage("変更を保存しますか？"),
         "saveTip": MessageLookupByLibrary.simpleMessage("保存してもよろしいですか？"),
+        "scanLinkWithPhone": MessageLookupByLibrary.simpleMessage(
+          "スマートフォンのカメラでコードをスキャンしてリンクを開きます。",
+        ),
+        "scanProfileWithPhone": MessageLookupByLibrary.simpleMessage(
+          "スマートフォンのカメラでコードを読み取ってください。両方のデバイスを同じネットワークに接続し、スマートフォンにサブスクリプションのリンクを貼り付けてください。",
+        ),
         "script": MessageLookupByLibrary.simpleMessage("スクリプト"),
         "search": MessageLookupByLibrary.simpleMessage("検索"),
         "seconds": MessageLookupByLibrary.simpleMessage("秒"),
         "selectAll": MessageLookupByLibrary.simpleMessage("すべて選択"),
+        "selectProfile": MessageLookupByLibrary.simpleMessage("プロファイルを選択"),
         "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
-        "selectedCountTitle": m7,
+        "selectedCountTitle": m8,
         "serverStatus": MessageLookupByLibrary.simpleMessage("サーバーの状態"),
         "serviceChannel": MessageLookupByLibrary.simpleMessage("チャンネル"),
         "serviceLinks": MessageLookupByLibrary.simpleMessage("リンク"),
@@ -613,7 +642,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpired": MessageLookupByLibrary.simpleMessage(
           "サブスクリプションが期限切れになりました",
         ),
-        "subscriptionExpiresInDays": m8,
+        "subscriptionExpiresInDays": m9,
         "subscriptionExpiresSoon": MessageLookupByLibrary.simpleMessage(
           "サブスクリプションがまもなく期限切れ",
         ),
@@ -626,6 +655,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "supportMessage": MessageLookupByLibrary.simpleMessage(
           "ご質問がある場合は、サポートまでお問い合わせください。解決をお手伝いします。",
         ),
+        "switchProfile": MessageLookupByLibrary.simpleMessage("プロファイルを切り替える"),
         "sync": MessageLookupByLibrary.simpleMessage("同期"),
         "system": MessageLookupByLibrary.simpleMessage("システム"),
         "systemApp": MessageLookupByLibrary.simpleMessage("システムアプリ"),
@@ -679,7 +709,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
         "url": MessageLookupByLibrary.simpleMessage("URL"),
         "urlDesc": MessageLookupByLibrary.simpleMessage("URL経由でプロファイルを取得"),
-        "urlTip": m9,
+        "urlTip": m10,
         "useHosts": MessageLookupByLibrary.simpleMessage("ホストを使用"),
         "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムホストを使用"),
         "value": MessageLookupByLibrary.simpleMessage("値"),

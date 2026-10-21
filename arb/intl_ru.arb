@@ -499,12 +499,21 @@
   "errorTitle": "Ошибка",
   "invalidQrMessage": "Неверный QR-код",
   "sendToTvTitle": "Отправить на ТВ",
+  "otherAddMethods": "Другой способ",
   "addFromPhoneTitle": "Добавить с телефона",
   "addFromPhoneSubtitle": "Сканировать QR-код телефоном",
   "pasteFromClipboard": "Вставить",
   "subscriptionUnlimited": "Бессрочная подписка",
   "updated": "Обновлено",
   "selectProfile": "Выбрать профиль",
+  "switchProfile": "Переключить профиль",
+  "deleteProfileConfirmation": "Удалить профиль «{name}»?",
+  "@deleteProfileConfirmation": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "openLinkFailed": "Не удалось открыть ссылку на этом устройстве",
   "sendToTv": "Отправить на ТВ",
   "support": "Поддержка",
   "supportMessage": "Возникли вопросы? Обратитесь в поддержку и решение обязательно найдётся.",
@@ -538,5 +547,12 @@
   "zashboardInAppDesc": "Показывать панель во встроенном браузере, не переключаясь на внешний",
   "openPanel": "Открыть панель",
   "downloadingZashboard": "Качаю Zashboard…",
-  "buyMoreTraffic": "Докупить трафик"
+  "buyMoreTraffic": "Докупить трафик",
+  "openOnPhone": "Открыть на телефоне",
+  "openOnTV": "Открыть на ТВ",
+  "scanLinkWithPhone": "Наведите камеру телефона на код, чтобы открыть ссылку.",
+  "scanProfileWithPhone": "Отсканируйте код камерой телефона. Подключите оба устройства к одной сети и вставьте ссылку на подписку на телефоне.",
+  "receivingProfile": "Получаю профиль…",
+  "profileReceived": "Профиль добавлен",
+  "profileReceiveFailed": "Не удалось добавить профиль"
 }

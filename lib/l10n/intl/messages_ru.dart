@@ -23,23 +23,25 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(label) =>
       "Вы уверены, что хотите удалить выбранные ${label}?";
 
-  static String m1(label) => "Вы уверены, что хотите удалить текущий ${label}?";
+  static String m1(name) => "Удалить профиль «${name}»?";
 
-  static String m2(label) => "${label} не может быть пустым";
+  static String m2(label) => "Вы уверены, что хотите удалить текущий ${label}?";
 
-  static String m3(label) => "Текущий ${label} уже существует";
+  static String m3(label) => "${label} не может быть пустым";
 
-  static String m4(label) => "Сейчас ${label} нет";
+  static String m4(label) => "Текущий ${label} уже существует";
 
-  static String m5(label) => "${label} должно быть числом";
+  static String m5(label) => "Сейчас ${label} нет";
 
-  static String m6(label) => "${label} должен быть числом от 1024 до 49151";
+  static String m6(label) => "${label} должно быть числом";
 
-  static String m7(count) => "Выбрано ${count} элементов";
+  static String m7(label) => "${label} должен быть числом от 1024 до 49151";
 
-  static String m8(days) => "Ваша подписка истекает через ${days} дн.";
+  static String m8(count) => "Выбрано ${count} элементов";
 
-  static String m9(label) => "${label} должен быть URL";
+  static String m9(days) => "Ваша подписка истекает через ${days} дн.";
+
+  static String m10(label) => "${label} должен быть URL";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -313,7 +315,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Сортировка по задержке"),
         "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
         "deleteMultipTip": m0,
-        "deleteTip": m1,
+        "deleteProfileConfirmation": m1,
+        "deleteTip": m2,
         "desc": MessageLookupByLibrary.simpleMessage(
           "Многоплатформенный прокси-клиент на основе ClashMeta, простой и удобный в использовании, с открытым исходным кодом и без рекламы.",
         ),
@@ -358,7 +361,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
         "email": MessageLookupByLibrary.simpleMessage("Почта"),
-        "emptyTip": m2,
+        "emptyTip": m3,
         "en": MessageLookupByLibrary.simpleMessage("Английский"),
         "enableOverride": MessageLookupByLibrary.simpleMessage(
           "Включить переопределение",
@@ -373,7 +376,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "excludeFromVpn":
             MessageLookupByLibrary.simpleMessage("Исключить из VPN"),
-        "existsTip": m3,
+        "existsTip": m4,
         "exit": MessageLookupByLibrary.simpleMessage("Выход"),
         "expand": MessageLookupByLibrary.simpleMessage("Стандартный"),
         "expandAll": MessageLookupByLibrary.simpleMessage("Развернуть всё"),
@@ -611,8 +614,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullScriptTip": MessageLookupByLibrary.simpleMessage(
           "Скрипты отсутствуют",
         ),
-        "nullTip": m4,
-        "numberTip": m5,
+        "nullTip": m5,
+        "numberTip": m6,
         "oneColumn": MessageLookupByLibrary.simpleMessage("Один столбец"),
         "oneline": MessageLookupByLibrary.simpleMessage("Линия"),
         "onlyIcon": MessageLookupByLibrary.simpleMessage("Только иконка"),
@@ -625,15 +628,23 @@ class MessageLookup extends MessageLookupByLibrary {
         "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
           "Учитывать в статистике только трафик через прокси",
         ),
+        "openLinkFailed": MessageLookupByLibrary.simpleMessage(
+          "Не удалось открыть ссылку на этом устройстве",
+        ),
         "openLogsFolder": MessageLookupByLibrary.simpleMessage(
           "Открыть папку логов",
         ),
+        "openOnPhone":
+            MessageLookupByLibrary.simpleMessage("Открыть на телефоне"),
+        "openOnTV": MessageLookupByLibrary.simpleMessage("Открыть на ТВ"),
         "openPanel": MessageLookupByLibrary.simpleMessage("Открыть панель"),
         "options": MessageLookupByLibrary.simpleMessage("Опции"),
         "originalRepository": MessageLookupByLibrary.simpleMessage(
           "Оригинальный репозиторий",
         ),
         "other": MessageLookupByLibrary.simpleMessage("Другое"),
+        "otherAddMethods":
+            MessageLookupByLibrary.simpleMessage("Другой способ"),
         "otherContributors":
             MessageLookupByLibrary.simpleMessage("Контрибьюторы"),
         "outboundMode": MessageLookupByLibrary.simpleMessage(
@@ -690,7 +701,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "portConflictTip": MessageLookupByLibrary.simpleMessage(
           "Введите другой порт",
         ),
-        "portTip": m6,
+        "portTip": m7,
         "preferH3Desc": MessageLookupByLibrary.simpleMessage(
           "Использовать HTTP/3 для DOH (если доступно)",
         ),
@@ -724,6 +735,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "profileParseErrorDesc": MessageLookupByLibrary.simpleMessage(
           "Ошибка парсинга профиля",
         ),
+        "profileReceiveFailed": MessageLookupByLibrary.simpleMessage(
+          "Не удалось добавить профиль",
+        ),
+        "profileReceived":
+            MessageLookupByLibrary.simpleMessage("Профиль добавлен"),
         "profileUrlInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
           "Пожалуйста, введите действительный URL профиля",
         ),
@@ -761,6 +777,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("Радужные"),
         "receiveSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
           "Получение подписки",
+        ),
+        "receivingProfile": MessageLookupByLibrary.simpleMessage(
+          "Получаю профиль…",
         ),
         "recovery": MessageLookupByLibrary.simpleMessage("Восстановление"),
         "recoveryAll": MessageLookupByLibrary.simpleMessage(
@@ -848,6 +867,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveChanges":
             MessageLookupByLibrary.simpleMessage("Сохранить изменения?"),
         "saveTip": MessageLookupByLibrary.simpleMessage("Сохранить изменения?"),
+        "scanLinkWithPhone": MessageLookupByLibrary.simpleMessage(
+          "Наведите камеру телефона на код, чтобы открыть ссылку.",
+        ),
+        "scanProfileWithPhone": MessageLookupByLibrary.simpleMessage(
+          "Отсканируйте код камерой телефона. Подключите оба устройства к одной сети и вставьте ссылку на подписку на телефоне.",
+        ),
         "script": MessageLookupByLibrary.simpleMessage("Скрипт"),
         "search": MessageLookupByLibrary.simpleMessage("Поиск"),
         "seconds": MessageLookupByLibrary.simpleMessage("Секунд"),
@@ -855,7 +880,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectProfile":
             MessageLookupByLibrary.simpleMessage("Выбрать профиль"),
         "selected": MessageLookupByLibrary.simpleMessage("Выбрано"),
-        "selectedCountTitle": m7,
+        "selectedCountTitle": m8,
         "sendToTv": MessageLookupByLibrary.simpleMessage("Отправить на ТВ"),
         "sendToTvTitle":
             MessageLookupByLibrary.simpleMessage("Отправить на ТВ"),
@@ -909,7 +934,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscriptionExpiredStatus": MessageLookupByLibrary.simpleMessage(
           "Истекла",
         ),
-        "subscriptionExpiresInDays": m8,
+        "subscriptionExpiresInDays": m9,
         "subscriptionExpiresSoon": MessageLookupByLibrary.simpleMessage(
           "Подписка скоро истекает",
         ),
@@ -928,6 +953,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "support": MessageLookupByLibrary.simpleMessage("Поддержка"),
         "supportMessage": MessageLookupByLibrary.simpleMessage(
           "Возникли вопросы? Обратитесь в поддержку и решение обязательно найдётся.",
+        ),
+        "switchProfile": MessageLookupByLibrary.simpleMessage(
+          "Переключить профиль",
         ),
         "sync": MessageLookupByLibrary.simpleMessage("Обновление"),
         "system": MessageLookupByLibrary.simpleMessage("Система"),
@@ -1012,7 +1040,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "url": MessageLookupByLibrary.simpleMessage("URL"),
         "urlDesc":
             MessageLookupByLibrary.simpleMessage("Загрузить профиль по URL"),
-        "urlTip": m9,
+        "urlTip": m10,
         "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
         "useSystemHosts": MessageLookupByLibrary.simpleMessage(
           "Использовать системные hosts",

@@ -22,23 +22,25 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(label) => "确定删除选中的${label}吗？";
 
-  static String m1(label) => "确定删除当前${label}吗？";
+  static String m1(name) => "要删除配置“${name}”吗？";
 
-  static String m2(label) => "${label}不能为空";
+  static String m2(label) => "确定删除当前${label}吗？";
 
-  static String m3(label) => "${label}当前已存在";
+  static String m3(label) => "${label}不能为空";
 
-  static String m4(label) => "暂无${label}";
+  static String m4(label) => "${label}当前已存在";
 
-  static String m5(label) => "${label}必须为数字";
+  static String m5(label) => "暂无${label}";
 
-  static String m6(label) => "${label} 必须在 1024 到 49151 之间";
+  static String m6(label) => "${label}必须为数字";
 
-  static String m7(count) => "已选择 ${count} 项";
+  static String m7(label) => "${label} 必须在 1024 到 49151 之间";
 
-  static String m8(days) => "您的订阅将在${days}天后到期";
+  static String m8(count) => "已选择 ${count} 项";
 
-  static String m9(label) => "${label}必须为URL";
+  static String m9(days) => "您的订阅将在${days}天后到期";
+
+  static String m10(label) => "${label}必须为URL";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -59,6 +61,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "action_tun": MessageLookupByLibrary.simpleMessage("虚拟网卡"),
         "action_view": MessageLookupByLibrary.simpleMessage("显示/隐藏"),
         "add": MessageLookupByLibrary.simpleMessage("添加"),
+        "addFromPhoneSubtitle":
+            MessageLookupByLibrary.simpleMessage("使用手机扫描二维码"),
+        "addFromPhoneTitle": MessageLookupByLibrary.simpleMessage("从手机添加"),
         "addProfile": MessageLookupByLibrary.simpleMessage("添加配置"),
         "addRule": MessageLookupByLibrary.simpleMessage("添加规则"),
         "addedOriginRules": MessageLookupByLibrary.simpleMessage("附加到原始规则"),
@@ -196,7 +201,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "delaySort": MessageLookupByLibrary.simpleMessage("按延迟排序"),
         "delete": MessageLookupByLibrary.simpleMessage("删除"),
         "deleteMultipTip": m0,
-        "deleteTip": m1,
+        "deleteProfileConfirmation": m1,
+        "deleteTip": m2,
         "desc": MessageLookupByLibrary.simpleMessage(
           "基于ClashMeta的多平台代理客户端，简单易用，开源无广告。",
         ),
@@ -225,7 +231,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "edit": MessageLookupByLibrary.simpleMessage("编辑"),
         "email": MessageLookupByLibrary.simpleMessage("电子邮件"),
-        "emptyTip": m2,
+        "emptyTip": m3,
         "en": MessageLookupByLibrary.simpleMessage("英语"),
         "enableOverride": MessageLookupByLibrary.simpleMessage("启用覆写"),
         "enableVpn": MessageLookupByLibrary.simpleMessage("开启"),
@@ -233,7 +239,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
         "excludeDesc":
             MessageLookupByLibrary.simpleMessage("应用在后台时,从最近任务中隐藏应用"),
-        "existsTip": m3,
+        "existsTip": m4,
         "exit": MessageLookupByLibrary.simpleMessage("退出"),
         "expand": MessageLookupByLibrary.simpleMessage("标准"),
         "expirationTime": MessageLookupByLibrary.simpleMessage("到期时间"),
@@ -370,8 +376,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullProfileDesc":
             MessageLookupByLibrary.simpleMessage("没有配置文件,请先添加配置文件"),
         "nullScriptTip": MessageLookupByLibrary.simpleMessage("暂无脚本"),
-        "nullTip": m4,
-        "numberTip": m5,
+        "nullTip": m5,
+        "numberTip": m6,
         "oneColumn": MessageLookupByLibrary.simpleMessage("一列"),
         "oneline": MessageLookupByLibrary.simpleMessage("单行"),
         "onlyIcon": MessageLookupByLibrary.simpleMessage("仅图标"),
@@ -380,11 +386,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
           "开启后，将只统计代理流量",
         ),
+        "openLinkFailed": MessageLookupByLibrary.simpleMessage("无法在此设备上打开链接"),
         "openLogsFolder": MessageLookupByLibrary.simpleMessage("打开日志文件夹"),
+        "openOnPhone": MessageLookupByLibrary.simpleMessage("在手机上打开"),
+        "openOnTV": MessageLookupByLibrary.simpleMessage("在电视上打开"),
         "openPanel": MessageLookupByLibrary.simpleMessage("打开面板"),
         "options": MessageLookupByLibrary.simpleMessage("选项"),
         "originalRepository": MessageLookupByLibrary.simpleMessage("原始存储库"),
         "other": MessageLookupByLibrary.simpleMessage("其他"),
+        "otherAddMethods": MessageLookupByLibrary.simpleMessage("其他方式"),
         "otherContributors": MessageLookupByLibrary.simpleMessage("贡献者"),
         "outboundMode": MessageLookupByLibrary.simpleMessage("出站模式"),
         "override": MessageLookupByLibrary.simpleMessage("覆写"),
@@ -419,7 +429,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "port": MessageLookupByLibrary.simpleMessage("端口"),
         "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
-        "portTip": m6,
+        "portTip": m7,
         "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用DOH的http/3"),
         "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
         "preview": MessageLookupByLibrary.simpleMessage("预览"),
@@ -442,6 +452,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("添加配置以开始使用"),
         "profileParseErrorDesc":
             MessageLookupByLibrary.simpleMessage("配置文件解析错误"),
+        "profileReceiveFailed": MessageLookupByLibrary.simpleMessage("无法添加配置"),
+        "profileReceived": MessageLookupByLibrary.simpleMessage("配置已添加"),
         "profileUrlInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
           "请输入有效配置URL",
         ),
@@ -465,6 +477,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "qrcode": MessageLookupByLibrary.simpleMessage("二维码"),
         "qrcodeDesc": MessageLookupByLibrary.simpleMessage("扫描二维码获取配置文件"),
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
+        "receiveSubscriptionTitle":
+            MessageLookupByLibrary.simpleMessage("接收订阅"),
+        "receivingProfile": MessageLookupByLibrary.simpleMessage("正在接收配置…"),
         "recovery": MessageLookupByLibrary.simpleMessage("恢复"),
         "recoveryAll": MessageLookupByLibrary.simpleMessage("恢复所有数据"),
         "recoveryProfiles": MessageLookupByLibrary.simpleMessage("仅恢复配置文件"),
@@ -510,12 +525,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "save": MessageLookupByLibrary.simpleMessage("保存"),
         "saveChanges": MessageLookupByLibrary.simpleMessage("是否保存更改？"),
         "saveTip": MessageLookupByLibrary.simpleMessage("确定要保存吗？"),
+        "scanLinkWithPhone": MessageLookupByLibrary.simpleMessage(
+          "使用手机相机扫描此码以打开链接。",
+        ),
+        "scanProfileWithPhone": MessageLookupByLibrary.simpleMessage(
+          "请使用手机相机扫描此二维码。将两台设备连接到同一网络，然后在手机上粘贴订阅链接。",
+        ),
         "script": MessageLookupByLibrary.simpleMessage("脚本"),
         "search": MessageLookupByLibrary.simpleMessage("搜索"),
         "seconds": MessageLookupByLibrary.simpleMessage("秒"),
         "selectAll": MessageLookupByLibrary.simpleMessage("全选"),
+        "selectProfile": MessageLookupByLibrary.simpleMessage("选择配置"),
         "selected": MessageLookupByLibrary.simpleMessage("已选择"),
-        "selectedCountTitle": m7,
+        "selectedCountTitle": m8,
         "serverStatus": MessageLookupByLibrary.simpleMessage("服务器状态"),
         "serviceChannel": MessageLookupByLibrary.simpleMessage("频道"),
         "serviceLinks": MessageLookupByLibrary.simpleMessage("链接"),
@@ -543,7 +565,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "subRule": MessageLookupByLibrary.simpleMessage("子规则"),
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "subscriptionExpired": MessageLookupByLibrary.simpleMessage("您的订阅已过期"),
-        "subscriptionExpiresInDays": m8,
+        "subscriptionExpiresInDays": m9,
         "subscriptionExpiresSoon":
             MessageLookupByLibrary.simpleMessage("订阅即将到期"),
         "subscriptionExpiresToday": MessageLookupByLibrary.simpleMessage(
@@ -555,6 +577,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "supportMessage": MessageLookupByLibrary.simpleMessage(
           "如有疑问，请联系支持团队，我们会帮助您解决问题。",
         ),
+        "switchProfile": MessageLookupByLibrary.simpleMessage("切换配置"),
         "sync": MessageLookupByLibrary.simpleMessage("同步"),
         "system": MessageLookupByLibrary.simpleMessage("系统"),
         "systemApp": MessageLookupByLibrary.simpleMessage("系统应用"),
@@ -602,7 +625,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "upload": MessageLookupByLibrary.simpleMessage("上传"),
         "url": MessageLookupByLibrary.simpleMessage("URL"),
         "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-        "urlTip": m9,
+        "urlTip": m10,
         "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
         "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
         "value": MessageLookupByLibrary.simpleMessage("值"),

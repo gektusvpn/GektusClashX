@@ -3899,6 +3899,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Another way`
+  String get otherAddMethods {
+    return Intl.message(
+      'Another way',
+      name: 'otherAddMethods',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Add from Phone`
   String get addFromPhoneTitle {
     return Intl.message(
@@ -3949,6 +3959,36 @@ class AppLocalizations {
     return Intl.message(
       'Select Profile',
       name: 'selectProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch profile`
+  String get switchProfile {
+    return Intl.message(
+      'Switch profile',
+      name: 'switchProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete profile “{name}”?`
+  String deleteProfileConfirmation(String name) {
+    return Intl.message(
+      'Delete profile “$name”?',
+      name: 'deleteProfileConfirmation',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Could not open the link on this device`
+  String get openLinkFailed {
+    return Intl.message(
+      'Could not open the link on this device',
+      name: 'openLinkFailed',
       desc: '',
       args: [],
     );
@@ -4229,6 +4269,71 @@ class AppLocalizations {
     return Intl.message(
       'Buy more traffic',
       name: 'buyMoreTraffic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open on your phone`
+  String get openOnPhone {
+    return Intl.message(
+      'Open on your phone',
+      name: 'openOnPhone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open on TV`
+  String get openOnTV {
+    return Intl.message('Open on TV', name: 'openOnTV', desc: '', args: []);
+  }
+
+  /// `Scan this code with your phone camera to open the link.`
+  String get scanLinkWithPhone {
+    return Intl.message(
+      'Scan this code with your phone camera to open the link.',
+      name: 'scanLinkWithPhone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scan this code with your phone camera. Keep both devices on the same network, then paste your subscription link on the phone.`
+  String get scanProfileWithPhone {
+    return Intl.message(
+      'Scan this code with your phone camera. Keep both devices on the same network, then paste your subscription link on the phone.',
+      name: 'scanProfileWithPhone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receiving profile…`
+  String get receivingProfile {
+    return Intl.message(
+      'Receiving profile…',
+      name: 'receivingProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile added`
+  String get profileReceived {
+    return Intl.message(
+      'Profile added',
+      name: 'profileReceived',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not add the profile`
+  String get profileReceiveFailed {
+    return Intl.message(
+      'Could not add the profile',
+      name: 'profileReceiveFailed',
       desc: '',
       args: [],
     );
