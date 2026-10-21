@@ -16,6 +16,7 @@ class System {
   System._internal();
   static System? _instance;
   List<String>? originDns;
+  Future<bool>? _isAndroidTVFuture;
 
   bool get isDesktop =>
       Platform.isWindows || Platform.isLinux || Platform.isMacOS;
@@ -40,7 +41,9 @@ class System {
 
   bool get isMobile => Platform.isAndroid || Platform.isIOS;
 
-  Future<bool> get isAndroidTV async {
+  Future<bool> get isAndroidTV => _isAndroidTVFuture ??= _detectAndroidTV();
+
+  Future<bool> _detectAndroidTV() async {
     if (!Platform.isAndroid) return false;
     final deviceInfo = await DeviceInfoPlugin().androidInfo;
     return deviceInfo.systemFeatures.contains('android.software.leanback');

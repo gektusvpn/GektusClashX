@@ -25,6 +25,7 @@ class CommonDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = ref.watch(viewSizeProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final isTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
 
     return AlertDialog(
       title: Text(title),
@@ -35,10 +36,10 @@ class CommonDialog extends ConsumerWidget {
       content: Container(
         constraints: BoxConstraints(
           maxHeight: min(
-            size.height - 40,
+            size.height - (isTV ? 180 : 40),
             500,
           ),
-          maxWidth: 300,
+          maxWidth: isTV ? 480 : 300,
         ),
         width: size.width - 40,
         child: !overrideScroll

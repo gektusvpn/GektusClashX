@@ -8,6 +8,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/app.g.dart';
 
+/// Cached platform capability used by TV-specific layout and focus behavior.
+final isAndroidTVProvider = FutureProvider<bool>((ref) => system.isAndroidTV);
+
 @riverpod
 class RealTunEnable extends _$RealTunEnable with AutoDisposeNotifierMixin {
   @override

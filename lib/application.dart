@@ -45,6 +45,71 @@ class ApplicationState extends ConsumerState<Application> {
   }) =>
       ref.read(genColorSchemeProvider(brightness));
 
+  ThemeData _getTheme({
+    required Brightness brightness,
+    required bool isAndroidTV,
+    int? primaryColor,
+  }) {
+    final generatedColorScheme = _getAppColorScheme(
+      brightness: brightness,
+      primaryColor: primaryColor,
+    );
+    final colorScheme = brightness == Brightness.dark
+        ? generatedColorScheme.toPureBlack(
+            ref.read(themeSettingProvider).pureBlack,
+          )
+        : generatedColorScheme;
+    final base = ThemeData(
+      useMaterial3: true,
+      pageTransitionsTheme: _pageTransitionsTheme,
+      colorScheme: colorScheme,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    );
+    if (!isAndroidTV) return base;
+
+    Color? focusOverlay(Set<WidgetState> states) =>
+        states.contains(WidgetState.focused)
+            ? colorScheme.primary.withValues(alpha: 0.16)
+            : null;
+
+    BorderSide? focusBorder(Set<WidgetState> states) =>
+        states.contains(WidgetState.focused)
+            ? BorderSide(color: colorScheme.primary, width: 2)
+            : null;
+
+    return base.copyWith(
+      focusColor: colorScheme.primary.withValues(alpha: 0.18),
+      hoverColor: colorScheme.primary.withValues(alpha: 0.16),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          overlayColor: WidgetStateProperty.resolveWith(focusOverlay),
+          side: WidgetStateProperty.resolveWith(focusBorder),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: ButtonStyle(
+          overlayColor: WidgetStateProperty.resolveWith(focusOverlay),
+          side: WidgetStateProperty.resolveWith(focusBorder),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: ButtonStyle(
+          overlayColor: WidgetStateProperty.resolveWith(focusOverlay),
+          side: WidgetStateProperty.resolveWith(focusBorder),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          overlayColor: WidgetStateProperty.resolveWith(focusOverlay),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        focusColor: colorScheme.primaryContainer,
+        hoverColor: colorScheme.primaryContainer,
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -144,6 +209,8 @@ class ApplicationState extends ConsumerState<Application> {
               final locale =
                   ref.watch(appSettingProvider.select((state) => state.locale));
               final themeProps = ref.watch(themeSettingProvider);
+              final isAndroidTV =
+                  ref.watch(isAndroidTVProvider).valueOrNull ?? false;
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
                 navigatorKey: globalState.navigatorKey,
@@ -182,25 +249,15 @@ class ApplicationState extends ConsumerState<Application> {
                 locale: utils.getLocaleForString(locale),
                 supportedLocales: AppLocalizations.delegate.supportedLocales,
                 themeMode: themeProps.themeMode,
-                theme: ThemeData(
-                  useMaterial3: true,
-                  pageTransitionsTheme: _pageTransitionsTheme,
-                  colorScheme: _getAppColorScheme(
-                    brightness: Brightness.light,
-                    primaryColor: themeProps.primaryColor,
-                  ),
-                  // Reduce animation duration for snappier feel
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                theme: _getTheme(
+                  brightness: Brightness.light,
+                  isAndroidTV: isAndroidTV,
+                  primaryColor: themeProps.primaryColor,
                 ),
-                darkTheme: ThemeData(
-                  useMaterial3: true,
-                  pageTransitionsTheme: _pageTransitionsTheme,
-                  colorScheme: _getAppColorScheme(
-                    brightness: Brightness.dark,
-                    primaryColor: themeProps.primaryColor,
-                  ).toPureBlack(themeProps.pureBlack),
-                  // Reduce animation duration for snappier feel
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                darkTheme: _getTheme(
+                  brightness: Brightness.dark,
+                  isAndroidTV: isAndroidTV,
+                  primaryColor: themeProps.primaryColor,
                 ),
                 home: child,
               );

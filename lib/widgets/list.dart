@@ -4,6 +4,8 @@ import 'package:gektusclashx/models/models.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/widgets/open_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gektusclashx/providers/providers.dart';
 
 import 'card.dart';
 import 'input.dart';
@@ -106,7 +108,7 @@ class InputDelegate extends Delegate {
   final String? resetValue;
 }
 
-class ListItem<T> extends StatelessWidget {
+class ListItem<T> extends ConsumerWidget {
   const ListItem({
     super.key,
     required this.title,
@@ -119,6 +121,7 @@ class ListItem<T> extends StatelessWidget {
     this.onTap,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : delegate = const Delegate();
 
@@ -134,6 +137,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : onTap = null;
 
@@ -149,6 +153,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : onTap = null;
 
@@ -164,6 +169,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : onTap = null;
 
@@ -179,6 +185,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : onTap = null;
 
@@ -193,6 +200,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   })  : trailing = null,
         onTap = null;
@@ -208,6 +216,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   })  : trailing = null,
         onTap = null;
@@ -223,6 +232,7 @@ class ListItem<T> extends StatelessWidget {
     this.dense,
     this.titleTextStyle,
     this.subtitleTextStyle,
+    this.focusNode,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   })  : leading = null,
         onTap = null;
@@ -237,6 +247,7 @@ class ListItem<T> extends StatelessWidget {
   final double? horizontalTitleGap;
   final TextStyle? titleTextStyle;
   final TextStyle? subtitleTextStyle;
+  final FocusNode? focusNode;
   final void Function()? onTap;
 
   ListTile _buildListTile({
@@ -246,6 +257,7 @@ class ListItem<T> extends StatelessWidget {
   }) =>
       ListTile(
         key: key,
+        focusNode: focusNode,
         dense: dense,
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
@@ -261,7 +273,10 @@ class ListItem<T> extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+    // A setting is one D-pad stop: OK on the row operates its control.
+    Widget control(Widget child) => ExcludeFocus(excluding: isTV, child: child);
     if (delegate is OpenDelegate) {
       final openDelegate = delegate as OpenDelegate;
       final child = SafeArea(
@@ -375,10 +390,10 @@ class ListItem<T> extends StatelessWidget {
             checkboxDelegate.onChanged!(!checkboxDelegate.value);
           }
         },
-        trailing: CommonCheckBox(
+        trailing: control(CommonCheckBox(
           value: checkboxDelegate.value,
           onChanged: checkboxDelegate.onChanged,
-        ),
+        )),
       );
     }
     if (delegate is SwitchDelegate) {
@@ -389,10 +404,10 @@ class ListItem<T> extends StatelessWidget {
             switchDelegate.onChanged!(!switchDelegate.value);
           }
         },
-        trailing: Switch(
+        trailing: control(Switch(
           value: switchDelegate.value,
           onChanged: switchDelegate.onChanged,
-        ),
+        )),
       );
     }
     if (delegate is RadioDelegate) {
@@ -403,13 +418,13 @@ class ListItem<T> extends StatelessWidget {
             radioDelegate.onChanged!(radioDelegate.value);
           }
         },
-        leading: Radio<T>(
+        leading: control(Radio<T>(
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           value: radioDelegate.value,
           groupValue: radioDelegate.groupValue,
           onChanged: radioDelegate.onChanged,
           toggleable: true,
-        ),
+        )),
         trailing: trailing,
       );
     }

@@ -106,6 +106,12 @@ class CommonCard extends StatelessWidget {
 
   BorderSide getBorderSide(BuildContext context, Set<WidgetState> states) {
     final colorScheme = context.colorScheme;
+    if (states.contains(WidgetState.focused)) {
+      return BorderSide(
+        color: colorScheme.primary,
+        width: 2,
+      );
+    }
     if (type == CommonCardType.filled) {
       return BorderSide.none;
     }
@@ -128,6 +134,12 @@ class CommonCard extends StatelessWidget {
 
   Color? getBackgroundColor(BuildContext context, Set<WidgetState> states) {
     final colorScheme = context.colorScheme;
+    if (states.contains(WidgetState.focused)) {
+      return Color.alphaBlend(
+        colorScheme.primary.withValues(alpha: 0.18),
+        colorScheme.surfaceContainer,
+      );
+    }
     if (type == CommonCardType.filled) {
       if (isSelected) {
         return colorScheme.secondaryContainer.opacity80;
