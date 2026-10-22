@@ -1,3 +1,25 @@
+## v0.5.6
+
+- Added service news from provider-configured RSS, Atom, and JSON feeds, with
+  cover images, optional hashtag filtering, and a latest-post card on Home.
+
+- Added a dedicated News page with publication dates and source identity,
+  including Telegram channel avatars, usernames, and subscription actions.
+  Full articles open in an adaptive native reader with bundled emoji rendering.
+
+- Cached news and images across launches. Saved posts appear immediately and
+  refresh in the background; an initial skeleton is shown only without a cache.
+
+- Updated progress indicators to Material 3, with theme-aware colors, accessible
+  labels, and bounded progress for traffic usage and downloads.
+
+- Unified bottom and side sheets around opaque Material surfaces while keeping
+  the existing modal background dimming.
+
+- Added Android predictive back for nested pages and coordinated scale/fade
+  transitions for desktop back navigation. Preserved editor confirmations and
+  updated back handling when profile files have unsaved changes.
+
 ## v0.5.5
 
 - Added a dedicated Android TV interface with an overlay navigation drawer,
