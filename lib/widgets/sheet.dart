@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
@@ -19,7 +17,7 @@ class SheetProps {
     this.fitContent = false,
     this.useSafeArea = true,
     this.isScrollControlled = false,
-    this.blur = true,
+    this.blur = false,
   });
   final double? maxWidth;
   final double? maxHeight;
@@ -36,7 +34,7 @@ class ExtendProps {
   const ExtendProps({
     this.maxWidth,
     this.useSafeArea = true,
-    this.blur = true,
+    this.blur = false,
   });
   final double? maxWidth;
   final bool useSafeArea;
@@ -69,13 +67,13 @@ Future<T?> showSheet<T>({
     true => showModalBottomSheet<T>(
         context: context,
         isScrollControlled: props.isScrollControlled,
-        backgroundColor: Colors.transparent,
-        builder: (_) => BackdropFilter(
-          filter: props.blur ? commonFilter : ImageFilter.blur(),
-          child: SafeArea(
-            child: builder(context, SheetType.bottomSheet),
-          ),
-        ),
+        builder: (_) {
+          final child =
+              SafeArea(child: builder(context, SheetType.bottomSheet));
+          return props.blur
+              ? BackdropFilter(filter: commonFilter, child: child)
+              : child;
+        },
         showDragHandle: false,
         useSafeArea: props.useSafeArea,
       ),
@@ -218,9 +216,12 @@ class _AdaptiveSheetScaffoldState extends ConsumerState<AdaptiveSheetScaffold> {
     final isAndroidTV = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
     final bottomSheet = widget.type == SheetType.bottomSheet;
     final sideSheet = widget.type == SheetType.sideSheet;
-    final backgroundColor = sideSheet
-        ? colorScheme.surface.withValues(alpha: 0.92)
-        : colorScheme.surface.withValues(alpha: 0.92);
+    final sheetTheme = Theme.of(context).bottomSheetTheme;
+    final backgroundColor = bottomSheet || sideSheet
+        ? sheetTheme.modalBackgroundColor ??
+            sheetTheme.backgroundColor ??
+            colorScheme.surfaceContainerLow
+        : colorScheme.surface;
     final appBar = AppBar(
       forceMaterialTransparency: bottomSheet ? true : false,
       automaticallyImplyLeading: isAndroidTV

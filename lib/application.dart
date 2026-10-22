@@ -67,6 +67,9 @@ class ApplicationState extends ConsumerState<Application> {
     final base = ThemeData(
       useMaterial3: true,
       progressIndicatorTheme: materialProgressTheme,
+      bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: colorScheme.surfaceContainerLow,
+          modalBackgroundColor: colorScheme.surfaceContainerLow),
       pageTransitionsTheme: _pageTransitionsTheme,
       colorScheme: colorScheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,

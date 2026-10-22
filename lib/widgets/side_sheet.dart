@@ -77,8 +77,10 @@ class _SideSheetState extends State<SideSheet> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final color =
-        widget.backgroundColor ?? colorScheme.surface.withValues(alpha: 0.6);
+    final color = widget.backgroundColor ??
+        Theme.of(context).bottomSheetTheme.modalBackgroundColor ??
+        Theme.of(context).bottomSheetTheme.backgroundColor ??
+        colorScheme.surfaceContainerLow;
     final surfaceTintColor = colorScheme.surfaceTint;
     final shadowColor = widget.shadowColor ?? Colors.transparent;
     final elevation = widget.elevation ?? 0;
@@ -501,8 +503,10 @@ class ModalSideSheetRoute<T> extends PopupRoute<T> {
           final colorScheme = Theme.of(context).colorScheme;
           return _ModalSideSheet<T>(
             route: this,
-            backgroundColor:
-                backgroundColor ?? colorScheme.surface.withValues(alpha: 0.6),
+            backgroundColor: backgroundColor ??
+                Theme.of(context).bottomSheetTheme.modalBackgroundColor ??
+                Theme.of(context).bottomSheetTheme.backgroundColor ??
+                colorScheme.surfaceContainerLow,
             elevation: elevation ?? 0,
             shape: shape,
             clipBehavior: clipBehavior,

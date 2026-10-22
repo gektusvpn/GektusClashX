@@ -104,7 +104,6 @@ class _AppUpdatePromptHostState extends State<AppUpdatePromptHost> {
           context: context,
           isScrollControlled: true,
           useSafeArea: true,
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
           shape: const RoundedSuperellipseBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),

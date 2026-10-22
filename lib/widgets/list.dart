@@ -51,7 +51,7 @@ class OpenDelegate extends Delegate {
     required this.widget,
     this.maxWidth,
     this.action,
-    this.blur = true,
+    this.blur = false,
   });
   final Widget widget;
   final String title;
@@ -66,7 +66,7 @@ class NextDelegate extends Delegate {
     required this.widget,
     this.maxWidth,
     this.action,
-    this.blur = true,
+    this.blur = false,
   });
   final Widget widget;
   final String title;
