@@ -91,6 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ago": MessageLookupByLibrary.simpleMessage(" Ago"),
         "agree": MessageLookupByLibrary.simpleMessage("Agree"),
         "allApps": MessageLookupByLibrary.simpleMessage("All apps"),
+        "allNews": MessageLookupByLibrary.simpleMessage("All news"),
         "allowBypass": MessageLookupByLibrary.simpleMessage(
           "Allow applications to bypass VPN",
         ),
@@ -569,6 +570,19 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Your IP Address"),
         "networkSpeed": MessageLookupByLibrary.simpleMessage("Network speed"),
         "neutralScheme": MessageLookupByLibrary.simpleMessage("Neutral"),
+        "news": MessageLookupByLibrary.simpleMessage("News"),
+        "newsCached": MessageLookupByLibrary.simpleMessage(
+          "Showing saved news. The feed is temporarily unavailable.",
+        ),
+        "newsEmpty": MessageLookupByLibrary.simpleMessage("No posts yet"),
+        "newsLoadFailed": MessageLookupByLibrary.simpleMessage(
+          "Could not load the news. Please try again later.",
+        ),
+        "newsLoading": MessageLookupByLibrary.simpleMessage("Loading news"),
+        "newsOpenFeed": MessageLookupByLibrary.simpleMessage("Open feed"),
+        "newsPost": MessageLookupByLibrary.simpleMessage("Post"),
+        "newsSource": MessageLookupByLibrary.simpleMessage("Open original"),
+        "newsSubscribe": MessageLookupByLibrary.simpleMessage("Subscribe"),
         "noData": MessageLookupByLibrary.simpleMessage("No data"),
         "noHotKey": MessageLookupByLibrary.simpleMessage("No HotKey"),
         "noIcon": MessageLookupByLibrary.simpleMessage("None"),
@@ -742,6 +756,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Scan QR code to obtain profile",
         ),
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
+        "readNews": MessageLookupByLibrary.simpleMessage("Read more"),
         "receiveSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
           "Receive Subscription",
         ),

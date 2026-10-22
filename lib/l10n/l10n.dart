@@ -54,6 +54,81 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
+  /// `News`
+  String get news {
+    return Intl.message('News', name: 'news', desc: '', args: []);
+  }
+
+  /// `All news`
+  String get allNews {
+    return Intl.message('All news', name: 'allNews', desc: '', args: []);
+  }
+
+  /// `Post`
+  String get newsPost {
+    return Intl.message('Post', name: 'newsPost', desc: '', args: []);
+  }
+
+  /// `Read more`
+  String get readNews {
+    return Intl.message('Read more', name: 'readNews', desc: '', args: []);
+  }
+
+  /// `Subscribe`
+  String get newsSubscribe {
+    return Intl.message('Subscribe', name: 'newsSubscribe', desc: '', args: []);
+  }
+
+  /// `Open feed`
+  String get newsOpenFeed {
+    return Intl.message('Open feed', name: 'newsOpenFeed', desc: '', args: []);
+  }
+
+  /// `Open original`
+  String get newsSource {
+    return Intl.message(
+      'Open original',
+      name: 'newsSource',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No posts yet`
+  String get newsEmpty {
+    return Intl.message('No posts yet', name: 'newsEmpty', desc: '', args: []);
+  }
+
+  /// `Could not load the news. Please try again later.`
+  String get newsLoadFailed {
+    return Intl.message(
+      'Could not load the news. Please try again later.',
+      name: 'newsLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading news`
+  String get newsLoading {
+    return Intl.message(
+      'Loading news',
+      name: 'newsLoading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Showing saved news. The feed is temporarily unavailable.`
+  String get newsCached {
+    return Intl.message(
+      'Showing saved news. The feed is temporarily unavailable.',
+      name: 'newsCached',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Update available`
   String get appUpdatePromptTitle {
     return Intl.message(

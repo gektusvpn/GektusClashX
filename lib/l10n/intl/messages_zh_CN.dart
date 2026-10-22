@@ -76,6 +76,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ago": MessageLookupByLibrary.simpleMessage("前"),
         "agree": MessageLookupByLibrary.simpleMessage("同意"),
         "allApps": MessageLookupByLibrary.simpleMessage("所有应用"),
+        "allNews": MessageLookupByLibrary.simpleMessage("全部新闻"),
         "allowBypass": MessageLookupByLibrary.simpleMessage("允许应用绕过VPN"),
         "allowBypassDesc":
             MessageLookupByLibrary.simpleMessage("开启后部分应用可绕过VPN"),
@@ -369,6 +370,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkDetection": MessageLookupByLibrary.simpleMessage("您的IP地址"),
         "networkSpeed": MessageLookupByLibrary.simpleMessage("网络速度"),
         "neutralScheme": MessageLookupByLibrary.simpleMessage("中性"),
+        "news": MessageLookupByLibrary.simpleMessage("新闻"),
+        "newsCached":
+            MessageLookupByLibrary.simpleMessage("正在显示已保存的新闻，订阅源暂时不可用。"),
+        "newsEmpty": MessageLookupByLibrary.simpleMessage("暂无文章"),
+        "newsLoadFailed": MessageLookupByLibrary.simpleMessage("无法加载新闻，请稍后重试。"),
+        "newsLoading": MessageLookupByLibrary.simpleMessage("正在加载新闻"),
+        "newsOpenFeed": MessageLookupByLibrary.simpleMessage("打开来源"),
+        "newsPost": MessageLookupByLibrary.simpleMessage("文章"),
+        "newsSource": MessageLookupByLibrary.simpleMessage("打开原文"),
+        "newsSubscribe": MessageLookupByLibrary.simpleMessage("订阅"),
         "noData": MessageLookupByLibrary.simpleMessage("暂无数据"),
         "noHotKey": MessageLookupByLibrary.simpleMessage("暂无快捷键"),
         "noIcon": MessageLookupByLibrary.simpleMessage("无图标"),
@@ -486,6 +497,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "qrcode": MessageLookupByLibrary.simpleMessage("二维码"),
         "qrcodeDesc": MessageLookupByLibrary.simpleMessage("扫描二维码获取配置文件"),
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
+        "readNews": MessageLookupByLibrary.simpleMessage("阅读全文"),
         "receiveSubscriptionTitle":
             MessageLookupByLibrary.simpleMessage("接收订阅"),
         "receivingProfile": MessageLookupByLibrary.simpleMessage("正在接收配置…"),

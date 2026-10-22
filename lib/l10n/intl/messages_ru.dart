@@ -93,6 +93,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ago": MessageLookupByLibrary.simpleMessage(" назад"),
         "agree": MessageLookupByLibrary.simpleMessage("Согласен"),
         "allApps": MessageLookupByLibrary.simpleMessage("Все приложения"),
+        "allNews": MessageLookupByLibrary.simpleMessage("Все новости"),
         "allowBypass":
             MessageLookupByLibrary.simpleMessage("Разрешить обход VPN"),
         "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
@@ -600,6 +601,22 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ваш IP-адрес"),
         "networkSpeed": MessageLookupByLibrary.simpleMessage("Скорость сети"),
         "neutralScheme": MessageLookupByLibrary.simpleMessage("Нейтральные"),
+        "news": MessageLookupByLibrary.simpleMessage("Новости"),
+        "newsCached": MessageLookupByLibrary.simpleMessage(
+          "Показаны сохранённые новости. Лента временно недоступна.",
+        ),
+        "newsEmpty":
+            MessageLookupByLibrary.simpleMessage("Публикаций пока нет"),
+        "newsLoadFailed": MessageLookupByLibrary.simpleMessage(
+          "Не удалось загрузить новости. Попробуйте позже.",
+        ),
+        "newsLoading":
+            MessageLookupByLibrary.simpleMessage("Загрузка новостей"),
+        "newsOpenFeed":
+            MessageLookupByLibrary.simpleMessage("Открыть источник"),
+        "newsPost": MessageLookupByLibrary.simpleMessage("Публикация"),
+        "newsSource": MessageLookupByLibrary.simpleMessage("Открыть оригинал"),
+        "newsSubscribe": MessageLookupByLibrary.simpleMessage("Подписаться"),
         "noData": MessageLookupByLibrary.simpleMessage("Нет данных"),
         "noHotKey": MessageLookupByLibrary.simpleMessage("Нет горячей клавиши"),
         "noIcon": MessageLookupByLibrary.simpleMessage("Нет иконки"),
@@ -786,6 +803,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Сканировать QR-код для получения профиля",
         ),
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("Радужные"),
+        "readNews": MessageLookupByLibrary.simpleMessage("Читать"),
         "receiveSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
           "Получение подписки",
         ),

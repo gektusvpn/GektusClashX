@@ -80,6 +80,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ago": MessageLookupByLibrary.simpleMessage("前"),
         "agree": MessageLookupByLibrary.simpleMessage("同意"),
         "allApps": MessageLookupByLibrary.simpleMessage("全アプリ"),
+        "allNews": MessageLookupByLibrary.simpleMessage("すべてのニュース"),
         "allowBypass":
             MessageLookupByLibrary.simpleMessage("アプリがVPNをバイパスすることを許可"),
         "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
@@ -413,6 +414,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkDetection": MessageLookupByLibrary.simpleMessage("あなたのIPアドレス"),
         "networkSpeed": MessageLookupByLibrary.simpleMessage("ネットワーク速度"),
         "neutralScheme": MessageLookupByLibrary.simpleMessage("ニュートラル"),
+        "news": MessageLookupByLibrary.simpleMessage("ニュース"),
+        "newsCached": MessageLookupByLibrary.simpleMessage(
+          "保存済みのニュースを表示しています。フィードは一時的に利用できません。",
+        ),
+        "newsEmpty": MessageLookupByLibrary.simpleMessage("投稿はまだありません"),
+        "newsLoadFailed": MessageLookupByLibrary.simpleMessage(
+          "ニュースを読み込めませんでした。後でもう一度お試しください。",
+        ),
+        "newsLoading": MessageLookupByLibrary.simpleMessage("ニュースを読み込み中"),
+        "newsOpenFeed": MessageLookupByLibrary.simpleMessage("配信元を開く"),
+        "newsPost": MessageLookupByLibrary.simpleMessage("投稿"),
+        "newsSource": MessageLookupByLibrary.simpleMessage("元の投稿を開く"),
+        "newsSubscribe": MessageLookupByLibrary.simpleMessage("登録する"),
         "noData": MessageLookupByLibrary.simpleMessage("データなし"),
         "noHotKey": MessageLookupByLibrary.simpleMessage("ホットキーなし"),
         "noIcon": MessageLookupByLibrary.simpleMessage("なし"),
@@ -555,6 +569,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "qrcodeDesc":
             MessageLookupByLibrary.simpleMessage("QRコードをスキャンしてプロファイルを取得"),
         "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
+        "readNews": MessageLookupByLibrary.simpleMessage("続きを読む"),
         "receiveSubscriptionTitle": MessageLookupByLibrary.simpleMessage(
           "サブスクリプションを受信",
         ),
