@@ -20,6 +20,7 @@ import 'controller.dart';
 import 'enum/enum.dart';
 import 'pages/pages.dart';
 import 'widgets/app_update_prompt.dart';
+import 'widgets/progress_theme.dart';
 
 class Application extends ConsumerStatefulWidget {
   const Application({
@@ -65,6 +66,7 @@ class ApplicationState extends ConsumerState<Application> {
         : generatedColorScheme;
     final base = ThemeData(
       useMaterial3: true,
+      progressIndicatorTheme: materialProgressTheme,
       pageTransitionsTheme: _pageTransitionsTheme,
       colorScheme: colorScheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,

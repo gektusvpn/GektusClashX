@@ -283,11 +283,11 @@ class _ProfileItemState extends State<ProfileItem> {
           }
           progress = progress.clamp(0.0, 1.0);
 
-          Color progressColor = Colors.green;
+          Color progressColor = context.colorScheme.primary;
           if (progress > 0.9) {
-            progressColor = Colors.red;
+            progressColor = context.colorScheme.error;
           } else if (progress > 0.7) {
-            progressColor = Colors.orange;
+            progressColor = context.colorScheme.tertiary;
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,6 +301,8 @@ class _ProfileItemState extends State<ProfileItem> {
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
                   value: progress,
+                  semanticsLabel: appLocalizations.traffic,
+                  stopIndicatorColor: progressColor,
                   minHeight: 6,
                   backgroundColor:
                       Theme.of(context).colorScheme.surfaceContainerHighest,

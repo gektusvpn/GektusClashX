@@ -199,7 +199,7 @@ class _ZashboardWebViewPageState extends State<ZashboardWebViewPage> {
           }
           return LinearProgressIndicator(
             value: progress == 0 ? null : progress / 100,
-            minHeight: 2,
+            semanticsLabel: appLocalizations.zashboardInApp,
           );
         },
       );

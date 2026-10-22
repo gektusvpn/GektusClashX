@@ -19,7 +19,7 @@ class SubscriptionInfoView extends StatelessWidget {
     }
     final use = subscriptionInfo!.upload + subscriptionInfo!.download;
     final total = subscriptionInfo!.total;
-    final progress = use / total;
+    final progress = (use / total).clamp(0.0, 1.0);
 
     final useShow = TrafficValue(value: use).show;
     final totalShow = TrafficValue(value: total).show;
@@ -34,6 +34,7 @@ class SubscriptionInfoView extends StatelessWidget {
         LinearProgressIndicator(
           minHeight: 6,
           value: progress,
+          semanticsLabel: '${appLocalizations.traffic}: $useShow / $totalShow',
           backgroundColor: context.colorScheme.primary.opacity15,
         ),
         const SizedBox(

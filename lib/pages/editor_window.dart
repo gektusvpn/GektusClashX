@@ -8,6 +8,7 @@ import 'package:re_highlight/languages/yaml.dart';
 import 'package:re_highlight/styles/atom-one-dark.dart';
 import 'package:re_highlight/styles/atom-one-light.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:gektusclashx/widgets/progress_theme.dart';
 
 // ===========================================================================
 // Standalone config-editor window (macOS).
@@ -91,6 +92,7 @@ class _EditorWindowApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          progressIndicatorTheme: materialProgressTheme,
           brightness: isDark ? Brightness.dark : Brightness.light,
           useMaterial3: true,
         ),

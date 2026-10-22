@@ -185,11 +185,11 @@ class MetainfoWidget extends ConsumerWidget {
                         }
                         progress = progress.clamp(0.0, 1.0);
 
-                        Color progressColor = Colors.green;
+                        Color progressColor = theme.colorScheme.primary;
                         if (progress > 0.9) {
-                          progressColor = Colors.red;
+                          progressColor = theme.colorScheme.error;
                         } else if (progress > 0.7) {
-                          progressColor = Colors.orange;
+                          progressColor = theme.colorScheme.tertiary;
                         }
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,6 +203,8 @@ class MetainfoWidget extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(10),
                               child: LinearProgressIndicator(
                                 value: progress,
+                                semanticsLabel: appLocalizations.traffic,
+                                stopIndicatorColor: progressColor,
                                 minHeight: 6,
                                 backgroundColor:
                                     theme.colorScheme.surfaceContainerHighest,

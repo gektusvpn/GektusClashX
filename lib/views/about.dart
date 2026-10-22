@@ -222,7 +222,7 @@ class _CoreUpdateItemState extends State<_CoreUpdateItem> {
   Map<String, dynamic>? _release;
   bool _busy = false;
   bool _downloading = false;
-  double _progress = 0;
+  double? _progress;
   String _error = '';
   bool _initialCheckDone = false;
 
@@ -284,7 +284,7 @@ class _CoreUpdateItemState extends State<_CoreUpdateItem> {
     setState(() {
       _busy = true;
       _downloading = true;
-      _progress = 0;
+      _progress = null;
       _error = '';
     });
     final error = await request.downloadCoreUpdate(
@@ -293,7 +293,7 @@ class _CoreUpdateItemState extends State<_CoreUpdateItem> {
       expectedDigest: asset['digest'] as String?,
       onProgress: (received, total) {
         if (!mounted || total <= 0) return;
-        setState(() => _progress = received / total);
+        setState(() => _progress = (received / total).clamp(0.0, 1.0));
       },
     );
     if (!mounted) return;
@@ -370,7 +370,8 @@ class _CoreUpdateItemState extends State<_CoreUpdateItem> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: LinearProgressIndicator(
-              value: _progress > 0 ? _progress : null,
+              value: _progress,
+              semanticsLabel: appLocalizations.coreUpdateDownloading,
             ),
           ),
       ],

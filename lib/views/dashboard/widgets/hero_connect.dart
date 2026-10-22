@@ -879,6 +879,7 @@ class _SubscriptionMetric extends StatelessWidget {
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: progress,
+              semanticsLabel: '$label: $value',
               minHeight: 6,
               borderRadius: BorderRadius.circular(3),
               color: colorScheme.primary,
@@ -1168,7 +1169,9 @@ class _AppUpdateBanner extends StatelessWidget {
                         value: state.progress,
                         minHeight: 4,
                         borderRadius: BorderRadius.circular(2),
-                        color: colorScheme.tertiary,
+                        color: colorScheme.onTertiaryContainer,
+                        stopIndicatorColor: colorScheme.onTertiaryContainer,
+                        semanticsLabel: appLocalizations.downloadingAppUpdate,
                         backgroundColor: colorScheme.onTertiaryContainer
                             .withValues(alpha: 0.16),
                       ),
