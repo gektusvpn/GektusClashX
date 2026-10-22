@@ -16,6 +16,7 @@ import 'package:gektusclashx/models/models.dart';
 import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/profiles/add_profile.dart';
+import 'package:gektusclashx/views/news/news.dart';
 import 'package:gektusclashx/views/profiles/receive_profile_dialog.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -142,6 +143,10 @@ class HeroConnect extends ConsumerWidget {
         showBuyTraffic = (sub.total - used) < sub.total * 0.1;
       }
     }
+    final newsUrl = headers['gektusclashx-news-url']?.trim();
+    final news = newsUrl != null && newsUrl.isNotEmpty
+        ? NewsCard(url: newsUrl, tag: headers['gektusclashx-news-tag'])
+        : null;
     final supportUrl = headers['support-url']?.trim();
     final supportEmail = headers['support-email']?.trim();
     final supportImageUrl = headers['gektusclashx-support-image']?.trim();
@@ -208,6 +213,7 @@ class HeroConnect extends ConsumerWidget {
                 shareUrl: profile.url,
               )
             : null,
+        news: news,
         support: hasSupport
             ? _SupportCard(
                 supportUrl: supportUrl,
@@ -270,6 +276,10 @@ class HeroConnect extends ConsumerWidget {
               buyPlanUrl: buyPlanUrl,
               shareUrl: profile.url,
             ),
+          ],
+          if (news != null) ...[
+            const SizedBox(height: 12),
+            news,
           ],
           if (hasSupport) ...[
             const SizedBox(height: 12),
@@ -1882,7 +1892,6 @@ class _SupportAvatar extends StatelessWidget {
     );
   }
 }
-
 
 bool _isTelegramUrl(String value) {
   final uri = Uri.tryParse(value.trim());

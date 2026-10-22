@@ -9,6 +9,7 @@ class TVDashboard extends StatelessWidget {
     required this.connection,
     this.subscription,
     this.support,
+    this.news,
     this.announcement,
     this.update,
     this.buyTraffic,
@@ -19,6 +20,7 @@ class TVDashboard extends StatelessWidget {
   final Widget connection;
   final Widget? subscription;
   final Widget? support;
+  final Widget? news;
   final Widget? announcement;
   final Widget? update;
   final Widget? buyTraffic;
@@ -60,7 +62,7 @@ class TVDashboard extends StatelessWidget {
                 Padding(
                     padding: const EdgeInsets.only(top: 16),
                     child: announcement),
-              if (subscription != null || support != null) ...[
+              if (subscription != null || support != null || news != null) ...[
                 const SizedBox(height: 24),
                 if (wide && subscription != null)
                   Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -69,6 +71,10 @@ class TVDashboard extends StatelessWidget {
                     Expanded(
                         flex: 5,
                         child: Column(children: [
+                          if (news != null) news!,
+                          if (news != null &&
+                              (support != null || links != null))
+                            const SizedBox(height: 20),
                           if (support != null) support!,
                           if (support != null && links != null)
                             const SizedBox(height: 20),
@@ -78,7 +84,11 @@ class TVDashboard extends StatelessWidget {
                 else
                   Column(children: [
                     if (subscription != null) subscription!,
-                    if (subscription != null && support != null)
+                    if (subscription != null &&
+                        (news != null || support != null))
+                      const SizedBox(height: 20),
+                    if (news != null) news!,
+                    if (news != null && support != null)
                       const SizedBox(height: 20),
                     if (support != null) support!,
                   ]),
