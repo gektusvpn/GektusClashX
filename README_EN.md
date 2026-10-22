@@ -231,6 +231,29 @@ Usage:
     gektusclashx-buytraffic: https://example.com/buy-traffic
 ```
 
+- `gektusclashx-news-url`: RSS 2.0, Atom or JSON Feed 1/1.1 URL. Adds the latest post between
+  Subscription and Support on Home. Open the full post in a bottom sheet, or use
+  "All news" to open a dedicated feed page with back navigation. Full posts on TV use a remote-friendly dialog. Omit the header
+  to hide the card. Example: `https://rss.gektus.link/`.
+  Cards include the cover image, title and first sentence after the heading.
+  The image sits beside the text on wide screens and above it on narrow screens.
+  Publication dates appear in the feed list and full post. The feed page shows the
+  source name and avatar, with its username and a Subscribe action for Telegram.
+  Trailing hashtags are hidden while reading but remain available for filtering.
+  The article sheet uses the post title
+  and places its rounded cover before the body text. Emoji use the bundled Twemoji font.
+  A self-hosted RSSHub, RSS-Bridge or any reachable feed server can be used. Feeds refresh every
+  15 minutes while displayed and can be refreshed manually from the list. Cached
+  posts appear before network requests, with expired data refreshed in the background.
+  A skeleton appears only when there is no cached feed. Posts remain available
+  offline, isolated by feed URL. Up to 100 entries from a
+  response of at most 2 MB are shown; this is not a full Telegram archive. HTML is
+  rendered as native widgets without JavaScript or embedded video players.
+- `gektusclashx-news-tag`: Optional post filter, for example `GektusClashX`.
+  Home and "All news" then show only posts containing `#GektusClashX` in their text
+  or feed categories/tags. Matching is case-insensitive, with or without a leading
+  `#` in the header. Omit the header to show all posts. No matches shows an empty state.
+
 - `gektusclashx-channel-url`: Service channel URL. Adds a "Channel" action to the Links card on Home.
 - `gektusclashx-status-url`: Server status page URL. Adds a "Server status" action.
 - `gektusclashx-terms-url`: Terms of service URL. Adds a "Terms of service" action.
