@@ -637,11 +637,7 @@ class _SubscriptionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   appLocalizations.subscription,
-                  style: context.textTheme.titleLarge?.copyWith(
-                    fontSize: 20,
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: dashboardCardTitleStyle(context),
                 ),
               ),
               Container(
@@ -1585,7 +1581,7 @@ class _SupportCard extends ConsumerWidget {
             PopupMenuItemData(
               icon: _isTelegramUrl(supportUrl!) ? null : Icons.language_rounded,
               iconWidget:
-                  _isTelegramUrl(supportUrl!) ? const _TelegramIcon() : null,
+                  _isTelegramUrl(supportUrl!) ? const TelegramIcon() : null,
               label: _isTelegramUrl(supportUrl!)
                   ? 'Telegram'
                   : appLocalizations.website,
@@ -1608,7 +1604,7 @@ class _SupportCard extends ConsumerWidget {
     if (_hasUrl) {
       return _SupportButton(
         icon: _isTelegramUrl(supportUrl!)
-            ? const _TelegramIcon()
+            ? const TelegramIcon()
             : const Icon(
                 Icons.edit_rounded,
                 size: _smallButtonIconSize,
@@ -1710,7 +1706,7 @@ class _SupportMethodList extends ConsumerWidget {
       (
         method: _SupportMethod.website,
         icon: isTelegram
-            ? const _TelegramIcon(size: 24)
+            ? const TelegramIcon(size: 24)
             : const Icon(Icons.language_rounded, size: 24),
         title: isTelegram ? 'Telegram' : appLocalizations.website,
       ),
@@ -1884,28 +1880,6 @@ class _SupportAvatar extends StatelessWidget {
   }
 }
 
-class _TelegramIcon extends StatelessWidget {
-  const _TelegramIcon({this.size = _smallButtonIconSize});
-
-  final double size;
-
-  static const _svg = '''
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-  <path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
-</svg>
-''';
-
-  @override
-  Widget build(BuildContext context) => SvgPicture.string(
-        _svg,
-        width: size,
-        height: size,
-        colorFilter: ColorFilter.mode(
-          IconTheme.of(context).color ?? context.colorScheme.onSurface,
-          BlendMode.srcIn,
-        ),
-      );
-}
 
 bool _isTelegramUrl(String value) {
   final uri = Uri.tryParse(value.trim());

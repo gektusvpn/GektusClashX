@@ -1,8 +1,16 @@
 import 'package:emoji_regex/emoji_regex.dart';
-import 'package:gektusclashx/enum/enum.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:gektusclashx/enum/enum.dart';
 
 import '../state.dart';
+
+/// The shared heading style for subscription and news cards on the dashboard.
+TextStyle? dashboardCardTitleStyle(BuildContext context) =>
+    Theme.of(context).textTheme.titleLarge?.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+        color: Theme.of(context).colorScheme.onSurface);
 
 class TooltipText extends StatelessWidget {
   const TooltipText({
@@ -43,47 +51,47 @@ class EmojiText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
 
-  List<TextSpan> _buildTextSpans(String emojis) {
-    final spans = <TextSpan>[];
-    final matches = emojiRegex().allMatches(text);
-
-    var lastMatchEnd = 0;
-    for (final match in matches) {
-      if (match.start > lastMatchEnd) {
-        spans.add(
-          TextSpan(
-              text: text.substring(lastMatchEnd, match.start), style: style),
-        );
-      }
-      spans.add(
-        TextSpan(
-          text: match.group(0),
-          style: style?.copyWith(
-            fontFamily: FontFamily.twEmoji.value,
-          ),
-        ),
-      );
-      lastMatchEnd = match.end;
-    }
-    if (lastMatchEnd < text.length) {
-      spans.add(
-        TextSpan(
-          text: text.substring(lastMatchEnd),
-          style: style,
-        ),
-      );
-    }
-
-    return spans;
-  }
-
   @override
   Widget build(BuildContext context) => RichText(
         textScaler: MediaQuery.of(context).textScaler,
         maxLines: maxLines,
         overflow: overflow ?? TextOverflow.clip,
         text: TextSpan(
-          children: _buildTextSpans(text),
+          children: emojiTextSpans(text, style: style),
         ),
       );
+}
+
+/// Apply the bundled font to complete emoji sequences, including the optional
+/// emoji presentation selector. Keep link gestures on each resulting span.
+List<TextSpan> emojiTextSpans(String text,
+    {TextStyle? style, GestureRecognizer? recognizer}) {
+  final spans = <TextSpan>[];
+  var lastEnd = 0;
+  for (final match in emojiRegex().allMatches(text)) {
+    if (match.start < lastEnd) {
+      continue;
+    }
+    if (match.start > lastEnd) {
+      spans.add(TextSpan(
+          text: text.substring(lastEnd, match.start),
+          style: style,
+          recognizer: recognizer));
+    }
+    var end = match.end;
+    if (end < text.length && text.codeUnitAt(end) == 0xfe0f) {
+      end++;
+    }
+    spans.add(TextSpan(
+        text: text.substring(match.start, end),
+        recognizer: recognizer,
+        style: (style ?? const TextStyle())
+            .copyWith(fontFamily: FontFamily.twEmoji.value)));
+    lastEnd = end;
+  }
+  if (lastEnd < text.length) {
+    spans.add(TextSpan(
+        text: text.substring(lastEnd), style: style, recognizer: recognizer));
+  }
+  return spans;
 }
