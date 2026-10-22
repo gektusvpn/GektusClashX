@@ -139,6 +139,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     final isMobileView = ref.watch(isMobileViewProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return CommonPopScope(
+      canPop: widget.onPop == null,
       onPop: () async {
         if (widget.onPop == null) return true;
         final res = await widget.onPop!(

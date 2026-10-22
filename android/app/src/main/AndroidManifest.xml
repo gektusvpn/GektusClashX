@@ -39,6 +39,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
+        android:enableOnBackInvokedCallback="true"
         android:label="${appLabel}"
         android:memtagMode="off"
         android:networkSecurityConfig="@xml/network_security_config">

@@ -1,20 +1,25 @@
 import 'dart:async';
 
-import 'package:gektusclashx/state.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gektusclashx/state.dart';
 
 class CommonPopScope extends StatelessWidget {
   const CommonPopScope({
     super.key,
     required this.child,
     this.onPop,
+    this.canPop,
   });
+
+  /// Decide ahead of the gesture when no confirmation or local back action
+  /// is needed. Omitted values retain interception for existing callbacks.
+  final bool? canPop;
   final Widget child;
   final FutureOr<bool> Function()? onPop;
 
   @override
   Widget build(BuildContext context) => PopScope(
-        canPop: onPop == null ? true : false,
+        canPop: canPop ?? onPop == null,
         onPopInvokedWithResult: onPop == null
             ? null
             : (didPop, __) async {

@@ -35,15 +35,6 @@ class ApplicationState extends ConsumerState<Application> {
   Timer? _autoUpdateProfilesTaskTimer;
   final _updateReminder = AppUpdateReminder();
 
-  final _pageTransitionsTheme = const PageTransitionsTheme(
-    builders: <TargetPlatform, PageTransitionsBuilder>{
-      TargetPlatform.android: CommonPageTransitionsBuilder(),
-      TargetPlatform.windows: CommonPageTransitionsBuilder(),
-      TargetPlatform.linux: CommonPageTransitionsBuilder(),
-      TargetPlatform.macOS: CommonPageTransitionsBuilder(),
-    },
-  );
-
   ColorScheme _getAppColorScheme({
     required Brightness brightness,
     int? primaryColor,
@@ -70,7 +61,7 @@ class ApplicationState extends ConsumerState<Application> {
       bottomSheetTheme: BottomSheetThemeData(
           backgroundColor: colorScheme.surfaceContainerLow,
           modalBackgroundColor: colorScheme.surfaceContainerLow),
-      pageTransitionsTheme: _pageTransitionsTheme,
+      pageTransitionsTheme: appPageTransitionsTheme,
       colorScheme: colorScheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
     );

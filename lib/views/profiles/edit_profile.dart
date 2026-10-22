@@ -219,11 +219,13 @@ class _EditProfileViewState extends State<EditProfileView> {
             }
             globalState.appController.setProfileAndAutoApply(saved);
             if (mounted) {
-              rawText = content;
-              fileData = null;
-              if (disableAutoUpdate) {
-                setState(() => autoUpdate = false);
-              }
+              setState(() {
+                rawText = content;
+                fileData = null;
+                if (disableAutoUpdate) {
+                  autoUpdate = false;
+                }
+              });
               fileInfoNotifier.value = fileInfoNotifier.value?.copyWith(
                 size: utf8.encode(content).length,
                 lastModified: DateTime.now(),
@@ -269,8 +271,10 @@ class _EditProfileViewState extends State<EditProfileView> {
     if (!mounted || data == null) {
       return;
     }
-    rawText = data;
-    fileData = Uint8List.fromList(utf8.encode(data));
+    setState(() {
+      rawText = data;
+      fileData = Uint8List.fromList(utf8.encode(data));
+    });
     fileInfoNotifier.value = fileInfoNotifier.value?.copyWith(
       size: fileData?.length ?? 0,
       lastModified: DateTime.now(),
@@ -411,6 +415,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       ),
     ];
     return CommonPopScope(
+      canPop: fileData == null,
       onPop: () {
         if (fileData == null) {
           return true;

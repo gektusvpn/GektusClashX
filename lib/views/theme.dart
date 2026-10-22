@@ -296,6 +296,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
     final isEquals = vm4.d;
 
     return CommonPopScope(
+      canPop: _removablePrimaryColor == null,
       onPop: () {
         if (_removablePrimaryColor != null) {
           setState(() {
