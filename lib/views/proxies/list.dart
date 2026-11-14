@@ -272,13 +272,20 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
   }
 
   Future<void> _delayTest() async {
+    if (!_expansibleController.isExpanded) {
+      _expansibleController.expand();
+      final unfoldSet = ProviderScope.containerOf(context, listen: false)
+          .read(unfoldSetProvider);
+      globalState.appController
+          .updateCurrentUnfoldSet({...unfoldSet, groupName});
+    }
     if (isLock) return;
     isLock = true;
-    await delayTest(
-      widget.group.all,
-      widget.group.testUrl,
-    );
-    isLock = false;
+    try {
+      await delayTest(widget.group.all, widget.group.testUrl);
+    } finally {
+      isLock = false;
+    }
   }
 
   Widget _buildIcon() => Consumer(
@@ -444,7 +451,7 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                             foregroundColor: colorScheme.onSurfaceVariant
                                 .withValues(alpha: 0.72),
                           ),
-                          icon: const Icon(Icons.network_ping),
+                          icon: const Icon(Icons.speed_rounded),
                         ),
                         const SizedBox(width: 6),
                         IconButton.filledTonal(

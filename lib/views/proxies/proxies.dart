@@ -38,6 +38,10 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
       await clashCore.healthCheck();
       return;
     }
+    globalState.appController.updateCurrentUnfoldSet({
+      ...ref.read(unfoldSetProvider),
+      ...groups.map((group) => group.name),
+    });
     await Future.wait(
       groups.map((group) => delayTest(group.all, group.testUrl)),
     );
@@ -96,7 +100,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           popup: CommonPopupMenu(
             items: [
               PopupMenuItemData(
-                icon: Icons.network_ping,
+                icon: Icons.speed_rounded,
                 label: appLocalizations.testAllDelay,
                 onPressed: () => unawaited(_pingAllGroups()),
               ),
@@ -196,7 +200,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                           foregroundColor: context.colorScheme.onSurfaceVariant,
                         ),
                         onPressed: () => unawaited(_pingAllGroups()),
-                        icon: const Icon(Icons.network_ping_rounded),
+                        icon: const Icon(Icons.speed_rounded),
                         label: Text(appLocalizations.testAllDelay),
                       ),
                     ),

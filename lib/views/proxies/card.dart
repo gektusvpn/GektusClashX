@@ -57,7 +57,7 @@ class ProxyCard extends StatelessWidget {
                         : ExcludeFocus(
                             excluding: isAndroidTV,
                             child: IconButton(
-                              icon: const Icon(Icons.bolt),
+                              icon: const Icon(Icons.speed_rounded),
                               iconSize: globalState.measure.labelSmallHeight,
                               padding: EdgeInsets.zero,
                               onPressed: _handleTestCurrentDelay,
