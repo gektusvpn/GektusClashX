@@ -8,6 +8,20 @@ set -euo pipefail
 : "${RELEASE_ASSET_DIR:?RELEASE_ASSET_DIR is required}"
 : "${IS_STABLE:?IS_STABLE is required}"
 
+# Validate before any GitHub mutation, including resuming an existing draft.
+if [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+  expected_stable=true
+elif [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-pre\.(0|[1-9][0-9]*)$ ]]; then
+  expected_stable=false
+else
+  echo "Unsupported app release tag: $RELEASE_TAG" >&2
+  exit 1
+fi
+if [ "$IS_STABLE" != "$expected_stable" ]; then
+  echo "Release channel does not match tag $RELEASE_TAG." >&2
+  exit 1
+fi
+
 retry() {
   local attempt=1
   local max_attempts=4

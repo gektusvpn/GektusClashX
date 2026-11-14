@@ -27,6 +27,10 @@ jobs:
         shell: bash
         run: |
           pubspec_version=$(sed -nE 's/^version: ([^+]+).*/\1/p' pubspec.yaml)
+          if ! [[ "$GITHUB_REF_NAME" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-pre\.(0|[1-9][0-9]*))?$ ]]; then
+            echo "::error::Unsupported app release tag: $GITHUB_REF_NAME"
+            exit 1
+          fi
           case "$GITHUB_REF_NAME" in
             "v$pubspec_version"|"v$pubspec_version-"*) ;;
             *)
@@ -266,6 +270,8 @@ jobs:
 
           manifest = {
               "tag_name": tag,
+              "prerelease": False,
+              "draft": False,
               "body": Path("release.md").read_text(encoding="utf-8"),
               "assets": assets,
           }
@@ -292,7 +298,7 @@ jobs:
 
   aur-publish:
     needs: [upload]
-    if: vars.PUBLISH_AUR == 'true' && needs.upload.result == 'success'
+    if: vars.PUBLISH_AUR == 'true' && !contains(github.ref_name, '-') && needs.upload.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -397,6 +403,7 @@ jobs:
     if: >-
       always() &&
       vars.SEND_TELEGRAM == 'true' &&
+      !contains(github.ref_name, '-') &&
       needs.upload.result == 'success' &&
       (needs.aur-publish.result == 'success' || needs.aur-publish.result == 'skipped')
     runs-on: ubuntu-latest
