@@ -31,11 +31,13 @@ class NewsCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final feed = ref.watch(newsFeedProvider(url));
     final tv = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+    final inset = tv ? 20.0 : 16.0;
     return Card.filled(
       margin: EdgeInsets.zero,
       color: theme.colorScheme.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(24))),
+      shape: RoundedRectangleBorder(
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+          borderRadius: const BorderRadius.all(Radius.circular(16))),
       clipBehavior: Clip.antiAlias,
       semanticContainer: false,
       child: feed.when(
@@ -44,8 +46,7 @@ class NewsCard extends ConsumerWidget {
           final articles = result.feed.forTag(tag).articles;
           if (articles.isEmpty) {
             return Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(strings.newsEmpty));
+                padding: EdgeInsets.all(inset), child: Text(strings.newsEmpty));
           }
           final article = articles.first;
           void openArticle() => unawaited(showNewsArticle(context, article));
@@ -54,17 +55,32 @@ class NewsCard extends ConsumerWidget {
             onTap: openArticle,
             child: _ArticleCardBody(
               article: article,
+              inset: inset,
               footer: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(inset),
                         child: Wrap(
                             alignment: WrapAlignment.end,
                             spacing: 8,
                             runSpacing: 8,
                             children: [
                               OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor:
+                                        theme.colorScheme.onSurfaceVariant,
+                                  ).copyWith(
+                                    side: WidgetStateProperty.resolveWith(
+                                        (states) => states.contains(
+                                                    WidgetState.disabled) ||
+                                                states.contains(
+                                                    WidgetState.focused)
+                                            ? null
+                                            : BorderSide(
+                                                color: theme.colorScheme
+                                                    .outlineVariant)),
+                                  ),
                                   onPressed: () => unawaited(
                                       showNewsFeed(context, url, tag: tag)),
                                   child: Text(strings.allNews)),
@@ -78,16 +94,16 @@ class NewsCard extends ConsumerWidget {
                             ])),
                     if (result.isStale)
                       Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                          padding: EdgeInsets.fromLTRB(inset, 0, inset, inset),
                           child: Text(strings.newsCached,
                               style: theme.textTheme.bodySmall)),
                   ]),
             ),
           );
         },
-        loading: () => const NewsCardSkeleton(),
+        loading: () => NewsCardSkeleton(inset: inset),
         error: (_, __) => Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(inset),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(strings.news, style: theme.textTheme.titleLarge),
@@ -107,7 +123,8 @@ class NewsCard extends ConsumerWidget {
 /// A quiet placeholder only for an empty cache. Existing posts stay visible
 /// while their feed refreshes; no looping animation is needed for reduced motion.
 class NewsCardSkeleton extends StatelessWidget {
-  const NewsCardSkeleton({super.key});
+  const NewsCardSkeleton({super.key, this.inset = 16});
+  final double inset;
 
   @override
   Widget build(BuildContext context) {
@@ -119,9 +136,9 @@ class NewsCardSkeleton extends StatelessWidget {
             height: height,
             decoration: BoxDecoration(
                 color: colors.onSurface.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12))));
+                borderRadius: BorderRadius.circular(16))));
     final text = Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(inset),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -140,7 +157,7 @@ class NewsCardSkeleton extends StatelessWidget {
     final media = DecoratedBox(
         decoration: BoxDecoration(
             color: colors.onSurface.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(12)));
+            borderRadius: BorderRadius.circular(16)));
     return Semantics(
         label: AppLocalizations.of(context).newsLoading,
         child: ExcludeSemantics(
@@ -170,7 +187,9 @@ class NewsCardSkeleton extends StatelessWidget {
 }
 
 class _ArticleCardBody extends StatelessWidget {
-  const _ArticleCardBody({required this.article, this.footer});
+  const _ArticleCardBody(
+      {required this.article, required this.inset, this.footer});
+  final double inset;
   final NewsArticle article;
   final Widget? footer;
 
@@ -182,7 +201,8 @@ class _ArticleCardBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, footer == null ? 16 : 0),
+            padding: EdgeInsets.fromLTRB(
+                inset, inset, inset, footer == null ? inset : 0),
             child: _ArticlePreview(article: article)),
         if (footer != null) footer!,
       ],
@@ -212,7 +232,7 @@ class _ArticleCardBody extends StatelessWidget {
             bottom: 0,
             width: imageWidth,
             child: NewsCover(
-                url: article.image!, borderRadius: BorderRadius.circular(12))),
+                url: article.image!, borderRadius: BorderRadius.circular(16))),
       ]);
     });
   }
@@ -224,8 +244,7 @@ class NewsCover extends StatelessWidget {
   const NewsCover(
       {super.key,
       required this.url,
-      this.borderRadius =
-          const BorderRadius.vertical(bottom: Radius.circular(12))});
+      this.borderRadius = const BorderRadius.all(Radius.circular(16))});
   final Uri url;
   final BorderRadius borderRadius;
 
@@ -268,7 +287,7 @@ class _ArticlePreview extends StatelessWidget {
           child: EmojiText(newsTitle(context, article),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: dashboardCardTitleStyle(context))),
+              style: newsHeadingStyle(context))),
       if (article.excerpt.isNotEmpty) ...[
         const SizedBox(height: 16),
         EmojiText(article.excerpt,
@@ -296,6 +315,7 @@ class NewsPage extends ConsumerWidget {
     final result = ref.watch(newsFeedProvider(url));
     final theme = Theme.of(context);
     final tv = ref.watch(isAndroidTVProvider).valueOrNull ?? false;
+    final inset = tv ? 20.0 : 16.0;
     return CommonScaffold(
       title: strings.news,
       enableAppBarScrolledUnderEffect: true,
@@ -360,22 +380,26 @@ class NewsPage extends ConsumerWidget {
                               final article = articles[index - prefixCount];
                               return TVFocusEffect(
                                 enabled: tv,
-                                borderRadius: BorderRadius.circular(24),
+                                borderRadius: BorderRadius.circular(16),
                                 child: Card.filled(
                                   margin: EdgeInsets.zero,
                                   color: theme.colorScheme.surfaceContainer,
                                   clipBehavior: Clip.antiAlias,
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(24))),
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                          color:
+                                              theme.colorScheme.outlineVariant),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16))),
                                   child: InkWell(
                                       canRequestFocus: false,
                                       onTap: () => unawaited(
                                           showNewsArticle(context, article)),
                                       child: _ArticleCardBody(
                                         article: article,
+                                        inset: inset,
                                         footer: Padding(
-                                          padding: const EdgeInsets.all(16),
+                                          padding: EdgeInsets.all(inset),
                                           child: Row(children: [
                                             Expanded(
                                                 child: article.publishedAt ==

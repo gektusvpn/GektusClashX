@@ -11,3 +11,9 @@ String newsTitle(BuildContext context, NewsArticle article) =>
     article.title.isEmpty
         ? AppLocalizations.of(context).newsPost
         : article.title;
+
+/// News headings match the compact heading previously used by support.
+TextStyle? newsHeadingStyle(BuildContext context) =>
+    Theme.of(context).textTheme.bodyLarge?.copyWith(
+        fontWeight: FontWeight.w500,
+        color: Theme.of(context).colorScheme.onSurface);

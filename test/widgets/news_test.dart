@@ -15,8 +15,137 @@ import '../support/news_test_app.dart';
 void main() {
   setUp(initializeNewsTestState);
 
+  for (final tv in [false, true]) {
+    testWidgets('dashboard card content has consistent padding (TV: $tv)',
+        (tester) async {
+      tester.view.physicalSize = const Size(1200, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(newsTestApp(tv: tv, extraHeaders: {
+        'gektusclashx-channel-url': 'https://example.com/channel',
+      }));
+      await tester.pumpAndSettle();
+      final inset = tv ? 20.0 : 16.0;
+      for (final title in ['Подписка', 'Ссылки']) {
+        final container = tester.widget<Container>(find
+            .ancestor(
+                of: find.text(title),
+                matching: find.byWidgetPredicate((widget) =>
+                    widget is Container && widget.decoration is BoxDecoration))
+            .first);
+        expect(container.padding, EdgeInsets.all(inset));
+      }
+      final newsTitle = find.byWidgetPredicate((widget) =>
+          widget is EmojiText &&
+          widget.text == 'Обновление сервиса: больше удобства каждый день');
+      final titlePadding = tester.widgetList<Padding>(
+          find.ancestor(of: newsTitle, matching: find.byType(Padding)));
+      expect(
+          titlePadding.any((padding) =>
+              padding.padding == EdgeInsets.fromLTRB(inset, inset, inset, 0)),
+          isTrue);
+      final actionsPadding = tester.widgetList<Padding>(find.ancestor(
+          of: find.text('Все новости'), matching: find.byType(Padding)));
+      expect(
+          actionsPadding
+              .any((padding) => padding.padding == EdgeInsets.all(inset)),
+          isTrue);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final brightness in Brightness.values) {
+    testWidgets(
+        'cards and action buttons use expressive outlines ($brightness)',
+        (tester) async {
+      tester.view.physicalSize = const Size(1000, 1200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(newsTestApp(
+          brightness: brightness,
+          subscriptionUrl: 'https://example.com/subscription',
+          extraHeaders: {
+            'gektusclashx-channel-url': 'https://example.com/channel'
+          }));
+      await tester.pumpAndSettle();
+      final colors =
+          Theme.of(tester.element(find.byType(NewsCard))).colorScheme;
+      final card = tester.widget<Card>(find
+          .descendant(of: find.byType(NewsCard), matching: find.byType(Card))
+          .first);
+      expect((card.shape! as OutlinedBorder).side,
+          BorderSide(color: colors.outlineVariant));
+      expect(card.color, colors.surfaceContainer);
+      for (final label in ['Поделиться', 'Обновить', 'Все новости']) {
+        final button = label == 'Поделиться'
+            ? find.descendant(
+                of: find.byTooltip(label),
+                matching: find.byType(OutlinedButton))
+            : find.ancestor(
+                of: find.text(label), matching: find.byType(OutlinedButton));
+        final material = tester.widget<Material>(
+            find.descendant(of: button, matching: find.byType(Material)));
+        expect((material.shape! as OutlinedBorder).side,
+            BorderSide(color: colors.outlineVariant));
+        expect(material.textStyle!.color, colors.onSurfaceVariant);
+      }
+      final links = tester.widget<Container>(find
+          .ancestor(
+              of: find.text('Ссылки'),
+              matching: find.byWidgetPredicate((widget) =>
+                  widget is Container && widget.decoration is BoxDecoration))
+          .first);
+      expect((links.decoration! as BoxDecoration).borderRadius,
+          BorderRadius.circular(16));
+      await tester.ensureVisible(find.text('Все новости'));
+      await tester.tap(find.text('Все новости'));
+      await tester.pumpAndSettle();
+      final articleCards = tester
+          .widgetList<Card>(find.descendant(
+              of: find.byType(NewsPage), matching: find.byType(Card)))
+          .where((card) => card.color == colors.surfaceContainer);
+      expect(articleCards, isNotEmpty);
+      for (final articleCard in articleCards) {
+        expect((articleCard.shape! as OutlinedBorder).side,
+            BorderSide(color: colors.outlineVariant));
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('news outlined action preserves the TV focus border',
+      (tester) async {
+    final colors = ColorScheme.fromSeed(seedColor: Colors.green);
+    await tester.pumpWidget(newsTestApp(
+        child: Theme(
+      data: ThemeData(
+          colorScheme: colors,
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: ButtonStyle(
+                side: WidgetStateProperty.resolveWith((states) =>
+                    states.contains(WidgetState.focused)
+                        ? BorderSide(color: colors.primary, width: 2)
+                        : null)),
+          )),
+      child: const SingleChildScrollView(
+          child: NewsCard(url: 'https://news.example/feed')),
+    )));
+    await tester.pumpAndSettle();
+    Focus.of(tester.element(find.text('Все новости'))).requestFocus();
+    await tester.pumpAndSettle();
+    final button = find.ancestor(
+        of: find.text('Все новости'), matching: find.byType(OutlinedButton));
+    final material = tester.widget<Material>(
+        find.descendant(of: button, matching: find.byType(Material)));
+    expect((material.shape! as OutlinedBorder).side,
+        BorderSide(color: colors.primary, width: 2));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
-      'Home inserts news between subscription and support only with header',
+      'Home shows news after subscription only with header and removes support card',
       (tester) async {
     tester.view.physicalSize = const Size(900, 1200);
     tester.view.devicePixelRatio = 1;
@@ -25,19 +154,23 @@ void main() {
     await tester.pumpWidget(newsTestApp());
     await tester.pumpAndSettle();
     expect(find.byType(NewsCard), findsOneWidget);
-    final subscriptionStyle = tester.widget<Text>(find.text('Подписка')).style!;
     final newsStyle = tester
         .widget<EmojiText>(find.byWidgetPredicate((widget) =>
             widget is EmojiText &&
             widget.text == 'Обновление сервиса: больше удобства каждый день'))
         .style!;
-    expect(newsStyle.fontSize, subscriptionStyle.fontSize);
-    expect(newsStyle.fontWeight, subscriptionStyle.fontWeight);
-    expect(newsStyle.fontFamily, subscriptionStyle.fontFamily);
+    final theme = Theme.of(tester.element(find.byType(NewsCard)));
+    expect(newsStyle.fontSize, theme.textTheme.bodyLarge!.fontSize);
+    expect(newsStyle.fontWeight, FontWeight.w500);
+    expect(newsStyle.fontFamily, theme.textTheme.bodyLarge!.fontFamily);
+    final card = tester.widget<Card>(find
+        .descendant(of: find.byType(NewsCard), matching: find.byType(Card))
+        .first);
+    expect((card.shape! as RoundedRectangleBorder).borderRadius,
+        BorderRadius.circular(16));
     expect(tester.getTopLeft(find.text('Подписка')).dy,
         lessThan(tester.getTopLeft(find.byType(NewsCard)).dy));
-    expect(tester.getTopLeft(find.byType(NewsCard)).dy,
-        lessThan(tester.getTopLeft(find.text('Поддержка')).dy));
+    expect(find.text('Поддержка'), findsNothing);
     expect(find.text('Приложение для телевизора', findRichText: true),
         findsNothing);
     await tester.pumpWidget(const SizedBox());
@@ -72,6 +205,17 @@ void main() {
     expect(find.text('Что изменилось', findRichText: true), findsOneWidget);
     expect(tester.takeException(), isNull);
     expect(find.byType(CloseButton), findsOneWidget);
+    final heading = tester.widget<EmojiText>(find.descendant(
+        of: find.byType(NewsArticleView),
+        matching: find.byWidgetPredicate(
+            (widget) => widget is EmojiText && widget.text == article.title)));
+    expect(
+        heading.style!.fontSize,
+        Theme.of(tester.element(find.byType(NewsArticleView)))
+            .textTheme
+            .bodyLarge!
+            .fontSize);
+    expect(heading.maxLines, isNull);
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Все новости'));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/common/common.dart';
+import 'package:gektusclashx/controller.dart';
 import 'package:gektusclashx/enum/enum.dart';
 import 'package:gektusclashx/l10n/l10n.dart';
 import 'package:gektusclashx/models/models.dart';
@@ -28,12 +29,16 @@ void initializeNewsTestState() {
 
 Widget newsTestApp(
     {bool withNews = true,
+    bool tv = false,
     Brightness brightness = Brightness.dark,
     NewsFeedRepository? repository,
     String newsUrl = 'https://news.example/feed',
+    String subscriptionUrl = '',
+    Map<String, String> extraHeaders = const {},
     Widget? child}) {
   final profile = Profile(
       id: 'news-test',
+      url: subscriptionUrl,
       label: 'Test service',
       autoUpdateDuration: const Duration(hours: 1),
       subscriptionInfo:
@@ -42,10 +47,11 @@ Widget newsTestApp(
         'gektusclashx-servicename': 'Gektus VPN',
         'support-email': 'support@example.com',
         if (withNews) 'gektusclashx-news-url': newsUrl,
+        ...extraHeaders,
       });
   return ProviderScope(
       overrides: [
-        isAndroidTVProvider.overrideWith((ref) async => false),
+        isAndroidTVProvider.overrideWith((ref) async => tv),
         startButtonSelectorStateProvider.overrideWith((ref) =>
             const StartButtonSelectorState(
                 isInit: true, hasProfile: true, hasProxiesInit: false)),
@@ -72,7 +78,10 @@ Widget newsTestApp(
             fontFamily: 'GoogleSansFlex'),
         home: Scaffold(
             appBar: AppBar(title: const Text('Главная')),
-            body: child ?? const HeroConnect()),
+            body: Consumer(builder: (context, ref, _) {
+              if (tv) globalState.appController = AppController(context, ref);
+              return child ?? const HeroConnect();
+            })),
       ));
 }
 

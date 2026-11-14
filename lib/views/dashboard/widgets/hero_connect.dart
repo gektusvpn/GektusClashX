@@ -635,7 +635,7 @@ class _SubscriptionCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(isAndroidTV ? 20 : 24),
+      padding: EdgeInsets.all(isAndroidTV ? 20 : 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         color: colorScheme.surfaceContainer,
@@ -820,15 +820,18 @@ class _SubscriptionCard extends StatelessWidget {
       OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         foregroundColor: context.colorScheme.onSurfaceVariant,
-        side: BorderSide(
-          color: context.colorScheme.outlineVariant.withValues(alpha: 0.8),
-        ),
         shape: RoundedRectangleBorder(
           borderRadius: borderRadius,
         ),
         textStyle: context.textTheme.titleSmall?.copyWith(
           fontWeight: FontWeight.w600,
         ),
+      ).copyWith(
+        side: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.disabled) ||
+                    states.contains(WidgetState.focused)
+                ? null
+                : BorderSide(color: context.colorScheme.outlineVariant)),
       );
 }
 
@@ -1341,11 +1344,11 @@ class _ServiceLinksCard extends StatelessWidget {
     final colorScheme = context.colorScheme;
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(isAndroidTV ? 20 : 24),
+      padding: EdgeInsets.all(isAndroidTV ? 20 : 16),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

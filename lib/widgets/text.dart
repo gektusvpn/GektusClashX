@@ -5,7 +5,7 @@ import 'package:gektusclashx/enum/enum.dart';
 
 import '../state.dart';
 
-/// The shared heading style for subscription and news cards on the dashboard.
+/// The heading style for subscription cards on the dashboard.
 TextStyle? dashboardCardTitleStyle(BuildContext context) =>
     Theme.of(context).textTheme.titleLarge?.copyWith(
         fontSize: 20,

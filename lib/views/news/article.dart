@@ -59,8 +59,7 @@ class _SheetHeading extends StatelessWidget {
           Expanded(
               child: Semantics(
                   header: true,
-                  child: EmojiText(title,
-                      style: dashboardCardTitleStyle(context)))),
+                  child: EmojiText(title, style: newsHeadingStyle(context)))),
           const SizedBox(width: 8),
           const CloseButton(),
         ]),
