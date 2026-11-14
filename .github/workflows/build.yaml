@@ -85,6 +85,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Setup Java for Android
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Setup Android Signing
         if: matrix.platform == 'android'
         env:
@@ -143,6 +150,15 @@ jobs:
           cache: true
 
       - run: flutter --version
+
+      - name: Select Android build JDK
+        if: matrix.platform == 'android'
+        shell: bash
+        run: |
+          flutter config --jdk-dir "$JAVA_HOME"
+          java -version
+          cd android
+          ./gradlew --version
 
       - name: Get Flutter Dependency
         run: flutter pub get
