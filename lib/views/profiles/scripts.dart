@@ -74,7 +74,10 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
                     },
                   ),
                   trailing: CommonPopupBox(
-                    targetBuilder: (open) => IconButton(
+                    targetBuilder: (open, focusNode, statesController) =>
+                        IconButton(
+                      focusNode: focusNode,
+                      statesController: statesController,
                       onPressed: () {
                         open();
                       },

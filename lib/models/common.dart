@@ -520,12 +520,14 @@ class PopupMenuItemData {
     this.iconWidget,
     required this.label,
     required this.onPressed,
+    this.selected,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
   final Widget? iconWidget;
+  final bool? selected;
 }
 
 @freezed

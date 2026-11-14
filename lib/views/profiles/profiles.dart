@@ -397,12 +397,15 @@ class _ProfileItemState extends State<ProfileItem> {
                           child: CircularProgressIndicator(),
                         )
                       : CommonPopupBox(
+                          focusNode: _menuFocusNode,
                           popup: CommonPopupMenu(
                             items: [
                               if (_isTV)
                                 PopupMenuItemData(
                                   icon: Icons.check_circle_outline,
                                   label: appLocalizations.selectProfile,
+                                  selected:
+                                      widget.groupValue == widget.profile.id,
                                   onPressed: () {
                                     widget.onChanged(widget.profile.id);
                                   },
@@ -445,18 +448,17 @@ class _ProfileItemState extends State<ProfileItem> {
                               ),
                             ],
                           ),
-                          targetBuilder: (open) => Focus(
-                            focusNode: _menuFocusNode,
-                            canRequestFocus: true,
-                            child: Material(
-                              color: _isMenuFocused
-                                  ? Theme.of(context).focusColor
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
-                              child: IconButton(
-                                onPressed: open,
-                                icon: const Icon(Icons.more_vert),
-                              ),
+                          targetBuilder: (open, focusNode, statesController) =>
+                              Material(
+                            color: _isMenuFocused
+                                ? Theme.of(context).focusColor
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                            child: IconButton(
+                              focusNode: focusNode,
+                              statesController: statesController,
+                              onPressed: open,
+                              icon: const Icon(Icons.more_vert),
                             ),
                           ),
                         ),

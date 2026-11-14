@@ -84,7 +84,10 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           ),
         ],
         CommonPopupBox(
-          targetBuilder: (open) => CommonHeaderIconButton(
+          targetBuilder: (open, focusNode, statesController) =>
+              CommonHeaderIconButton(
+            focusNode: focusNode,
+            statesController: statesController,
             onPressed: open,
             icon: const Icon(
               Icons.more_vert,
@@ -240,7 +243,10 @@ class _ModeSelectorAction extends ConsumerWidget {
     );
 
     return CommonPopupBox(
-      targetBuilder: (open) => CommonHeaderIconButton(
+      targetBuilder: (open, focusNode, statesController) =>
+          CommonHeaderIconButton(
+        focusNode: focusNode,
+        statesController: statesController,
         tooltip: appLocalizations.action_mode,
         onPressed: open,
         icon: Icon(_modeIcon(mode)),
@@ -251,6 +257,7 @@ class _ModeSelectorAction extends ConsumerWidget {
             PopupMenuItemData(
               icon: _modeIcon(item),
               label: _modeLabel(context, item),
+              selected: item == mode,
               onPressed: () {
                 globalState.appController.changeMode(item);
               },

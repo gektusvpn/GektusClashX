@@ -185,7 +185,10 @@ class _EditorPageState extends ConsumerState<EditorPage> {
             ),
             _wrapController(
               (_) => CommonPopupBox(
-                targetBuilder: (open) => IconButton(
+                targetBuilder: (open, focusNode, statesController) =>
+                    IconButton(
+                  focusNode: focusNode,
+                  statesController: statesController,
                   onPressed: open,
                   icon: const Icon(Icons.more_vert),
                 ),

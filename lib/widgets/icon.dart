@@ -11,19 +11,29 @@ class CommonHeaderIconButton extends StatelessWidget {
     required this.icon,
     this.tooltip,
     this.iconSize,
+    this.focusNode,
+    this.statesController,
   });
 
   final VoidCallback? onPressed;
   final Widget icon;
   final String? tooltip;
   final double? iconSize;
+  final FocusNode? focusNode;
+  final WidgetStatesController? statesController;
 
   @override
   Widget build(BuildContext context) => IconButton.filledTonal(
         tooltip: tooltip,
         onPressed: onPressed,
-        iconSize: iconSize,
+        iconSize: iconSize ?? 24,
+        focusNode: focusNode,
+        statesController: statesController,
         style: IconButton.styleFrom(
+          minimumSize: const Size(40, 40),
+          fixedSize: const Size(40, 40),
+          visualDensity: VisualDensity.standard,
+          tapTargetSize: MaterialTapTargetSize.padded,
           backgroundColor: context.colorScheme.surfaceContainerHigh,
           foregroundColor: context.colorScheme.onSurfaceVariant,
         ),
