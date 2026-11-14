@@ -3164,6 +3164,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Subscription link copied to clipboard`
+  String get subscriptionLinkCopied {
+    return Intl.message(
+      'Subscription link copied to clipboard',
+      name: 'subscriptionLinkCopied',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Copy link`
   String get copyLink {
     return Intl.message('Copy link', name: 'copyLink', desc: '', args: []);

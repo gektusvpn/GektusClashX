@@ -404,6 +404,7 @@
   "profileHasUpdate": "The profile has been modified. Do you want to disable auto update?",
   "hasCacheChange": "Do you want to cache the changes?",
   "copySuccess": "Copy success",
+  "subscriptionLinkCopied": "Subscription link copied to clipboard",
   "copyLink": "Copy link",
   "exportFile": "Export file",
   "cacheCorrupt": "The cache is corrupt. Do you want to clear it?",

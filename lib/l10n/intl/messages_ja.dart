@@ -675,6 +675,9 @@ class MessageLookup extends MessageLookupByLibrary {
           "サブスクリプションは本日期限切れになります",
         ),
         "subscriptionLifetime": MessageLookupByLibrary.simpleMessage("無期限"),
+        "subscriptionLinkCopied": MessageLookupByLibrary.simpleMessage(
+          "サブスクリプションリンクをクリップボードにコピーしました",
+        ),
         "subscriptionValidity": MessageLookupByLibrary.simpleMessage("有効期間"),
         "support": MessageLookupByLibrary.simpleMessage("サポート"),
         "supportMessage": MessageLookupByLibrary.simpleMessage(

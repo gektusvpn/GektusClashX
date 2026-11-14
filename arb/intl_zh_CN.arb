@@ -376,6 +376,7 @@
   "profileHasUpdate": "配置文件已经修改,是否关闭自动更新 ",
   "hasCacheChange": "是否缓存修改",
   "copySuccess": "复制成功",
+  "subscriptionLinkCopied": "订阅链接已复制到剪贴板",
   "copyLink": "复制链接",
   "exportFile": "导出文件",
   "cacheCorrupt": "缓存已损坏，是否清空？",

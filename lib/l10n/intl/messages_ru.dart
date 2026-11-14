@@ -972,6 +972,9 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "subscriptionLifetime":
             MessageLookupByLibrary.simpleMessage("Бессрочно"),
+        "subscriptionLinkCopied": MessageLookupByLibrary.simpleMessage(
+          "Ссылка подписки скопирована в буфер обмена",
+        ),
         "subscriptionUnlimited": MessageLookupByLibrary.simpleMessage(
           "Бессрочная подписка",
         ),

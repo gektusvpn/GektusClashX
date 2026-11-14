@@ -593,6 +593,9 @@ class MessageLookup extends MessageLookupByLibrary {
           "您的订阅今天到期",
         ),
         "subscriptionLifetime": MessageLookupByLibrary.simpleMessage("永久"),
+        "subscriptionLinkCopied": MessageLookupByLibrary.simpleMessage(
+          "订阅链接已复制到剪贴板",
+        ),
         "subscriptionValidity": MessageLookupByLibrary.simpleMessage("有效期"),
         "support": MessageLookupByLibrary.simpleMessage("支持"),
         "supportMessage": MessageLookupByLibrary.simpleMessage(

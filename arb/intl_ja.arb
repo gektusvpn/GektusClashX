@@ -376,6 +376,7 @@
   "profileHasUpdate": "プロファイルが変更されました。自動更新を無効化しますか？",
   "hasCacheChange": "変更をキャッシュしますか？",
   "copySuccess": "コピー成功",
+  "subscriptionLinkCopied": "サブスクリプションリンクをクリップボードにコピーしました",
   "copyLink": "リンクをコピー",
   "exportFile": "ファイルをエクスポート",
   "cacheCorrupt": "キャッシュが破損しています。クリアしますか？",

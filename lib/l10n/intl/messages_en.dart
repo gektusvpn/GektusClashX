@@ -913,6 +913,9 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
         "subscriptionLifetime":
             MessageLookupByLibrary.simpleMessage("Lifetime"),
+        "subscriptionLinkCopied": MessageLookupByLibrary.simpleMessage(
+          "Subscription link copied to clipboard",
+        ),
         "subscriptionUnlimited": MessageLookupByLibrary.simpleMessage(
           "Lifetime Subscription",
         ),

@@ -583,6 +583,14 @@ class _SubscriptionCard extends StatelessWidget {
   Future<void> _share(BuildContext context) async {
     final url = shareUrl?.trim();
     if (url == null || url.isEmpty) return;
+    if (system.isDesktop) {
+      await Clipboard.setData(ClipboardData(text: url));
+      if (context.mounted) {
+        context
+            .showSnackBar(AppLocalizations.of(context).subscriptionLinkCopied);
+      }
+      return;
+    }
     final box = context.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(
       ShareParams(
