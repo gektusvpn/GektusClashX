@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -93,33 +94,21 @@ func computeMinHealthCheckInterval(rawConfig *config.RawConfig) {
 
 // extractProxyDescriptionsFromRaw caches custom server descriptions by proxy name.
 func extractProxyDescriptionsFromRaw(rawConfig *config.RawConfig) {
-	descriptions := make(map[string]string, len(rawConfig.Proxy))
-	for _, proxy := range rawConfig.Proxy {
-		nameValue, ok := proxy["name"]
-		if !ok {
-			continue
-		}
-		name, ok := nameValue.(string)
-		if !ok || name == "" {
-			continue
-		}
-		description := ""
-		if value, ok := proxy["serverDescription"]; ok {
-			if text, ok := value.(string); ok {
-				description = text
+	descriptions := make(map[string]string)
+	if rawConfig != nil {
+		for _, proxy := range rawConfig.Proxy {
+			name, ok := proxy["name"].(string)
+			if !ok || name == "" {
+				continue
 			}
-		}
-		if description == "" {
-			if value, ok := proxy["server-description"]; ok {
-				if text, ok := value.(string); ok {
-					description = text
+			// Keep existing aliases first for backwards compatibility.
+			for _, key := range []string{"serverDescription", "server-description"} {
+				if text, ok := proxy[key].(string); ok && strings.TrimSpace(text) != "" {
+					descriptions[name] = strings.TrimSpace(text)
+					break
 				}
 			}
 		}
-		if description == "" {
-			continue
-		}
-		descriptions[name] = description
 	}
 	proxyDescMu.Lock()
 	proxyDescriptions = descriptions

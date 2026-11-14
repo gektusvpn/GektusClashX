@@ -607,13 +607,16 @@ String? getSelectedProxyName(Ref ref, String groupName) {
 
 @riverpod
 String getProxyDesc(Ref ref, Proxy proxy) {
+  final description = proxy.serverDescription?.trim();
+  final fallback =
+      description != null && description.isNotEmpty ? description : proxy.type;
   final groupTypeNamesList = GroupType.values.map((e) => e.name).toList();
   if (!groupTypeNamesList.contains(proxy.type)) {
-    return proxy.serverDescription ?? proxy.type;
+    return fallback;
   } else {
     final groups = ref.watch(groupsProvider);
     final index = groups.indexWhere((element) => element.name == proxy.name);
-    if (index == -1) return proxy.serverDescription ?? proxy.type;
+    if (index == -1) return fallback;
     // Custom description from YAML wins over the group type when present.
     // Otherwise show the currently selected proxy instead of "Type(selection)".
     final customDesc = globalState.groupDescriptions.value[proxy.name];
@@ -621,9 +624,7 @@ String getProxyDesc(Ref ref, Proxy proxy) {
       return customDesc;
     }
     final state = ref.watch(getProxyCardStateProvider(proxy.name));
-    return state.proxyName.isNotEmpty
-        ? state.proxyName
-        : (proxy.serverDescription ?? proxy.type);
+    return state.proxyName.isNotEmpty ? state.proxyName : fallback;
   }
 }
 

@@ -306,6 +306,10 @@ proxy-groups:
       - 🇫🇮 Finland
 ```
 
+### `serverDescription` (on an individual proxy)
+
+An entry in the main YAML `proxies` list can set `serverDescription: "For video and streaming"`. This text appears below the location name instead of the protocol type (for example, `Vless`). Empty descriptions fall back to the protocol type. The existing `server-description` alias remains supported; a nonempty `serverDescription` takes precedence. The `description` field is not used for individual servers.
+
 ### `description` (on any proxy-group)
 
 A custom subtitle for the group on the Proxies screen. By default the group's type (Selector/URLTest/Fallback…) or the currently selected node is shown under its name; setting `description` displays the given text instead. Handy for clearer labels on nested groups.
