@@ -46,6 +46,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("О приложении"),
+        "aboutLinks": MessageLookupByLibrary.simpleMessage("Ссылки"),
+        "aboutUpdates": MessageLookupByLibrary.simpleMessage("Обновления"),
         "accessControl":
             MessageLookupByLibrary.simpleMessage("Контроль доступа"),
         "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
@@ -1067,6 +1069,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAllGeoData": MessageLookupByLibrary.simpleMessage(
           "Обновить все геофайлы",
         ),
+        "updateChannel":
+            MessageLookupByLibrary.simpleMessage("Ветка обновлений"),
+        "updateChannelDescription": MessageLookupByLibrary.simpleMessage(
+          "Тестовая ветка включает предварительные сборки. При возврате на стабильную приложение ждёт более новую стабильную версию без понижения.",
+        ),
+        "updateChannelStable":
+            MessageLookupByLibrary.simpleMessage("Стабильная"),
+        "updateChannelTesting":
+            MessageLookupByLibrary.simpleMessage("Тестовая"),
         "updated": MessageLookupByLibrary.simpleMessage("Обновлено"),
         "upload": MessageLookupByLibrary.simpleMessage("Отправка"),
         "url": MessageLookupByLibrary.simpleMessage("URL"),

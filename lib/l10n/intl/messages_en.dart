@@ -47,6 +47,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("About"),
+        "aboutLinks": MessageLookupByLibrary.simpleMessage("Links"),
+        "aboutUpdates": MessageLookupByLibrary.simpleMessage("Updates"),
         "accessControl": MessageLookupByLibrary.simpleMessage("Access control"),
         "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
           "Only allow selected app to enter VPN",
@@ -995,6 +997,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAllGeoData": MessageLookupByLibrary.simpleMessage(
           "Update All Geo Files",
         ),
+        "updateChannel": MessageLookupByLibrary.simpleMessage("Update channel"),
+        "updateChannelDescription": MessageLookupByLibrary.simpleMessage(
+          "Testing includes preview releases. Switching to Stable waits for a newer stable version without downgrading.",
+        ),
+        "updateChannelStable": MessageLookupByLibrary.simpleMessage("Stable"),
+        "updateChannelTesting": MessageLookupByLibrary.simpleMessage("Testing"),
         "updated": MessageLookupByLibrary.simpleMessage("Updated"),
         "upload": MessageLookupByLibrary.simpleMessage("Upload"),
         "url": MessageLookupByLibrary.simpleMessage("URL"),

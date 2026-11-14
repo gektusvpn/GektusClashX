@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/clash/core.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
+import 'package:gektusclashx/providers/config.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 
@@ -15,13 +17,13 @@ class AboutView extends StatelessWidget {
     final commonScaffoldState = context.commonScaffoldState;
     if (commonScaffoldState?.mounted != true) return;
     try {
-      final data = await commonScaffoldState?.loadingRun<Map<String, dynamic>?>(
-        request.checkForUpdate,
-        rethrowError: true,
-      );
-      await globalState.appController.checkUpdateResultHandle(
-        data: data,
+      await globalState.appController.checkAppUpdate(
         handleError: true,
+        load: (channel) =>
+            commonScaffoldState!.loadingRun<Map<String, dynamic>?>(
+          () => request.checkForUpdate(channel: channel),
+          rethrowError: true,
+        ),
       );
     } catch (error) {
       if (context.mounted) {
@@ -30,10 +32,11 @@ class AboutView extends StatelessWidget {
     }
   }
 
-  List<Widget> _buildMoreSection(BuildContext context) => generateSection(
+  List<Widget> _buildUpdatesSection(BuildContext context) => generateSection(
         separated: false,
-        title: appLocalizations.more,
+        title: appLocalizations.aboutUpdates,
         items: [
+          const UpdateChannelItem(),
           ListItem(
             title: Text(appLocalizations.checkUpdate),
             onTap: () {
@@ -42,6 +45,13 @@ class AboutView extends StatelessWidget {
             trailing: const Icon(Icons.update),
           ),
           if (system.isDesktop) const _CoreUpdateItem(),
+        ],
+      );
+
+  List<Widget> _buildLinksSection(BuildContext context) => generateSection(
+        separated: false,
+        title: appLocalizations.aboutLinks,
+        items: [
           ListItem(
             title: Text(appLocalizations.project),
             onTap: () {
@@ -49,7 +59,7 @@ class AboutView extends StatelessWidget {
                 "https://github.com/$repository",
               );
             },
-            trailing: const Icon(Icons.insert_link),
+            trailing: const Icon(Icons.open_in_new_rounded),
           ),
           ListItem(
             title: Text(appLocalizations.originalRepository),
@@ -58,7 +68,7 @@ class AboutView extends StatelessWidget {
                 "https://github.com/chen08209/FlClash",
               );
             },
-            trailing: const Icon(Icons.insert_link),
+            trailing: const Icon(Icons.open_in_new_rounded),
           ),
           ListItem(
             title: Text(appLocalizations.core),
@@ -67,7 +77,7 @@ class AboutView extends StatelessWidget {
                 "https://github.com/MetaCubeX/mihomo",
               );
             },
-            trailing: const Icon(Icons.insert_link),
+            trailing: const Icon(Icons.open_in_new_rounded),
           ),
         ],
       );
@@ -173,7 +183,9 @@ class AboutView extends StatelessWidget {
       const SizedBox(
         height: 12,
       ),
-      ..._buildMoreSection(context),
+      ..._buildUpdatesSection(context),
+      const SizedBox(height: 12),
+      ..._buildLinksSection(context),
     ];
     return Padding(
       padding: kMaterialListPadding.copyWith(
@@ -181,6 +193,43 @@ class AboutView extends StatelessWidget {
         bottom: 16,
       ),
       child: generateListView(items),
+    );
+  }
+}
+
+class UpdateChannelItem extends ConsumerWidget {
+  const UpdateChannelItem({super.key});
+
+  String _label(AppUpdateChannel channel) => switch (channel) {
+        AppUpdateChannel.stable => appLocalizations.updateChannelStable,
+        AppUpdateChannel.testing => appLocalizations.updateChannelTesting,
+      };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final channel = ref.watch(
+      appSettingProvider.select((state) => state.updateChannel),
+    );
+    return ListItem(
+      title: Text(appLocalizations.updateChannel),
+      subtitle: Text(
+          '${_label(channel)}. ${appLocalizations.updateChannelDescription}'),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () async {
+        final selected = await showDialog<AppUpdateChannel>(
+          context: context,
+          builder: (_) => OptionsDialog<AppUpdateChannel>(
+            title: appLocalizations.updateChannel,
+            options: AppUpdateChannel.values,
+            textBuilder: _label,
+            value: channel,
+          ),
+        );
+        if (selected == null || !context.mounted) return;
+        ref.read(appSettingProvider.notifier).updateState(
+              (state) => state.copyWith(updateChannel: selected),
+            );
+      },
     );
   }
 }

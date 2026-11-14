@@ -1,4 +1,10 @@
 {
+  "aboutUpdates": "Обновления",
+  "aboutLinks": "Ссылки",
+  "updateChannel": "Ветка обновлений",
+  "updateChannelStable": "Стабильная",
+  "updateChannelTesting": "Тестовая",
+  "updateChannelDescription": "Тестовая ветка включает предварительные сборки. При возврате на стабильную приложение ждёт более новую стабильную версию без понижения.",
   "news": "Новости",
   "allNews": "Все новости",
   "newsPost": "Публикация",

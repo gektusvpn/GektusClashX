@@ -150,40 +150,19 @@ class Request {
     );
   }
 
-  Future<Map<String, dynamic>?> checkForUpdate() async {
-    final data = await _getLatestRelease();
-    if (data == null) return null;
-    final remoteVersion = data['tag_name'] as String?;
-    if (remoteVersion == null || remoteVersion.isEmpty) return null;
-    final version = globalState.packageInfo.version;
-    final normalizedVersion = remoteVersion.replaceFirst(RegExp(r'^v'), '');
-    final hasUpdate = utils.compareVersions(normalizedVersion, version) > 0;
-    if (!hasUpdate) return null;
-    return data;
-  }
-
-  Future<Map<String, dynamic>?> _getLatestRelease() async {
-    try {
-      final response = await _dio.get<Map<String, dynamic>>(
-        globalState.githubUrl(
-          "https://github.com/$repository/releases/latest/download/update.json",
-        ),
-        options: Options(responseType: ResponseType.json),
+  Future<Map<String, dynamic>?> checkForUpdate({
+    AppUpdateChannel? channel,
+  }) =>
+      AppReleaseUpdates(
+        _dio,
+        repository: repository,
+        githubUrl: globalState.githubUrl,
+      ).check(
+        channel: channel ?? globalState.config.appSetting.updateChannel,
+        currentVersion: globalState.appVersionTag.isNotEmpty
+            ? globalState.appVersionTag
+            : globalState.packageInfo.version,
       );
-      if (response.statusCode == HttpStatus.ok && response.data != null) {
-        return response.data;
-      }
-    } on DioException catch (error) {
-      commonPrint
-          .log('Update manifest unavailable: ${error.response?.statusCode}');
-    }
-
-    final response = await _dio.get<Map<String, dynamic>>(
-      "https://api.github.com/repos/$repository/releases/latest",
-      options: Options(responseType: ResponseType.json),
-    );
-    return response.statusCode == HttpStatus.ok ? response.data : null;
-  }
 
   Future<Map<String, dynamic>?> checkForCoreUpdate(
       String currentCoreVersion) async {

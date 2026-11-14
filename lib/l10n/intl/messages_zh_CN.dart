@@ -45,6 +45,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("关于"),
+        "aboutLinks": MessageLookupByLibrary.simpleMessage("链接"),
+        "aboutUpdates": MessageLookupByLibrary.simpleMessage("更新"),
         "accessControl": MessageLookupByLibrary.simpleMessage("访问控制"),
         "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
           "只允许选中应用进入VPN",
@@ -646,6 +648,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "unnamed": MessageLookupByLibrary.simpleMessage("未命名"),
         "update": MessageLookupByLibrary.simpleMessage("更新"),
         "updateAllGeoData": MessageLookupByLibrary.simpleMessage("更新所有地理数据"),
+        "updateChannel": MessageLookupByLibrary.simpleMessage("更新通道"),
+        "updateChannelDescription": MessageLookupByLibrary.simpleMessage(
+          "测试通道包含预发布版本。切换回稳定通道后将等待更新的稳定版本，不会降级。",
+        ),
+        "updateChannelStable": MessageLookupByLibrary.simpleMessage("稳定版"),
+        "updateChannelTesting": MessageLookupByLibrary.simpleMessage("测试版"),
         "upload": MessageLookupByLibrary.simpleMessage("上传"),
         "url": MessageLookupByLibrary.simpleMessage("URL"),
         "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),

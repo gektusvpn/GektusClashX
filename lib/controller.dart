@@ -40,6 +40,40 @@ class AppController {
   final WidgetRef _ref;
   final appUpdateState = ValueNotifier<AppUpdateState?>(null);
   CancelToken? _androidAppUpdateCancelToken;
+  int _appUpdateGeneration = 0;
+
+  void invalidateAppUpdate() {
+    _appUpdateGeneration++;
+    _androidAppUpdateCancelToken?.cancel();
+    appUpdateState.value = null;
+  }
+
+  @visibleForTesting
+  Future<Map<String, dynamic>?> fetchAppUpdate(AppUpdateChannel channel) =>
+      request.checkForUpdate(channel: channel);
+
+  Future<void> checkAppUpdate({
+    bool handleError = false,
+    Future<Map<String, dynamic>?> Function(AppUpdateChannel)? load,
+  }) async {
+    final generation = _appUpdateGeneration;
+    final channel = _ref.read(appSettingProvider).updateChannel;
+    try {
+      final data = await (load ?? fetchAppUpdate)(channel);
+      if (generation != _appUpdateGeneration) return;
+      if (Platform.isAndroid && data == null) {
+        await androidAppUpdater.cleanup(includePartial: true);
+      }
+      if (generation != _appUpdateGeneration) return;
+      await _handleAppUpdateResult(
+        data: data,
+        handleError: handleError,
+        generation: generation,
+      );
+    } catch (_) {
+      if (generation == _appUpdateGeneration) rethrow;
+    }
+  }
 
   void setupClashConfigDebounce() {
     debouncer.call(FunctionTag.setupClashConfig, () async {
@@ -1155,11 +1189,7 @@ class AppController {
     await _initializeAutoCheckUpdate();
     if (!_ref.read(appSettingProvider).autoCheckUpdate) return;
     try {
-      final res = await request.checkForUpdate();
-      if (Platform.isAndroid && res == null) {
-        await androidAppUpdater.cleanup(includePartial: true);
-      }
-      await checkUpdateResultHandle(data: res);
+      await checkAppUpdate();
     } catch (error) {
       commonPrint.log('Automatic app update check failed: $error');
     }
@@ -1192,16 +1222,16 @@ class AppController {
     await prefs.setBool(initializationKey, true);
   }
 
-  Future<void> checkUpdateResultHandle({
+  Future<void> _handleAppUpdateResult({
     Map<String, dynamic>? data,
     bool handleError = false,
+    required int generation,
   }) async {
-    if (globalState.isPre) {
-      return;
-    }
+    if (generation != _appUpdateGeneration) return;
     if (data != null) {
       final downloadUri =
           system.isDesktop ? await desktopAppUpdater.downloadUri(data) : null;
+      if (generation != _appUpdateGeneration) return;
       appUpdateState.value = AppUpdateState.available(
         data,
         downloadUri: downloadUri,
@@ -1221,7 +1251,7 @@ class AppController {
     if (!system.isDesktop || current == null) return;
 
     final target = current.downloadUri ??
-        Uri.parse('https://github.com/$repository/releases/latest');
+        Uri.https('github.com', '/$repository/releases/tag/${current.version}');
     await launchUrl(Uri.parse(globalState.githubUrl(target.toString())));
   }
 
@@ -1229,6 +1259,7 @@ class AppController {
     final current = appUpdateState.value;
     if (!Platform.isAndroid || current == null) return;
 
+    final generation = _appUpdateGeneration;
     final cancelToken = CancelToken();
     _androidAppUpdateCancelToken?.cancel();
     _androidAppUpdateCancelToken = cancelToken;
@@ -1241,7 +1272,9 @@ class AppController {
         current.release,
         cancelToken: cancelToken,
         onProgress: (received, total) {
-          if (cancelToken.isCancelled) return;
+          if (generation != _appUpdateGeneration || cancelToken.isCancelled) {
+            return;
+          }
           appUpdateState.value = AppUpdateState(
             release: current.release,
             phase: AppUpdatePhase.downloading,
@@ -1249,13 +1282,14 @@ class AppController {
           );
         },
       );
-      if (cancelToken.isCancelled) return;
+      if (generation != _appUpdateGeneration || cancelToken.isCancelled) return;
       appUpdateState.value = AppUpdateState(
         release: current.release,
         phase: AppUpdatePhase.readyToInstall,
         apk: apk,
       );
     } on AndroidAppUpdateException catch (error) {
+      if (generation != _appUpdateGeneration) return;
       if (error.code == AndroidAppUpdateError.cancelled) {
         appUpdateState.value = AppUpdateState.available(current.release);
         return;
@@ -1281,6 +1315,7 @@ class AppController {
         failure: failure,
       );
     } catch (error) {
+      if (generation != _appUpdateGeneration) return;
       commonPrint.log('Android app update download failed: $error');
       appUpdateState.value = AppUpdateState(
         release: current.release,
@@ -1303,6 +1338,7 @@ class AppController {
     final apk = current?.apk;
     if (!Platform.isAndroid || current == null || apk == null) return;
 
+    final generation = _appUpdateGeneration;
     appUpdateState.value = AppUpdateState(
       release: current.release,
       phase: AppUpdatePhase.installing,
@@ -1310,6 +1346,7 @@ class AppController {
     );
     try {
       final installerStarted = await app?.installApk(apk.path) ?? false;
+      if (generation != _appUpdateGeneration) return;
       appUpdateState.value = AppUpdateState(
         release: current.release,
         phase: installerStarted
@@ -1327,6 +1364,7 @@ class AppController {
         'INSTALL_PERMISSION_FAILED' => AppUpdateFailure.permissionDenied,
         _ => AppUpdateFailure.installerUnavailable,
       };
+      if (generation != _appUpdateGeneration) return;
       appUpdateState.value = AppUpdateState(
         release: current.release,
         phase: AppUpdatePhase.failed,
@@ -1335,6 +1373,7 @@ class AppController {
       );
     } catch (error) {
       commonPrint.log('Android app update install failed: $error');
+      if (generation != _appUpdateGeneration) return;
       appUpdateState.value = AppUpdateState(
         release: current.release,
         phase: AppUpdatePhase.failed,

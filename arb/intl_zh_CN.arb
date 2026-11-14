@@ -1,4 +1,10 @@
 {
+  "aboutUpdates": "更新",
+  "aboutLinks": "链接",
+  "updateChannel": "更新通道",
+  "updateChannelStable": "稳定版",
+  "updateChannelTesting": "测试版",
+  "updateChannelDescription": "测试通道包含预发布版本。切换回稳定通道后将等待更新的稳定版本，不会降级。",
   "news": "新闻",
   "allNews": "全部新闻",
   "newsPost": "文章",

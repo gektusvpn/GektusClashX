@@ -33,6 +33,8 @@ mixin _$AppSettingProps {
   String get testUrl => throw _privateConstructorUsedError;
   bool get isAnimateToPage => throw _privateConstructorUsedError;
   bool get autoCheckUpdate => throw _privateConstructorUsedError;
+  @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+  AppUpdateChannel get updateChannel => throw _privateConstructorUsedError;
   bool get showLabel => throw _privateConstructorUsedError;
   bool get disclaimerAccepted => throw _privateConstructorUsedError;
   bool get minimizeOnExit => throw _privateConstructorUsedError;
@@ -73,6 +75,8 @@ abstract class $AppSettingPropsCopyWith<$Res> {
       String testUrl,
       bool isAnimateToPage,
       bool autoCheckUpdate,
+      @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+      AppUpdateChannel updateChannel,
       bool showLabel,
       bool disclaimerAccepted,
       bool minimizeOnExit,
@@ -111,6 +115,7 @@ class _$AppSettingPropsCopyWithImpl<$Res, $Val extends AppSettingProps>
     Object? testUrl = null,
     Object? isAnimateToPage = null,
     Object? autoCheckUpdate = null,
+    Object? updateChannel = null,
     Object? showLabel = null,
     Object? disclaimerAccepted = null,
     Object? minimizeOnExit = null,
@@ -167,6 +172,10 @@ class _$AppSettingPropsCopyWithImpl<$Res, $Val extends AppSettingProps>
           ? _value.autoCheckUpdate
           : autoCheckUpdate // ignore: cast_nullable_to_non_nullable
               as bool,
+      updateChannel: null == updateChannel
+          ? _value.updateChannel
+          : updateChannel // ignore: cast_nullable_to_non_nullable
+              as AppUpdateChannel,
       showLabel: null == showLabel
           ? _value.showLabel
           : showLabel // ignore: cast_nullable_to_non_nullable
@@ -232,6 +241,8 @@ abstract class _$$AppSettingPropsImplCopyWith<$Res>
       String testUrl,
       bool isAnimateToPage,
       bool autoCheckUpdate,
+      @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+      AppUpdateChannel updateChannel,
       bool showLabel,
       bool disclaimerAccepted,
       bool minimizeOnExit,
@@ -268,6 +279,7 @@ class __$$AppSettingPropsImplCopyWithImpl<$Res>
     Object? testUrl = null,
     Object? isAnimateToPage = null,
     Object? autoCheckUpdate = null,
+    Object? updateChannel = null,
     Object? showLabel = null,
     Object? disclaimerAccepted = null,
     Object? minimizeOnExit = null,
@@ -324,6 +336,10 @@ class __$$AppSettingPropsImplCopyWithImpl<$Res>
           ? _value.autoCheckUpdate
           : autoCheckUpdate // ignore: cast_nullable_to_non_nullable
               as bool,
+      updateChannel: null == updateChannel
+          ? _value.updateChannel
+          : updateChannel // ignore: cast_nullable_to_non_nullable
+              as AppUpdateChannel,
       showLabel: null == showLabel
           ? _value.showLabel
           : showLabel // ignore: cast_nullable_to_non_nullable
@@ -384,6 +400,8 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
       this.testUrl = defaultTestUrl,
       this.isAnimateToPage = true,
       this.autoCheckUpdate = false,
+      @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+      this.updateChannel = AppUpdateChannel.stable,
       this.showLabel = false,
       this.disclaimerAccepted = false,
       this.minimizeOnExit = false,
@@ -439,6 +457,9 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
   @JsonKey()
   final bool autoCheckUpdate;
   @override
+  @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+  final AppUpdateChannel updateChannel;
+  @override
   @JsonKey()
   final bool showLabel;
   @override
@@ -471,7 +492,7 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
 
   @override
   String toString() {
-    return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, crashlytics: $crashlytics, zashboardInApp: $zashboardInApp, overrideProviderSettings: $overrideProviderSettings, overrideNetworkSettings: $overrideNetworkSettings, recoveryStrategy: $recoveryStrategy)';
+    return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, autoCheckUpdate: $autoCheckUpdate, updateChannel: $updateChannel, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, crashlytics: $crashlytics, zashboardInApp: $zashboardInApp, overrideProviderSettings: $overrideProviderSettings, overrideNetworkSettings: $overrideNetworkSettings, recoveryStrategy: $recoveryStrategy)';
   }
 
   @override
@@ -498,6 +519,8 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
                 other.isAnimateToPage == isAnimateToPage) &&
             (identical(other.autoCheckUpdate, autoCheckUpdate) ||
                 other.autoCheckUpdate == autoCheckUpdate) &&
+            (identical(other.updateChannel, updateChannel) ||
+                other.updateChannel == updateChannel) &&
             (identical(other.showLabel, showLabel) ||
                 other.showLabel == showLabel) &&
             (identical(other.disclaimerAccepted, disclaimerAccepted) ||
@@ -536,6 +559,7 @@ class _$AppSettingPropsImpl implements _AppSettingProps {
         testUrl,
         isAnimateToPage,
         autoCheckUpdate,
+        updateChannel,
         showLabel,
         disclaimerAccepted,
         minimizeOnExit,
@@ -579,6 +603,8 @@ abstract class _AppSettingProps implements AppSettingProps {
       final String testUrl,
       final bool isAnimateToPage,
       final bool autoCheckUpdate,
+      @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+      final AppUpdateChannel updateChannel,
       final bool showLabel,
       final bool disclaimerAccepted,
       final bool minimizeOnExit,
@@ -616,6 +642,9 @@ abstract class _AppSettingProps implements AppSettingProps {
   bool get isAnimateToPage;
   @override
   bool get autoCheckUpdate;
+  @override
+  @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+  AppUpdateChannel get updateChannel;
   @override
   bool get showLabel;
   @override

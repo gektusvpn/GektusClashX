@@ -13,6 +13,10 @@ class AppSetting extends _$AppSetting with AutoDisposeNotifierMixin {
 
   @override
   void onUpdate(AppSettingProps value) {
+    if (globalState.config.appSetting.updateChannel != value.updateChannel &&
+        globalState.isAppControllerReady) {
+      globalState.appController.invalidateAppUpdate();
+    }
     globalState.config = globalState.config.copyWith(
       appSetting: value,
     );

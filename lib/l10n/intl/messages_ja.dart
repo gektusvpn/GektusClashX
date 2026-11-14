@@ -45,6 +45,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("について"),
+        "aboutLinks": MessageLookupByLibrary.simpleMessage("リンク"),
+        "aboutUpdates": MessageLookupByLibrary.simpleMessage("更新"),
         "accessControl": MessageLookupByLibrary.simpleMessage("アクセス制御"),
         "accessControlAllowDesc": MessageLookupByLibrary.simpleMessage(
           "選択したアプリのみVPNを許可",
@@ -734,6 +736,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "update": MessageLookupByLibrary.simpleMessage("更新"),
         "updateAllGeoData":
             MessageLookupByLibrary.simpleMessage("すべての地理データを更新"),
+        "updateChannel": MessageLookupByLibrary.simpleMessage("更新チャンネル"),
+        "updateChannelDescription": MessageLookupByLibrary.simpleMessage(
+          "テスト版にはプレリリースが含まれます。安定版に戻すと、ダウングレードせずに新しい安定版を待ちます。",
+        ),
+        "updateChannelStable": MessageLookupByLibrary.simpleMessage("安定版"),
+        "updateChannelTesting": MessageLookupByLibrary.simpleMessage("テスト版"),
         "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
         "url": MessageLookupByLibrary.simpleMessage("URL"),
         "urlDesc": MessageLookupByLibrary.simpleMessage("URL経由でプロファイルを取得"),

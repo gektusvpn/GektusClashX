@@ -22,6 +22,10 @@ _$AppSettingPropsImpl _$$AppSettingPropsImplFromJson(
       testUrl: json['testUrl'] as String? ?? defaultTestUrl,
       isAnimateToPage: json['isAnimateToPage'] as bool? ?? true,
       autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? false,
+      updateChannel: $enumDecodeNullable(
+              _$AppUpdateChannelEnumMap, json['updateChannel'],
+              unknownValue: AppUpdateChannel.stable) ??
+          AppUpdateChannel.stable,
       showLabel: json['showLabel'] as bool? ?? false,
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       minimizeOnExit: json['minimizeOnExit'] as bool? ?? false,
@@ -54,6 +58,7 @@ Map<String, dynamic> _$$AppSettingPropsImplToJson(
       'testUrl': instance.testUrl,
       'isAnimateToPage': instance.isAnimateToPage,
       'autoCheckUpdate': instance.autoCheckUpdate,
+      'updateChannel': _$AppUpdateChannelEnumMap[instance.updateChannel]!,
       'showLabel': instance.showLabel,
       'disclaimerAccepted': instance.disclaimerAccepted,
       'minimizeOnExit': instance.minimizeOnExit,
@@ -65,6 +70,11 @@ Map<String, dynamic> _$$AppSettingPropsImplToJson(
       'overrideNetworkSettings': instance.overrideNetworkSettings,
       'recoveryStrategy': _$RecoveryStrategyEnumMap[instance.recoveryStrategy]!,
     };
+
+const _$AppUpdateChannelEnumMap = {
+  AppUpdateChannel.stable: 'stable',
+  AppUpdateChannel.testing: 'testing',
+};
 
 const _$RecoveryStrategyEnumMap = {
   RecoveryStrategy.compatible: 'compatible',

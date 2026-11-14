@@ -73,6 +73,9 @@ class AppSettingProps with _$AppSettingProps {
     @Default(defaultTestUrl) String testUrl,
     @Default(true) bool isAnimateToPage,
     @Default(false) bool autoCheckUpdate,
+    @Default(AppUpdateChannel.stable)
+    @JsonKey(unknownEnumValue: AppUpdateChannel.stable)
+    AppUpdateChannel updateChannel,
     @Default(false) bool showLabel,
     @Default(false) bool disclaimerAccepted,
     @Default(false) bool minimizeOnExit,

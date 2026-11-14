@@ -49,3 +49,4 @@ export 'utils.dart';
 export 'window.dart';
 export 'windows.dart';
 export 'zashboard.dart';
+export 'app_release.dart';

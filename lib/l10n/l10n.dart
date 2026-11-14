@@ -54,6 +54,56 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
+  /// `Updates`
+  String get aboutUpdates {
+    return Intl.message('Updates', name: 'aboutUpdates', desc: '', args: []);
+  }
+
+  /// `Links`
+  String get aboutLinks {
+    return Intl.message('Links', name: 'aboutLinks', desc: '', args: []);
+  }
+
+  /// `Update channel`
+  String get updateChannel {
+    return Intl.message(
+      'Update channel',
+      name: 'updateChannel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stable`
+  String get updateChannelStable {
+    return Intl.message(
+      'Stable',
+      name: 'updateChannelStable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing`
+  String get updateChannelTesting {
+    return Intl.message(
+      'Testing',
+      name: 'updateChannelTesting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing includes preview releases. Switching to Stable waits for a newer stable version without downgrading.`
+  String get updateChannelDescription {
+    return Intl.message(
+      'Testing includes preview releases. Switching to Stable waits for a newer stable version without downgrading.',
+      name: 'updateChannelDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `News`
   String get news {
     return Intl.message('News', name: 'news', desc: '', args: []);

@@ -1,4 +1,10 @@
 {
+  "aboutUpdates": "更新",
+  "aboutLinks": "リンク",
+  "updateChannel": "更新チャンネル",
+  "updateChannelStable": "安定版",
+  "updateChannelTesting": "テスト版",
+  "updateChannelDescription": "テスト版にはプレリリースが含まれます。安定版に戻すと、ダウングレードせずに新しい安定版を待ちます。",
   "news": "ニュース",
   "allNews": "すべてのニュース",
   "newsPost": "投稿",
