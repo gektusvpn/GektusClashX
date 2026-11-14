@@ -230,6 +230,7 @@ extension ProfileExtension on Profile {
           return;
         }
         final suffix = normalizedName.substring(prefix.length);
+        if (suffix == 'support-image') return;
         providerHeaders['gektusclashx-$suffix'] = values.first;
       });
     }

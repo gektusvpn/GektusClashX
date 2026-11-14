@@ -8,6 +8,7 @@ import 'package:gektusclashx/views/tools.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
 
 import 'widgets/hero_connect.dart';
+import 'widgets/support.dart';
 
 class DashboardView extends ConsumerStatefulWidget {
   const DashboardView({super.key});
@@ -33,13 +34,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
 
   @override
   List<Widget> get actions => [
-        Builder(
-          builder: (context) => CommonHeaderIconButton(
-            tooltip: AppLocalizations.of(context).settings,
-            onPressed: _openSettings,
-            icon: const Icon(Icons.settings_rounded),
-          ),
-        ),
+        DashboardHeaderActions(onSettings: _openSettings),
       ];
 
   Future<void> _openSettings() async {
