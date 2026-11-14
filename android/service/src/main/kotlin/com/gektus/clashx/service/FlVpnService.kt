@@ -252,6 +252,9 @@ class FlVpnService : VpnService(), IBaseService {
         }
 
         if (coreResult.isNotEmpty()) {
+            if (coreResult.startsWith("gektusclashx-core-compatibility:")) {
+                SavedParams.saveCoreCompatibilityError(coreResult)
+            }
             GlobalState.log("Always-on: quickStart returned error, aborting: $coreResult")
             SavedParams.setVpnActive(false)
             runCatching { com.gektus.clashx.core.Core.stopTun() }

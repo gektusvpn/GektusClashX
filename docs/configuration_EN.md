@@ -13,6 +13,26 @@ A reference for subscription providers and users who need additional client sett
 
 Providers supply these headers in the HTTP response when the client downloads a subscription.
 
+### Minimum core version
+
+In Remnawave, add this custom **subscription HTTP response header**:
+
+```http
+gektusclashx-min-core-version: 1.19.30
+```
+
+This is a GektusClashX extension, not a Mihomo YAML setting. The header is optional.
+Use a stable `major.minor.patch` version, optionally prefixed with `v` and surrounded
+by whitespace. Missing, empty, or malformed values impose no restriction; malformed
+values are logged. A successful refresh without a requirement removes the old one.
+
+If the running core is too old, the app asks the user to update the app. It does not
+save the new configuration, preserving the previous working one. `announce` is not
+used. An unknown running version stops the operation and asks the user to retry.
+The requirement is also checked before connecting and during Android headless start.
+Compatibility refusals do not trigger the fallback subscription domain.
+
+
 ### `gektusclashx-announce-show`
 
 Controls the announcement on Home. `false`

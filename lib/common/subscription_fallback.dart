@@ -1,3 +1,6 @@
+import 'core_compatibility.dart';
+import 'subscription_hwid.dart';
+
 class SubscriptionFetchResult<T> {
   const SubscriptionFetchResult({
     required this.value,
@@ -24,6 +27,8 @@ Future<SubscriptionFetchResult<T>> fetchSubscriptionWithFallback<T>({
       fallbackDomain: null,
     );
   } catch (error, stackTrace) {
+    if (error is SubscriptionDeviceLimitException ||
+        error is CoreCompatibilityException) rethrow;
     final domain = _validFallbackDomain(fallbackDomain);
     final fallbackUrl = _replaceDomain(primaryUrl, domain);
     if (domain == null || fallbackUrl == null || fallbackUrl == primaryUrl) {

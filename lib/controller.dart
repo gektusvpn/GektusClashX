@@ -33,8 +33,13 @@ const _androidAutoCheckUpdateDefaultKey =
 const _desktopAutoCheckUpdateDefaultKey =
     'desktopAutoCheckUpdateDefaultInitializedV1';
 
+class _ProfileCompatibilityCheckSuperseded implements Exception {
+  const _ProfileCompatibilityCheckSuperseded();
+}
+
 class AppController {
   AppController(this.context, WidgetRef ref) : _ref = ref;
+  final _reportedCoreCompatibility = <String>{};
   int? lastProfileModified;
   final BuildContext context;
   final WidgetRef _ref;
@@ -148,11 +153,16 @@ class AppController {
   }
 
   Future<void> restartCore() async {
-    commonPrint.log("restart core");
+    commonPrint.log('restart core');
     await clashService?.reStart();
     await _initCore();
     if (_ref.read(runTimeProvider.notifier).isStart) {
-      await globalState.handleStart();
+      try {
+        await globalState.handleStart();
+      } on CoreCompatibilityException catch (error) {
+        await _updateStatus(false);
+        unawaited(_showCoreCompatibilityNotice(error, background: true));
+      }
     }
   }
 
@@ -174,8 +184,12 @@ class AppController {
       // it a no-op instead of driving a full redundant bring-up/tear-down.
       if (epoch != _statusEpoch) return;
       _statusOpInFlight = true;
+      final wasRunning = _ref.read(runTimeProvider.notifier).isStart;
       try {
         await _updateStatus(isStart);
+      } on CoreCompatibilityException catch (error) {
+        await StatusBarManager.updateIcon(isConnected: wasRunning);
+        unawaited(_showCoreCompatibilityNotice(error));
       } finally {
         _statusOpInFlight = false;
       }
@@ -187,6 +201,7 @@ class AppController {
   }
 
   Future<void> _updateStatus(bool isStart) async {
+    if (isStart && !await _verifySelectedCoreCompatibility()) return;
     await StatusBarManager.updateIcon(isConnected: isStart);
 
     if (isStart) {
@@ -474,7 +489,7 @@ class AppController {
     }
   }
 
-  Future<void> updateProfile(Profile profile) async {
+  Future<void> updateProfile(Profile profile, {bool background = false}) async {
     _ref
         .read(profilesProvider.notifier)
         .setProfile(profile.copyWith(isUpdating: true));
@@ -496,14 +511,6 @@ class AppController {
         await _applyAllHeaderSettings(updatedProfile, isNewProfile: false);
       }
 
-      final showHwidLimit =
-          responseHeaders['x-hwid-max-devices-reached']?.toLowerCase() ==
-              'true';
-      final announceText = responseHeaders['announce'];
-      if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
-        _showHwidLimitNotice(announceText, responseHeaders['support-url']);
-      }
-
       if (responseHeaders['x-hwid-not-supported']?.toLowerCase() == 'true') {
         _showHwidNotSupportedNotice();
       }
@@ -523,8 +530,71 @@ class AppController {
       _ref
           .read(profilesProvider.notifier)
           .setProfile(profile.copyWith(isUpdating: false));
+      if (e is CoreCompatibilityException) {
+        unawaited(_showCoreCompatibilityNotice(e,
+            profile: profile, background: background));
+        return;
+      }
+      if (e is SubscriptionDeviceLimitException) {
+        await _showHwidLimitNotice(e);
+        return;
+      }
       rethrow;
     }
+  }
+
+  Future<void> _showCoreCompatibilityNotice(
+    CoreCompatibilityException error, {
+    Profile? profile,
+    bool background = false,
+  }) async {
+    final selected = profile ?? _ref.read(currentProfileProvider);
+    final key =
+        '${selected?.id}|${error.minimum}|${error.current}|${error.unknown}';
+    commonPrint.log('Core compatibility refusal: ${error.diagnostic}');
+    if (background && _reportedCoreCompatibility.contains(key)) return;
+    _reportedCoreCompatibility.add(key);
+    final supportUrl = (error.supportUrl ??
+            coreCompatibilitySupportTarget(selected?.providerHeaders))
+        ?.trim();
+    await globalState.showCommonDialog<void>(
+        child: Builder(
+      builder: (dialogContext) => CommonDialog(
+        title: error.unknown
+            ? appLocalizations.tip
+            : appLocalizations.coreCompatibilityTitle,
+        child: Text(error.message),
+        actions: [
+          if (supportUrl != null && supportUrl.isNotEmpty)
+            TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  unawaited(globalState.openUrl(supportUrl));
+                },
+                child: Text(appLocalizations.support)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(appLocalizations.confirm)),
+        ],
+      ),
+    ));
+  }
+
+  bool _sameCompatibilityProfile(Profile? selected) {
+    final current = _ref.read(currentProfileProvider);
+    return current?.id == selected?.id &&
+        current?.providerHeaders[minCoreVersionHeader] ==
+            selected?.providerHeaders[minCoreVersionHeader];
+  }
+
+  Future<bool> _verifySelectedCoreCompatibility() {
+    final selected = _ref.read(currentProfileProvider);
+    return ensureSelectedCoreCompatibility(
+      selected?.providerHeaders[minCoreVersionHeader],
+      readVersion: clashCore.getCoreVersion,
+      supportUrl: coreCompatibilitySupportTarget(selected?.providerHeaders),
+      isCurrent: () => _sameCompatibilityProfile(selected),
+    );
   }
 
   void _showHwidNotSupportedNotice() {
@@ -535,64 +605,30 @@ class AppController {
     );
   }
 
-  void _showHwidLimitNotice(String encodedText, String? supportUrl) {
-    String? announceText;
-    var textToDecode = encodedText;
-
-    if (encodedText.startsWith('base64:')) {
-      textToDecode = encodedText.substring(7);
-    }
-
-    try {
-      final normalized = base64.normalize(textToDecode);
-      announceText = utf8.decode(base64.decode(normalized));
-    } catch (e) {
-      announceText = encodedText;
-    }
-
-    if (announceText.isNotEmpty) {
-      final actions = <Widget>[];
-
-      if (supportUrl != null && supportUrl.isNotEmpty) {
-        actions.add(
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              globalState.openUrl(supportUrl);
-            },
-            child: Text(appLocalizations.support),
-          ),
-        );
-      }
-
-      actions.add(
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text(appLocalizations.confirm),
-        ),
-      );
-
-      globalState.showCommonDialog(
-        child: CommonDialog(
-          title: appLocalizations.tip,
-          actions: actions,
-          child: Container(
-            width: 300,
-            constraints: const BoxConstraints(maxHeight: 200),
-            child: SingleChildScrollView(
-              child: SelectableText(
-                announceText,
-                style: const TextStyle(
-                  overflow: TextOverflow.visible,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
+  Future<void> _showHwidLimitNotice(
+      SubscriptionDeviceLimitException error) async {
+    final supportUrl = error.supportUrl;
+    await globalState.showCommonDialog<void>(
+      child: Builder(
+          builder: (dialogContext) => CommonDialog(
+                title: appLocalizations.hwidDeviceLimitTitle,
+                actions: [
+                  if (supportUrl != null && supportUrl.isNotEmpty)
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(dialogContext).pop();
+                        unawaited(globalState.openUrl(supportUrl));
+                      },
+                      child: Text(appLocalizations.support),
+                    ),
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: Text(appLocalizations.confirm),
+                  ),
+                ],
+                child: SelectableText(error.message),
+              )),
+    );
   }
 
   void setProfile(Profile profile) {
@@ -720,15 +756,33 @@ class AppController {
   }
 
   Future<void> setupClashConfig() async {
-    final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-    if (commonScaffoldState?.mounted != true) return;
-    await commonScaffoldState?.loadingRun(() async {
-      await _setupClashConfig();
-    });
+    final scaffold = globalState.homeScaffoldKey.currentState;
+    if (scaffold?.mounted != true) return;
+    try {
+      await scaffold!.loadingRun(_setupClashConfig, rethrowError: true);
+    } on CoreCompatibilityException catch (error) {
+      unawaited(_showCoreCompatibilityNotice(error, background: true));
+    } on _ProfileCompatibilityCheckSuperseded {
+      return;
+    } catch (error) {
+      unawaited(
+          globalState.showMessage(message: TextSpan(text: error.toString())));
+    }
   }
 
   Future<void> _setupClashConfig() async {
-    await _ref.read(currentProfileProvider)?.checkAndUpdate();
+    final requested = _ref.read(currentProfileProvider);
+    final restored = await requested?.checkAndUpdate();
+    if (restored != null) {
+      _ref.read(profilesProvider.notifier).setProfile(restored);
+    }
+    if (_ref.read(currentProfileProvider)?.id != requested?.id) {
+      throw const _ProfileCompatibilityCheckSuperseded();
+    }
+    if (!await _verifySelectedCoreCompatibility()) {
+      throw const _ProfileCompatibilityCheckSuperseded();
+    }
+    final selected = _ref.read(currentProfileProvider);
     var patchConfig = _ref.read(patchClashConfigProvider);
 
     // Sync network settings from provider config if not overriding
@@ -772,12 +826,15 @@ class AppController {
     final params = await globalState.getSetupParams(
       pathConfig: realPatchConfig,
     );
+    if (!_sameCompatibilityProfile(selected)) {
+      throw const _ProfileCompatibilityCheckSuperseded();
+    }
     final message = await clashCore.setupConfig(params);
     if (message.isNotEmpty) {
       // Don't advance lastProfileModified on a failed/timed-out setup: doing so
       // would make the next start's recovery re-apply think the profile is
       // already applied and skip it, leaving a degraded executor in place.
-      throw message;
+      throw parseCoreCompatibilityError(message) ?? message;
     }
     lastProfileModified = await _ref.read(
       currentProfileProvider.select(
@@ -788,34 +845,32 @@ class AppController {
 
   Future _applyProfile({bool silence = false}) async {
     clashCore.requestGc();
-    if (silence) {
-      // Silent/headless/early-start recovery: bypass the PUBLIC setupClashConfig()
-      // scaffold gate + loadingRun (which no-ops when the home scaffold isn't
-      // mounted — exactly when recovery is needed — and shows a loading overlay
-      // when it is) by re-applying through the private path directly.
-      await _setupClashConfig();
-    } else {
-      await setupClashConfig();
-    }
+    await _setupClashConfig();
     await updateGroups();
     await updateProviders();
     initForegroundCache();
   }
 
   Future applyProfile({bool silence = false}) async {
-    if (silence) {
-      await _applyProfile(silence: true);
-    } else {
-      final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-      if (commonScaffoldState?.mounted != true) return;
-      await commonScaffoldState?.loadingRun(() async {
-        await _applyProfile();
-      });
+    try {
+      if (silence) {
+        await _applyProfile(silence: true);
+      } else {
+        final scaffold = globalState.homeScaffoldKey.currentState;
+        if (scaffold?.mounted != true) return;
+        await scaffold!.loadingRun(() => _applyProfile(), rethrowError: true);
+      }
+      addCheckIpNumDebounce();
+      unawaited(_persistColdStartParams());
+    } on CoreCompatibilityException catch (error) {
+      unawaited(_showCoreCompatibilityNotice(error, background: silence));
+    } on _ProfileCompatibilityCheckSuperseded {
+      return;
+    } catch (error) {
+      if (silence) rethrow;
+      unawaited(
+          globalState.showMessage(message: TextSpan(text: error.toString())));
     }
-    addCheckIpNumDebounce();
-    // Re-persist cold-start params so tile/widget/Always-on headless restarts reflect
-    // the currently active profile, not a stale one from app init.
-    unawaited(_persistColdStartParams());
   }
 
   Future<void> handleChangeProfile() async {
@@ -854,7 +909,7 @@ class AppController {
         continue;
       }
       try {
-        await updateProfile(profile);
+        await updateProfile(profile, background: true);
       } catch (e) {
         commonPrint.log(e.toString());
       }
@@ -909,7 +964,7 @@ class AppController {
               "_updateCurrentProfileSubscription: already covered by autoUpdateProfiles, skipping");
           return;
         }
-        await updateProfile(currentProfile);
+        await updateProfile(currentProfile, background: true);
         commonPrint.log("Subscription info updated successfully");
       } else {
         commonPrint.log(
@@ -1420,28 +1475,27 @@ class AppController {
     } else {
       clashCore.stopLog();
     }
-    await applyProfile();
+    await applyProfile(silence: true);
   }
 
   Future<void> _persistColdStartParams() async {
     if (clashLib == null) return;
+    final selected = _ref.read(currentProfileProvider);
     try {
-      final clashConfig = globalState.config.patchClashConfig.copyWith.tun(
-        enable: false,
-      );
-      final setupParams = await globalState.getSetupParams(
-        pathConfig: clashConfig,
-      );
-      unawaited(clashLib?.saveParamsForColdStart(
-        initParams: InitParams(
-          homeDir: await appPath.homeDirPath,
-          version: await system.version,
-        ),
+      final clashConfig =
+          globalState.config.patchClashConfig.copyWith.tun(enable: false);
+      final setupParams =
+          await globalState.getSetupParams(pathConfig: clashConfig);
+      final homeDir = await appPath.homeDirPath;
+      final version = await system.version;
+      if (!_sameCompatibilityProfile(selected)) return;
+      await clashLib?.saveParamsForColdStart(
+        initParams: InitParams(homeDir: homeDir, version: version),
         setupParams: setupParams,
         state: globalState.getCoreState(),
-      ));
+      );
     } catch (e) {
-      commonPrint.log("persistColdStartParams: $e");
+      commonPrint.log('persistColdStartParams: $e');
     }
   }
 
@@ -1449,8 +1503,10 @@ class AppController {
     FlutterError.onError = (details) {
       commonPrint.log(details.stack.toString());
     };
+    String? pendingCompatibilityError;
     if (Platform.isAndroid) {
       await androidAppUpdater.cleanup();
+      pendingCompatibilityError = await app?.takeCoreCompatibilityError();
     }
     await updateTray();
     // Desktop only (clashService is null on Android): on an unexpected core-process
@@ -1460,6 +1516,18 @@ class AppController {
       await _initCore();
     } catch (e) {
       commonPrint.log("initCore failed (will retry on profile change): $e");
+    }
+    final pending = pendingCompatibilityError == null
+        ? null
+        : parseCoreCompatibilityError(pendingCompatibilityError);
+    if (pending != null) {
+      // An app/core update may already have resolved the persisted refusal.
+      try {
+        await ensureCoreCompatibility(pending.minimum,
+            readVersion: clashCore.getCoreVersion);
+      } on CoreCompatibilityException catch (error) {
+        unawaited(_showCoreCompatibilityNotice(error, background: true));
+      }
     }
     await _initStatus();
     autoLaunch?.updateStatus(
@@ -1586,18 +1654,13 @@ class AppController {
           return Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
         },
         title: appLocalizations.addProfile,
+        rethrowError: true,
       );
 
       if (profile != null) {
         await _applyAllHeaderSettings(profile, isNewProfile: true);
 
         final headers = profile.providerHeaders;
-        final showHwidLimit =
-            headers['x-hwid-max-devices-reached']?.toLowerCase() == 'true';
-        final announceText = headers['announce'];
-        if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
-          _showHwidLimitNotice(announceText, headers['support-url']);
-        }
         if (headers['x-hwid-not-supported']?.toLowerCase() == 'true') {
           _showHwidNotSupportedNotice();
         }
@@ -1605,6 +1668,14 @@ class AppController {
         await addProfile(profile);
       }
     } catch (err) {
+      if (err is CoreCompatibilityException) {
+        await _showCoreCompatibilityNotice(err);
+        return;
+      }
+      if (err is SubscriptionDeviceLimitException) {
+        await _showHwidLimitNotice(err);
+        return;
+      }
       commonPrint.log('Add Profile Failed: $err');
       unawaited(
           globalState.showMessage(message: TextSpan(text: err.toString())));
@@ -1622,12 +1693,6 @@ class AppController {
         await Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
     await _applyAllHeaderSettings(profile, isNewProfile: true);
     final headers = profile.providerHeaders;
-    final showHwidLimit =
-        headers['x-hwid-max-devices-reached']?.toLowerCase() == 'true';
-    final announceText = headers['announce'];
-    if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
-      _showHwidLimitNotice(announceText, headers['support-url']);
-    }
     if (headers['x-hwid-not-supported']?.toLowerCase() == 'true') {
       _showHwidNotSupportedNotice();
     }

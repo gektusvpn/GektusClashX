@@ -117,6 +117,17 @@ Future<void> _handleStart() async {
     }
 
     final profile = globalState.config.currentProfile;
+    if (!await ensureSelectedCoreCompatibility(
+      profile?.providerHeaders[minCoreVersionHeader],
+      readVersion: clashCore.getCoreVersion,
+      isCurrent: () =>
+          globalState.config.currentProfileId == profile?.id &&
+          globalState.config.currentProfile
+                  ?.providerHeaders[minCoreVersionHeader] ==
+              profile?.providerHeaders[minCoreVersionHeader],
+    )) {
+      return;
+    }
     final title = _buildNotificationTitle(profile);
     unawaited(clashLib?.updateNotificationParams(title: title));
 
@@ -128,6 +139,8 @@ Future<void> _handleStart() async {
     }
 
     await clashCore.startListener();
+  } on CoreCompatibilityException catch (error) {
+    unawaited(app?.tip(error.message));
   } catch (e, stackTrace) {
     commonPrint.log("Tile onStart error: $e\n$stackTrace");
     unawaited(app?.tip("Start error: $e"));

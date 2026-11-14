@@ -195,6 +195,9 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
+            "takeCoreCompatibilityError" -> {
+                result.success(com.gektus.clashx.common.SavedParams.takeCoreCompatibilityError())
+            }
             "moveTaskToBack" -> {
                 activityRef?.get()?.moveTaskToBack(true)
                 result.success(true)

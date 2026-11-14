@@ -8,6 +8,7 @@ part of '../core.dart';
 
 _$SetupParamsImpl _$$SetupParamsImplFromJson(Map<String, dynamic> json) =>
     _$SetupParamsImpl(
+      minCoreVersion: json['min-core-version'] as String?,
       config: json['config'] as Map<String, dynamic>,
       selectedMap: Map<String, String>.from(json['selected-map'] as Map),
       testUrl: json['test-url'] as String,
@@ -15,6 +16,7 @@ _$SetupParamsImpl _$$SetupParamsImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$SetupParamsImplToJson(_$SetupParamsImpl instance) =>
     <String, dynamic>{
+      'min-core-version': instance.minCoreVersion,
       'config': instance.config,
       'selected-map': instance.selectedMap,
       'test-url': instance.testUrl,

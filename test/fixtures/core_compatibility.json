@@ -1,0 +1,18 @@
+[
+  {"current":"v1.19.30","minimum":"1.19.30","compatible":true},
+  {"current":"1.19.29","minimum":"1.19.30","compatible":false},
+  {"current":"1.20.0","minimum":"1.19.30","compatible":true},
+  {"current":"1.9.10","minimum":"1.10.0","compatible":false},
+  {"current":"1.10.0","minimum":"1.9.10","compatible":true},
+  {"current":"1.19.30-alpha.1","minimum":"1.19.30","compatible":false},
+  {"current":"1.19.31-alpha.1","minimum":"1.19.30","compatible":true},
+  {"current":"1.19.30+local-build","minimum":"1.19.30","compatible":true},
+  {"current":" V1.19.30 ","minimum":" v1.19.30 ","compatible":true},
+  {"current":"alpha-abcdef","minimum":"1.19.30","compatible":null},
+  {"current":"","minimum":"1.19.30","compatible":null},
+  {"current":"unknown","minimum":"","compatible":true},
+  {"current":"unknown","minimum":"latest","compatible":true},
+  {"current":"1.19.30","minimum":"1.19","compatible":true},
+  {"current":"1.19.30","minimum":"1.19.31-alpha","compatible":true},
+  {"current":"1.19.30","minimum":"1.019.30","compatible":true}
+]

@@ -26,6 +26,7 @@ abstract mixin class AppMessageListener {
 @freezed
 class SetupParams with _$SetupParams {
   const factory SetupParams({
+    @JsonKey(name: "min-core-version") String? minCoreVersion,
     @JsonKey(name: "config") required Map<String, dynamic> config,
     @JsonKey(name: "selected-map") required Map<String, String> selectedMap,
     @JsonKey(name: "test-url") required String testUrl,

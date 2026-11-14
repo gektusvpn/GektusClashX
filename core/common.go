@@ -371,6 +371,9 @@ func updateConfig(params *UpdateParams) {
 }
 
 func setupConfig(params *SetupParams) error {
+	if err := checkCoreCompatibility(constant.Version, params.MinCoreVersion); err != nil {
+		return err
+	}
 	runLock.Lock()
 	defer runLock.Unlock()
 	var err error

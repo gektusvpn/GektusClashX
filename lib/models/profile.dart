@@ -140,13 +140,12 @@ extension ProfileExtension on Profile {
 
   bool get realAutoUpdate => url.isEmpty == true ? false : autoUpdate;
 
-  Future<void> checkAndUpdate() async {
+  Future<Profile?> checkAndUpdate() async {
     final isExists = await check();
-    if (!isExists) {
-      if (url.isNotEmpty && realAutoUpdate) {
-        await update();
-      }
+    if (!isExists && url.isNotEmpty && realAutoUpdate) {
+      return update();
     }
+    return null;
   }
 
   Future<bool> check() async {
@@ -185,11 +184,25 @@ extension ProfileExtension on Profile {
     final fetchResult = await fetchSubscriptionWithFallback(
       primaryUrl: url,
       fallbackDomain: this.providerHeaders['gektusclashx-fallback'],
-      fetch: (requestUrl) => request.getFileResponseForUrl(
-        requestUrl,
-        headers: headers.isNotEmpty ? headers : null,
-        githubProxyBase: this.providerHeaders['gektusclashx-gh-proxy'] ?? '',
-      ),
+      fetch: (requestUrl) async {
+        final response =
+            await fetchSubscriptionResponse(() => request.getFileResponseForUrl(
+                  requestUrl,
+                  headers: headers.isNotEmpty ? headers : null,
+                  githubProxyBase:
+                      this.providerHeaders['gektusclashx-gh-proxy'] ?? '',
+                ));
+        await ensureCoreCompatibility(
+          response.headers.value(minCoreVersionHeader) ??
+              response.headers.value('flclashx-min-core-version'),
+          readVersion: clashCore.getCoreVersion,
+          supportUrl: coreCompatibilitySupportTarget({
+            'support-url': response.headers.value('support-url') ?? '',
+            'support-email': response.headers.value('support-email') ?? '',
+          }),
+        );
+        return response;
+      },
     );
     final response = fetchResult.value;
 
@@ -239,6 +252,11 @@ extension ProfileExtension on Profile {
     // the current prefix last so it wins when a provider sends both variants.
     collectProviderHeaders('flclashx-');
     collectProviderHeaders('gektusclashx-');
+
+    final minimum =
+        normalizeMinCoreVersion(providerHeaders[minCoreVersionHeader]);
+    providerHeaders.remove(minCoreVersionHeader);
+    if (minimum != null) providerHeaders[minCoreVersionHeader] = minimum;
 
     // A fallback response may omit the header that originally led to it. Keep
     // that working address for the next primary outage without changing the

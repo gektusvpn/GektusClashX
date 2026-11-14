@@ -235,6 +235,19 @@ class GlobalState {
   }
 
   Future<bool> handleStart([UpdateTasks? tasks]) async {
+    final selected = config.currentProfile;
+    bool stillSelected() =>
+        config.currentProfileId == selected?.id &&
+        config.currentProfile?.providerHeaders[minCoreVersionHeader] ==
+            selected?.providerHeaders[minCoreVersionHeader];
+    if (!await ensureSelectedCoreCompatibility(
+      selected?.providerHeaders[minCoreVersionHeader],
+      readVersion: clashCore.getCoreVersion,
+      supportUrl: coreCompatibilitySupportTarget(selected?.providerHeaders),
+      isCurrent: stillSelected,
+    )) {
+      return false;
+    }
     startTime ??= DateTime.now();
     await clashCore.startListener();
     final started = await service?.startVpn();
@@ -434,6 +447,8 @@ class GlobalState {
     );
     lastRuntimeConfig = clashConfig;
     final params = SetupParams(
+      minCoreVersion: normalizeMinCoreVersion(
+          config.currentProfile?.providerHeaders[minCoreVersionHeader]),
       config: clashConfig,
       selectedMap: config.currentProfile?.selectedMap ?? {},
       testUrl: config.appSetting.testUrl,

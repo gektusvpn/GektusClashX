@@ -17,6 +17,19 @@ object SavedParams {
     private val startTimeFile by lazy { File(GlobalState.application.filesDir, START_TIME_FILE) }
     private val crashlyticsOptOutFile by lazy { File(GlobalState.application.filesDir, CRASHLYTICS_OPTOUT_FILE) }
 
+    private val compatibilityErrorFile by lazy { File(GlobalState.application.filesDir, "gektusclashx_core_compatibility_error") }
+
+    fun saveCoreCompatibilityError(error: String) {
+        runCatching { writeAtomic(compatibilityErrorFile, error) }
+            .onFailure { GlobalState.log("saveCoreCompatibilityError failed: ${it.message}") }
+    }
+
+    fun takeCoreCompatibilityError(): String? {
+        val text = runCatching { compatibilityErrorFile.readText() }.getOrNull()
+        runCatching { compatibilityErrorFile.delete() }
+        return text?.takeIf { it.startsWith("gektusclashx-core-compatibility:") }
+    }
+
     data class QuickStartParams(val init: String, val setup: String, val state: String)
 
     fun saveQuickStartParams(initParams: String, setupParams: String, stateParams: String) {

@@ -38,6 +38,9 @@ class App {
   late MethodChannel methodChannel;
   Function()? onExit;
 
+  Future<String?> takeCoreCompatibilityError() =>
+      methodChannel.invokeMethod<String>('takeCoreCompatibilityError');
+
   Future<bool?> moveTaskToBack() async =>
       methodChannel.invokeMethod<bool>("moveTaskToBack");
 

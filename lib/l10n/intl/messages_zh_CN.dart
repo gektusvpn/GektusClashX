@@ -192,6 +192,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "copyLink": MessageLookupByLibrary.simpleMessage("复制链接"),
         "copySuccess": MessageLookupByLibrary.simpleMessage("复制成功"),
         "core": MessageLookupByLibrary.simpleMessage("内核"),
+        "coreCompatibilityMessage": MessageLookupByLibrary.simpleMessage(
+          "请更新应用，以从订阅获取新的配置。",
+        ),
+        "coreCompatibilityTitle": MessageLookupByLibrary.simpleMessage("请更新应用"),
+        "coreCompatibilityUnknown": MessageLookupByLibrary.simpleMessage(
+          "无法检查订阅兼容性。请重试。",
+        ),
         "coreInfo": MessageLookupByLibrary.simpleMessage("内核信息"),
         "country": MessageLookupByLibrary.simpleMessage("区域"),
         "crashTest": MessageLookupByLibrary.simpleMessage("崩溃测试"),
@@ -301,6 +308,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "hotkeyManagementDesc":
             MessageLookupByLibrary.simpleMessage("使用键盘控制应用程序"),
         "hours": MessageLookupByLibrary.simpleMessage("小时"),
+        "hwidDeviceLimitMessage": MessageLookupByLibrary.simpleMessage(
+          "此订阅已达到设备数量上限。请在个人账户中移除不再使用的设备，或联系支持。",
+        ),
+        "hwidDeviceLimitTitle":
+            MessageLookupByLibrary.simpleMessage("已达到设备数量上限"),
         "icon": MessageLookupByLibrary.simpleMessage("图片"),
         "iconConfiguration": MessageLookupByLibrary.simpleMessage("图片配置"),
         "iconStyle": MessageLookupByLibrary.simpleMessage("图标样式"),

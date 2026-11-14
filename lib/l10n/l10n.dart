@@ -104,6 +104,56 @@ class AppLocalizations {
     );
   }
 
+  /// `Update the app`
+  String get coreCompatibilityTitle {
+    return Intl.message(
+      'Update the app',
+      name: 'coreCompatibilityTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update the app to get a new configuration from your subscription.`
+  String get coreCompatibilityMessage {
+    return Intl.message(
+      'Update the app to get a new configuration from your subscription.',
+      name: 'coreCompatibilityMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not check subscription compatibility. Please try again.`
+  String get coreCompatibilityUnknown {
+    return Intl.message(
+      'Could not check subscription compatibility. Please try again.',
+      name: 'coreCompatibilityUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device limit reached`
+  String get hwidDeviceLimitTitle {
+    return Intl.message(
+      'Device limit reached',
+      name: 'hwidDeviceLimitTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This subscription has reached its device limit. Remove an unused device in your account or contact support.`
+  String get hwidDeviceLimitMessage {
+    return Intl.message(
+      'This subscription has reached its device limit. Remove an unused device in your account or contact support.',
+      name: 'hwidDeviceLimitMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `News`
   String get news {
     return Intl.message('News', name: 'news', desc: '', args: []);

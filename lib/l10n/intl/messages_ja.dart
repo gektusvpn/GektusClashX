@@ -214,6 +214,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "copyLink": MessageLookupByLibrary.simpleMessage("リンクをコピー"),
         "copySuccess": MessageLookupByLibrary.simpleMessage("コピー成功"),
         "core": MessageLookupByLibrary.simpleMessage("コア"),
+        "coreCompatibilityMessage": MessageLookupByLibrary.simpleMessage(
+          "サブスクリプションから新しい設定を取得するには、アプリを更新してください。",
+        ),
+        "coreCompatibilityTitle": MessageLookupByLibrary.simpleMessage(
+          "アプリを更新してください",
+        ),
+        "coreCompatibilityUnknown": MessageLookupByLibrary.simpleMessage(
+          "サブスクリプションの互換性を確認できませんでした。もう一度お試しください。",
+        ),
         "coreInfo": MessageLookupByLibrary.simpleMessage("コア情報"),
         "country": MessageLookupByLibrary.simpleMessage("国"),
         "crashTest": MessageLookupByLibrary.simpleMessage("クラッシュテスト"),
@@ -335,6 +344,12 @@ class MessageLookup extends MessageLookupByLibrary {
           "キーボードでアプリを制御",
         ),
         "hours": MessageLookupByLibrary.simpleMessage("時間"),
+        "hwidDeviceLimitMessage": MessageLookupByLibrary.simpleMessage(
+          "このサブスクリプションのデバイス数が上限に達しました。アカウントで未使用のデバイスを削除するか、サポートにお問い合わせください。",
+        ),
+        "hwidDeviceLimitTitle": MessageLookupByLibrary.simpleMessage(
+          "デバイス数の上限に達しました",
+        ),
         "icon": MessageLookupByLibrary.simpleMessage("アイコン"),
         "iconConfiguration": MessageLookupByLibrary.simpleMessage("アイコン設定"),
         "iconStyle": MessageLookupByLibrary.simpleMessage("アイコンスタイル"),

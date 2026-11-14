@@ -269,6 +269,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "copyLink": MessageLookupByLibrary.simpleMessage("Copy link"),
         "copySuccess": MessageLookupByLibrary.simpleMessage("Copy success"),
         "core": MessageLookupByLibrary.simpleMessage("Core"),
+        "coreCompatibilityMessage": MessageLookupByLibrary.simpleMessage(
+          "Update the app to get a new configuration from your subscription.",
+        ),
+        "coreCompatibilityTitle": MessageLookupByLibrary.simpleMessage(
+          "Update the app",
+        ),
+        "coreCompatibilityUnknown": MessageLookupByLibrary.simpleMessage(
+          "Could not check subscription compatibility. Please try again.",
+        ),
         "coreInfo": MessageLookupByLibrary.simpleMessage("Core info"),
         "coreStatusRestarting":
             MessageLookupByLibrary.simpleMessage("Restarting"),
@@ -458,6 +467,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "hours": MessageLookupByLibrary.simpleMessage("Hours"),
         "hoursGenitive": MessageLookupByLibrary.simpleMessage("hours"),
         "hoursPlural": MessageLookupByLibrary.simpleMessage("hours"),
+        "hwidDeviceLimitMessage": MessageLookupByLibrary.simpleMessage(
+          "This subscription has reached its device limit. Remove an unused device in your account or contact support.",
+        ),
+        "hwidDeviceLimitTitle": MessageLookupByLibrary.simpleMessage(
+          "Device limit reached",
+        ),
         "hwidNotSupported": MessageLookupByLibrary.simpleMessage(
           "HWID binding is not supported on this platform.",
         ),

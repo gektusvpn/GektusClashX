@@ -18,9 +18,10 @@ type InitParams struct {
 }
 
 type SetupParams struct {
-	Config      *config.RawConfig `json:"config"`
-	SelectedMap map[string]string `json:"selected-map"`
-	TestURL     string            `json:"test-url"`
+	MinCoreVersion string            `json:"min-core-version,omitempty"`
+	Config         *config.RawConfig `json:"config"`
+	SelectedMap    map[string]string `json:"selected-map"`
+	TestURL        string            `json:"test-url"`
 }
 
 type UpdateParams struct {

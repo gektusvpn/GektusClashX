@@ -280,6 +280,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "copySuccess":
             MessageLookupByLibrary.simpleMessage("Копирование успешно"),
         "core": MessageLookupByLibrary.simpleMessage("Ядро"),
+        "coreCompatibilityMessage": MessageLookupByLibrary.simpleMessage(
+          "Обновите приложение для получения новой конфигурации из подписки.",
+        ),
+        "coreCompatibilityTitle": MessageLookupByLibrary.simpleMessage(
+          "Обновите приложение",
+        ),
+        "coreCompatibilityUnknown": MessageLookupByLibrary.simpleMessage(
+          "Не удалось проверить совместимость подписки. Попробуйте ещё раз.",
+        ),
         "coreInfo": MessageLookupByLibrary.simpleMessage("Информация о ядре"),
         "coreStatusRestarting":
             MessageLookupByLibrary.simpleMessage("Перезапуск"),
@@ -485,6 +494,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "hours": MessageLookupByLibrary.simpleMessage("Часов"),
         "hoursGenitive": MessageLookupByLibrary.simpleMessage("часов"),
         "hoursPlural": MessageLookupByLibrary.simpleMessage("часа"),
+        "hwidDeviceLimitMessage": MessageLookupByLibrary.simpleMessage(
+          "Достигнут лимит устройств для этой подписки. Удалите неиспользуемое устройство в личном кабинете или обратитесь в поддержку.",
+        ),
+        "hwidDeviceLimitTitle": MessageLookupByLibrary.simpleMessage(
+          "Достигнут лимит устройств",
+        ),
         "hwidNotSupported": MessageLookupByLibrary.simpleMessage(
           "Привязка по HWID не поддерживается на этой платформе.",
         ),

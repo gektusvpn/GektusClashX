@@ -20,6 +20,8 @@ SetupParams _$SetupParamsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SetupParams {
+  @JsonKey(name: "min-core-version")
+  String? get minCoreVersion => throw _privateConstructorUsedError;
   @JsonKey(name: "config")
   Map<String, dynamic> get config => throw _privateConstructorUsedError;
   @JsonKey(name: "selected-map")
@@ -44,7 +46,8 @@ abstract class $SetupParamsCopyWith<$Res> {
       _$SetupParamsCopyWithImpl<$Res, SetupParams>;
   @useResult
   $Res call(
-      {@JsonKey(name: "config") Map<String, dynamic> config,
+      {@JsonKey(name: "min-core-version") String? minCoreVersion,
+      @JsonKey(name: "config") Map<String, dynamic> config,
       @JsonKey(name: "selected-map") Map<String, String> selectedMap,
       @JsonKey(name: "test-url") String testUrl});
 }
@@ -64,11 +67,16 @@ class _$SetupParamsCopyWithImpl<$Res, $Val extends SetupParams>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? minCoreVersion = freezed,
     Object? config = null,
     Object? selectedMap = null,
     Object? testUrl = null,
   }) {
     return _then(_value.copyWith(
+      minCoreVersion: freezed == minCoreVersion
+          ? _value.minCoreVersion
+          : minCoreVersion // ignore: cast_nullable_to_non_nullable
+              as String?,
       config: null == config
           ? _value.config
           : config // ignore: cast_nullable_to_non_nullable
@@ -94,7 +102,8 @@ abstract class _$$SetupParamsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: "config") Map<String, dynamic> config,
+      {@JsonKey(name: "min-core-version") String? minCoreVersion,
+      @JsonKey(name: "config") Map<String, dynamic> config,
       @JsonKey(name: "selected-map") Map<String, String> selectedMap,
       @JsonKey(name: "test-url") String testUrl});
 }
@@ -112,11 +121,16 @@ class __$$SetupParamsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? minCoreVersion = freezed,
     Object? config = null,
     Object? selectedMap = null,
     Object? testUrl = null,
   }) {
     return _then(_$SetupParamsImpl(
+      minCoreVersion: freezed == minCoreVersion
+          ? _value.minCoreVersion
+          : minCoreVersion // ignore: cast_nullable_to_non_nullable
+              as String?,
       config: null == config
           ? _value._config
           : config // ignore: cast_nullable_to_non_nullable
@@ -137,7 +151,8 @@ class __$$SetupParamsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SetupParamsImpl implements _SetupParams {
   const _$SetupParamsImpl(
-      {@JsonKey(name: "config") required final Map<String, dynamic> config,
+      {@JsonKey(name: "min-core-version") this.minCoreVersion,
+      @JsonKey(name: "config") required final Map<String, dynamic> config,
       @JsonKey(name: "selected-map")
       required final Map<String, String> selectedMap,
       @JsonKey(name: "test-url") required this.testUrl})
@@ -147,6 +162,9 @@ class _$SetupParamsImpl implements _SetupParams {
   factory _$SetupParamsImpl.fromJson(Map<String, dynamic> json) =>
       _$$SetupParamsImplFromJson(json);
 
+  @override
+  @JsonKey(name: "min-core-version")
+  final String? minCoreVersion;
   final Map<String, dynamic> _config;
   @override
   @JsonKey(name: "config")
@@ -171,7 +189,7 @@ class _$SetupParamsImpl implements _SetupParams {
 
   @override
   String toString() {
-    return 'SetupParams(config: $config, selectedMap: $selectedMap, testUrl: $testUrl)';
+    return 'SetupParams(minCoreVersion: $minCoreVersion, config: $config, selectedMap: $selectedMap, testUrl: $testUrl)';
   }
 
   @override
@@ -179,6 +197,8 @@ class _$SetupParamsImpl implements _SetupParams {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SetupParamsImpl &&
+            (identical(other.minCoreVersion, minCoreVersion) ||
+                other.minCoreVersion == minCoreVersion) &&
             const DeepCollectionEquality().equals(other._config, _config) &&
             const DeepCollectionEquality()
                 .equals(other._selectedMap, _selectedMap) &&
@@ -189,6 +209,7 @@ class _$SetupParamsImpl implements _SetupParams {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      minCoreVersion,
       const DeepCollectionEquality().hash(_config),
       const DeepCollectionEquality().hash(_selectedMap),
       testUrl);
@@ -211,7 +232,8 @@ class _$SetupParamsImpl implements _SetupParams {
 
 abstract class _SetupParams implements SetupParams {
   const factory _SetupParams(
-          {@JsonKey(name: "config") required final Map<String, dynamic> config,
+          {@JsonKey(name: "min-core-version") final String? minCoreVersion,
+          @JsonKey(name: "config") required final Map<String, dynamic> config,
           @JsonKey(name: "selected-map")
           required final Map<String, String> selectedMap,
           @JsonKey(name: "test-url") required final String testUrl}) =
@@ -220,6 +242,9 @@ abstract class _SetupParams implements SetupParams {
   factory _SetupParams.fromJson(Map<String, dynamic> json) =
       _$SetupParamsImpl.fromJson;
 
+  @override
+  @JsonKey(name: "min-core-version")
+  String? get minCoreVersion;
   @override
   @JsonKey(name: "config")
   Map<String, dynamic> get config;
