@@ -24,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'common/common.dart';
+import 'common/startup_diagnostics.dart';
 import 'models/models.dart';
 import 'plugins/vpn.dart';
 import 'views/profiles/override_profile.dart';
@@ -177,7 +178,11 @@ class AppController {
   // would clobber the optimistic startTime, tearing down a live tunnel's UI.
   bool _statusOpInFlight = false;
 
-  Future<void> updateStatus(bool isStart) {
+  Future<void> updateStatus(bool isStart, {bool startup = false}) {
+    if (Platform.isWindows && !startup && !windowsStartupReady.value) {
+      startupLog('VPN toggle ignored while startup is incomplete');
+      return Future.value();
+    }
     final epoch = ++_statusEpoch;
     final op = _statusOp.then((_) async {
       // Superseded by a newer toggle (rapid double-tap, start-then-stop): make
@@ -1109,6 +1114,12 @@ class AppController {
       await Future.any([
         Future(() async {
           try {
+            if (Platform.isWindows) {
+              final geometry = await window?.captureNormalGeometry();
+              if (geometry != null) {
+                _ref.read(windowSettingProvider.notifier).value = geometry;
+              }
+            }
             await savePreferences();
           } catch (_) {}
           try {
@@ -1500,21 +1511,38 @@ class AppController {
   }
 
   Future<void> init() async {
-    FlutterError.onError = (details) {
-      commonPrint.log(details.stack.toString());
-    };
+    if (Platform.isWindows) {
+      await window?.applyStartupVisibility(
+          silentLaunch: _ref.read(appSettingProvider).silentLaunch);
+    } else {
+      FlutterError.onError = (details) {
+        commonPrint.log(details.stack.toString());
+      };
+    }
     String? pendingCompatibilityError;
     if (Platform.isAndroid) {
       await androidAppUpdater.cleanup();
       pendingCompatibilityError = await app?.takeCoreCompatibilityError();
     }
-    await updateTray();
+    if (Platform.isWindows) {
+      try {
+        await startupStage('tray.init', updateTray);
+      } catch (error) {
+        startupLog('tray unavailable: $error');
+      }
+    } else {
+      await updateTray();
+    }
     // Desktop only (clashService is null on Android): on an unexpected core-process
     // death, respawn it AND re-init/re-apply (and re-start the tunnel if it was up).
     clashService?.onCoreCrash = (_) => restartCore();
     try {
-      await _initCore();
+      await startupStage('core.init', _initCore);
     } catch (e) {
+      if (Platform.isWindows) {
+        windowsStartupError.value =
+            'Core initialization failed. See the startup log.';
+      }
       commonPrint.log("initCore failed (will retry on profile change): $e");
     }
     final pending = pendingCompatibilityError == null
@@ -1529,7 +1557,7 @@ class AppController {
         unawaited(_showCoreCompatibilityNotice(error, background: true));
       }
     }
-    await _initStatus();
+    await startupStage('status.init', _initStatus);
     autoLaunch?.updateStatus(
       _ref.read(appSettingProvider).autoLaunch,
     );
@@ -1538,7 +1566,7 @@ class AppController {
         const Duration(seconds: 1), _updateCurrentProfileSubscription);
     autoUpdateProfiles();
     unawaited(autoCheckUpdate());
-    if (!Platform.isMacOS) {
+    if (!Platform.isMacOS && !Platform.isWindows) {
       if (!_ref.read(appSettingProvider).silentLaunch) {
         window?.show();
       } else {
@@ -1565,7 +1593,7 @@ class AppController {
         ? true
         : _ref.read(appSettingProvider).autoRun;
 
-    await updateStatus(status);
+    await updateStatus(status, startup: true);
     if (!status) {
       addCheckIpNumDebounce();
     }
@@ -1898,7 +1926,7 @@ class AppController {
 
     final visible = await window?.isVisible;
     if (visible != null && !visible) {
-      window?.show();
+      unawaited(window?.show(source: 'visibility toggle'));
     } else {
       window?.hide();
     }

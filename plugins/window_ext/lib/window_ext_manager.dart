@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'window_ext_listener.dart';
+import 'window_geometry.dart';
 
 class WindowExtManager {
   WindowExtManager._() {
@@ -18,6 +19,9 @@ class WindowExtManager {
   Future<void> _methodCallHandler(MethodCall call) async {
     for (final WindowExtListener listener in _listeners) {
       switch (call.method) {
+        case "displayChanged":
+          listener.onDisplayChanged();
+          break;
         case "taskbarCreated":
           listener.onTaskbarCreated();
           break;
@@ -27,6 +31,19 @@ class WindowExtManager {
       }
     }
   }
+
+  Future<NativeGeometry> getGeometrySnapshot() async =>
+      NativeGeometry((await _channel
+          .invokeMapMethod<Object?, Object?>('getGeometrySnapshot'))!);
+
+  Future<NativeGeometry> setPhysicalBounds(Rect bounds) async =>
+      NativeGeometry((await _channel
+          .invokeMapMethod<Object?, Object?>('setPhysicalBounds', {
+        'x': bounds.left,
+        'y': bounds.top,
+        'width': bounds.width,
+        'height': bounds.height,
+      }))!);
 
   bool get hasListeners {
     return _listeners.isNotEmpty;

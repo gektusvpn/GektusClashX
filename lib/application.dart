@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gektusclashx/clash/clash.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/l10n/l10n.dart';
@@ -10,17 +14,15 @@ import 'package:gektusclashx/manager/manager.dart';
 import 'package:gektusclashx/plugins/app.dart';
 import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common/app_update_reminder.dart';
+import 'common/startup_diagnostics.dart';
 import 'controller.dart';
 import 'enum/enum.dart';
 import 'pages/pages.dart';
 import 'widgets/app_update_prompt.dart';
 import 'widgets/progress_theme.dart';
+import 'widgets/windows_startup_gate.dart';
 
 class Application extends ConsumerStatefulWidget {
   const Application({
@@ -130,11 +132,21 @@ class ApplicationState extends ConsumerState<Application> {
     _autoUpdateProfilesTask();
     globalState.appController = AppController(context, ref);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      startupLog('first Dart post-frame');
       final currentContext = globalState.navigatorKey.currentContext;
       if (currentContext != null) {
         globalState.appController = AppController(currentContext, ref);
       }
-      await globalState.appController.init();
+      try {
+        await globalState.appController.init();
+        if (Platform.isWindows) windowsStartupReady.value = true;
+      } catch (error, stack) {
+        if (!Platform.isWindows) rethrow;
+        startupLog('controller startup failed: $error\n$stack');
+        windowsStartupError.value =
+            'Startup failed. Exit and reopen GektusClashX; see the startup log.';
+        return;
+      }
       globalState.appController.initLink();
       app?.initShortcuts();
     });
@@ -187,7 +199,7 @@ class ApplicationState extends ConsumerState<Application> {
   Widget _buildPlatformApp(Widget child) {
     if (system.isDesktop) {
       return WindowHeaderContainer(
-        child: child,
+        child: Platform.isWindows ? WindowsStartupGate(child: child) : child,
       );
     }
     return VpnManager(

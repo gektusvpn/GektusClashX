@@ -146,6 +146,7 @@ _$WindowPropsImpl _$$WindowPropsImplFromJson(Map<String, dynamic> json) =>
       height: (json['height'] as num?)?.toDouble() ?? 900,
       top: (json['top'] as num?)?.toDouble(),
       left: (json['left'] as num?)?.toDouble(),
+      positionScale: (json['positionScale'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$WindowPropsImplToJson(_$WindowPropsImpl instance) =>
@@ -154,6 +155,7 @@ Map<String, dynamic> _$$WindowPropsImplToJson(_$WindowPropsImpl instance) =>
       'height': instance.height,
       'top': instance.top,
       'left': instance.left,
+      'positionScale': instance.positionScale,
     };
 
 _$VpnPropsImpl _$$VpnPropsImplFromJson(Map<String, dynamic> json) =>
@@ -369,7 +371,7 @@ _$ConfigImpl _$$ConfigImplFromJson(Map<String, dynamic> json) => _$ConfigImpl(
               json['proxiesStyle'] as Map<String, dynamic>?),
       windowProps: json['windowProps'] == null
           ? defaultWindowProps
-          : WindowProps.fromJson(json['windowProps'] as Map<String, dynamic>?),
+          : WindowProps.fromJson(json['windowProps']),
       patchClashConfig: json['patchClashConfig'] == null
           ? defaultClashConfig
           : ClashConfig.fromJson(

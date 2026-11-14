@@ -1,4 +1,6 @@
 #include "win32_window.h"
+#include "startup_log.h"
+#include <algorithm>
 #include "app_links/app_links_plugin_c_api.h"
 
 #include <dwmapi.h>
@@ -17,6 +19,57 @@ namespace
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
 #endif
+
+  BOOL CALLBACK AddWorkArea(HMONITOR monitor, HDC, LPRECT, LPARAM context) {
+    MONITORINFO info = {sizeof(info)};
+    if (GetMonitorInfo(monitor, &info)) {
+      HRGN area = CreateRectRgnIndirect(&info.rcWork);
+      CombineRgn(reinterpret_cast<HRGN>(context), reinterpret_cast<HRGN>(context), area, RGN_OR);
+      DeleteObject(area);
+    }
+    return TRUE;
+  }
+
+  // A second launch may be handled before Dart is ready. Repair geometry here
+  // too, without waiting on the isolate or creating another instance.
+  void RecoverInstancePosition(HWND hwnd) {
+    WINDOWPLACEMENT placement = {sizeof(placement)};
+    if (!GetWindowPlacement(hwnd, &placement)) return;
+    RECT rect{};
+    const bool normalPlacement = IsIconic(hwnd) || IsZoomed(hwnd);
+    if (normalPlacement) {
+      rect = placement.rcNormalPosition;
+      MONITORINFO old = {sizeof(old)};
+      if (GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &old)) {
+        OffsetRect(&rect, old.rcWork.left - old.rcMonitor.left, old.rcWork.top - old.rcMonitor.top);
+      }
+    } else if (!GetWindowRect(hwnd, &rect)) { return; }
+    HRGN work = CreateRectRgn(0, 0, 0, 0);
+    EnumDisplayMonitors(nullptr, nullptr, AddWorkArea, reinterpret_cast<LPARAM>(work));
+    HRGN remaining = CreateRectRgnIndirect(&rect);
+    const int coverage = CombineRgn(remaining, remaining, work, RGN_DIFF);
+    DeleteObject(work);
+    DeleteObject(remaining);
+    if (coverage == NULLREGION || coverage == ERROR) return;
+    HMONITOR monitor = MonitorFromRect(&rect, MONITOR_DEFAULTTONULL);
+    if (!monitor) monitor = MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY);
+    MONITORINFO info = {sizeof(info)};
+    if (!GetMonitorInfo(monitor, &info)) return;
+    const LONG width = std::min(rect.right - rect.left, info.rcWork.right - info.rcWork.left);
+    const LONG height = std::min(rect.bottom - rect.top, info.rcWork.bottom - info.rcWork.top);
+    if (width <= 0 || height <= 0) return;
+    const LONG x = std::clamp(rect.left, info.rcWork.left, info.rcWork.right - width);
+    const LONG y = std::clamp(rect.top, info.rcWork.top, info.rcWork.bottom - height);
+    if (normalPlacement) {
+      placement.rcNormalPosition = RECT{x, y, x + width, y + height};
+      OffsetRect(&placement.rcNormalPosition, info.rcMonitor.left - info.rcWork.left,
+                 info.rcMonitor.top - info.rcWork.top);
+      SetWindowPlacement(hwnd, &placement);
+    } else {
+      SetWindowPos(hwnd, nullptr, x, y, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    StartupLog("existing instance geometry repaired");
+  }
 
   constexpr const wchar_t kWindowClassName[] = L"FLUTTER_RUNNER_WIN32_WINDOW";
 
@@ -182,6 +235,12 @@ bool Win32Window::SendAppLinkToInstance(const std::wstring &title)
 
   if (hwnd)
   {
+    DWORD owner = 0;
+    GetWindowThreadProcessId(hwnd, &owner);
+    char message[128]{};
+    sprintf_s(message, "existing instance owner=%lu", owner);
+    StartupLog(message);
+    RecoverInstancePosition(hwnd);
     // Dispatch new link to current window
     SendAppLink(hwnd);
 
@@ -202,8 +261,9 @@ bool Win32Window::SendAppLinkToInstance(const std::wstring &title)
       break;
     }
 
-    SetWindowPos(0, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
-    SetForegroundWindow(hwnd);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
+    const BOOL activated = SetForegroundWindow(hwnd);
+    StartupLog(activated ? "existing instance activated" : "foreground activation refused");
 
     // Window has been found, don't create another one.
     return true;

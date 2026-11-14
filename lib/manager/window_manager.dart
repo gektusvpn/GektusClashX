@@ -24,6 +24,33 @@ class WindowManager extends ConsumerStatefulWidget {
 
 class _WindowContainerState extends ConsumerState<WindowManager>
     with WindowListener, WindowExtListener {
+  Timer? _geometryTimer;
+  Timer? _displayTimer;
+
+  void _saveWindowsGeometry() {
+    if (window?.restoringGeometry == true) return;
+    _geometryTimer?.cancel();
+    _geometryTimer = Timer(const Duration(milliseconds: 200), () async {
+      try {
+        final props = await window?.captureNormalGeometry();
+        if (mounted && props != null) {
+          ref.read(windowSettingProvider.notifier).value = props;
+        }
+      } catch (error) {
+        commonPrint.log('capture window geometry failed: $error');
+      }
+    });
+  }
+
+  @override
+  void onDisplayChanged() {
+    _displayTimer?.cancel();
+    _displayTimer = Timer(const Duration(milliseconds: 300), () async {
+      await window?.ensureVisibleGeometry();
+      if (mounted) _saveWindowsGeometry();
+    });
+  }
+
   @override
   Widget build(BuildContext context) => widget.child;
 
@@ -61,6 +88,11 @@ class _WindowContainerState extends ConsumerState<WindowManager>
     super.onWindowFocus();
     commonPrint.log("focus");
     render?.resume();
+    if (Platform.isWindows) {
+      unawaited(window?.ensureVisibleGeometry().then((_) {
+        if (mounted) _saveWindowsGeometry();
+      }));
+    }
   }
 
   @override
@@ -72,6 +104,10 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   Future<void> onWindowMoved() async {
     super.onWindowMoved();
+    if (Platform.isWindows) {
+      _saveWindowsGeometry();
+      return;
+    }
     final offset = await windowManager.getPosition();
     ref.read(windowSettingProvider.notifier).updateState(
           (state) => state.copyWith(
@@ -84,6 +120,10 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   Future<void> onWindowResized() async {
     super.onWindowResized();
+    if (Platform.isWindows) {
+      _saveWindowsGeometry();
+      return;
+    }
     final size = await windowManager.getSize();
     ref.read(windowSettingProvider.notifier).updateState(
           (state) => state.copyWith(
@@ -105,11 +145,14 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowRestore() {
     commonPrint.log("restore");
     render?.resume();
+    if (Platform.isWindows) onDisplayChanged();
     super.onWindowRestore();
   }
 
   @override
   Future<void> dispose() async {
+    _geometryTimer?.cancel();
+    _displayTimer?.cancel();
     windowExtManager.removeListener(this);
     if (!Platform.isMacOS) {
       windowManager.removeListener(this);

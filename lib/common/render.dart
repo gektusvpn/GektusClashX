@@ -1,6 +1,8 @@
+import 'package:flutter/scheduler.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/enum/enum.dart';
-import 'package:flutter/scheduler.dart';
+
+import 'startup_diagnostics.dart';
 
 class Render {
   factory Render() {
@@ -40,6 +42,7 @@ class Render {
     _drawFrame = _dispatcher.onDrawFrame;
     _dispatcher.onBeginFrame = null;
     _dispatcher.onDrawFrame = null;
+    startupLog('render paused');
     commonPrint.log("pause");
   }
 
@@ -49,6 +52,7 @@ class Render {
     _dispatcher.onBeginFrame = _beginFrame;
     _dispatcher.onDrawFrame = _drawFrame;
     _dispatcher.scheduleFrame();
+    startupLog('render resumed');
     commonPrint.log("resume");
   }
 }

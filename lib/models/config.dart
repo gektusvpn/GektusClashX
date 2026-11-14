@@ -125,10 +125,29 @@ class WindowProps with _$WindowProps {
     @Default(900) double height,
     double? top,
     double? left,
+    double? positionScale,
   }) = _WindowProps;
 
-  factory WindowProps.fromJson(Map<String, Object?>? json) =>
-      json == null ? const WindowProps() : _$WindowPropsFromJson(json);
+  factory WindowProps.fromJson(Object? json) =>
+      _$WindowPropsFromJson(_sanitizeWindowProps(json));
+}
+
+Map<String, dynamic> _sanitizeWindowProps(Object? json) {
+  final data = json is Map ? json : const {};
+  double? number(String key, {bool positive = false}) {
+    final value = data[key];
+    return value is num && value.isFinite && (!positive || value > 0)
+        ? value.toDouble()
+        : null;
+  }
+
+  return {
+    'width': number('width', positive: true) ?? 450,
+    'height': number('height', positive: true) ?? 900,
+    'left': number('left'),
+    'top': number('top'),
+    'positionScale': number('positionScale', positive: true)
+  };
 }
 
 @freezed
@@ -256,7 +275,9 @@ class Config with _$Config {
     @Default(defaultVpnProps) VpnProps vpnProps,
     @JsonKey(fromJson: ThemeProps.safeFromJson) required ThemeProps themeProps,
     @Default(defaultProxiesStyle) ProxiesStyle proxiesStyle,
-    @Default(defaultWindowProps) WindowProps windowProps,
+    @JsonKey(fromJson: WindowProps.fromJson)
+    @Default(defaultWindowProps)
+    WindowProps windowProps,
     @Default(defaultClashConfig) ClashConfig patchClashConfig,
     @Default(ScriptProps()) ScriptProps scriptProps,
   }) = _Config;

@@ -159,7 +159,7 @@ class _TrayContainerState extends ConsumerState<TrayManager>
   void onTrayIconMouseDown() {
     _closeWindowsPopupMenu();
     if (!Platform.isLinux) {
-      unawaited(window?.show());
+      unawaited(window?.show(source: 'tray icon'));
     }
   }
 

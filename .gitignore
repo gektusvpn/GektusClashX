@@ -83,3 +83,4 @@ store/
 /docs/*
 !/docs/configuration.md
 !/docs/configuration_EN.md
+!/docs/window-recovery-testing.md

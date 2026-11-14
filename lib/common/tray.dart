@@ -71,7 +71,7 @@ class Tray {
     final showMenuItem = MenuItem(
       label: appLocalizations.show,
       onClick: (_) {
-        unawaited(window?.show());
+        unawaited(window?.show(source: 'tray menu'));
       },
     );
     menuItems.add(showMenuItem);

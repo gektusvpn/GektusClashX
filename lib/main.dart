@@ -15,6 +15,7 @@ import 'application.dart';
 import 'clash/core.dart';
 import 'clash/lib.dart';
 import 'common/common.dart';
+import 'common/startup_diagnostics.dart';
 import 'models/core.dart' as core_models show Action;
 import 'models/models.dart';
 import 'pages/editor_window.dart';
@@ -34,31 +35,73 @@ Future<void> main(List<String> args) async {
     DartPluginRegistrant.ensureInitialized();
   }
 
-  final version = await system.version;
-  await clashCore.preload();
-  await globalState.initApp(version);
-  await serviceLogoCache.preload(
-    decodeServiceLogoUrl(
-      globalState
-          .config.currentProfile?.providerHeaders['gektusclashx-servicelogo'],
-    ),
-  );
-  await android?.init();
-  await window?.init(version);
-
-  if (Platform.isAndroid) {
-    // Accessing the singletons wires up method channel handlers.
-    vpn;
-    _wireAndroidTileListener();
-    unawaited(
-      clashLib?.setCrashlytics(globalState.config.appSetting.crashlytics),
-    );
+  bool? silentLaunch;
+  if (Platform.isWindows) {
+    final previous = FlutterError.onError;
+    FlutterError.onError = (details) {
+      startupLog('Flutter error: ${details.exception}\n${details.stack}');
+      previous?.call(details);
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      startupLog('unhandled async error: $error\n$stack');
+      return false; // Preserve the engine's normal error reporting.
+    };
   }
+  try {
+    final version = await startupStage('system.version', () => system.version);
+    await startupStage('core.preload', clashCore.preload);
+    await startupStage('state.init', () => globalState.initApp(version));
+    silentLaunch = globalState.config.appSetting.silentLaunch;
+    startupLog(
+        'config ready version=${globalState.packageInfo.version} silentLaunch=$silentLaunch');
+    await startupStage(
+        'logo.cache',
+        () => serviceLogoCache.preload(
+              decodeServiceLogoUrl(
+                globalState.config.currentProfile
+                    ?.providerHeaders['gektusclashx-servicelogo'],
+              ),
+            ));
+    await android?.init();
+    await startupStage('window.init', () async {
+      await window?.init(version);
+    });
 
-  HttpOverrides.global = FlClashHttpOverrides();
-  runApp(const ProviderScope(
-    child: Application(),
-  ));
+    if (Platform.isAndroid) {
+      // Accessing the singletons wires up method channel handlers.
+      vpn;
+      _wireAndroidTileListener();
+      unawaited(
+        clashLib?.setCrashlytics(globalState.config.appSetting.crashlytics),
+      );
+    }
+
+    HttpOverrides.global = FlClashHttpOverrides();
+    startupLog('runApp');
+    runApp(const ProviderScope(
+      child: Application(),
+    ));
+  } catch (error, stack) {
+    if (!Platform.isWindows) rethrow;
+    startupLog('startup failed: $error\n$stack');
+    // This screen does not depend on a valid config, provider tree, or core.
+    runApp(MaterialApp(
+        home: Scaffold(
+            body: Center(
+                child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Text(
+            'GektusClashX could not start. See the startup log for details.'),
+        TextButton(onPressed: () => window?.close(), child: const Text('Exit')),
+      ]),
+    )))));
+    try {
+      await window?.showInitFailure(reveal: silentLaunch == false);
+    } catch (windowError, windowStack) {
+      startupLog('failure window unavailable: $windowError\n$windowStack');
+    }
+  }
 }
 
 /// Handles start/stop/mode intents coming from the quick-settings tile or the

@@ -1,4 +1,5 @@
 #include "flutter_window.h"
+#include "startup_log.h"
 
 #include <optional>
 
@@ -10,6 +11,7 @@ FlutterWindow::FlutterWindow(const flutter::DartProject& project)
 FlutterWindow::~FlutterWindow() {}
 
 bool FlutterWindow::OnCreate() {
+  StartupLog("Flutter controller create");
   if (!Win32Window::OnCreate()) {
     return false;
   }
@@ -28,7 +30,7 @@ bool FlutterWindow::OnCreate() {
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
-
+    StartupLog("first native Flutter frame");
   });
 
   // Flutter can complete the first frame before the "show window" callback is
