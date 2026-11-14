@@ -157,8 +157,6 @@ jobs:
         run: |
           flutter config --jdk-dir "$JAVA_HOME"
           java -version
-          cd android
-          ./gradlew --version
 
       - name: Get Flutter Dependency
         run: flutter pub get
