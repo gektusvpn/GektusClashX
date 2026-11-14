@@ -1,3 +1,26 @@
+## v0.5.7-pre.1
+
+This is a testing release. Install it manually to try the changes below;
+stable installations continue to receive stable updates only.
+
+- Improved Windows window restoration across monitors with different DPI,
+  disconnected displays, and changed work areas. Added startup diagnostics.
+- Show the Windows interface while the VPN core initializes, preserving silent
+  launch and preventing connection changes until startup state is ready.
+- Added Stable and Testing update channels in About, with correct prerelease
+  version ordering and protection against stale update requests.
+- Preserve the existing subscription when a provider requires a newer core or
+  reports a device limit; show actionable compatibility and support messages.
+- Improved keyboard and remote focus in popup menus and marked selected actions.
+- Expand proxy groups during latency tests and normalize server descriptions.
+- Moved provider support to dashboard header actions and aligned news,
+  subscription, and links card spacing and outlines.
+- Copy subscription links to the clipboard when sharing from desktop.
+
+Please test Windows startup on one and multiple monitors, mixed scaling,
+opening from the tray, repeated launches, and silent launch. Automated tests
+cannot establish whether the originally reported intermittent issue is resolved.
+
 ## v0.5.6
 
 - Added service news from provider-configured RSS, Atom, and JSON feeds, with
