@@ -1,3 +1,10 @@
+## v0.5.7-pre.2
+
+- Pin Android CI to JDK 17 for compatibility with the existing Gradle 8.11.1
+  and Android Gradle Plugin 8.9.2. The first preview did not publish because
+  its Android build failed while starting Gradle.
+- Includes all application changes described under v0.5.7-pre.1 below.
+
 ## v0.5.7-pre.1
 
 This is a testing release. Install it manually to try the changes below;
