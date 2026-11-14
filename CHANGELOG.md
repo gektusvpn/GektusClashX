@@ -1,3 +1,8 @@
+## v0.5.7-pre.3
+
+- Keep Android builds on JDK 17 without invoking the Flutter-generated Gradle
+  wrapper before it exists. Includes the application changes in pre.1.
+
 ## v0.5.7-pre.2
 
 - Pin Android CI to JDK 17 for compatibility with the existing Gradle 8.11.1
