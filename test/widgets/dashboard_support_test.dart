@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gektusclashx/common/common.dart';
 import 'package:gektusclashx/l10n/l10n.dart';
 import 'package:gektusclashx/models/models.dart';
@@ -9,8 +10,22 @@ import 'package:gektusclashx/providers/providers.dart';
 import 'package:gektusclashx/state.dart';
 import 'package:gektusclashx/views/dashboard/widgets/support.dart';
 import 'package:gektusclashx/widgets/widgets.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 import '../support/news_test_app.dart';
+
+class _RecordingUrlLauncher extends UrlLauncherPlatform {
+  final urls = <String>[];
+
+  @override
+  Null get linkDelegate => null;
+
+  @override
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
+    urls.add(url);
+    return true;
+  }
+}
 
 final _profile = StateProvider<Profile?>((ref) => null);
 
@@ -26,6 +41,7 @@ Future<ProviderContainer> _pumpHeader(WidgetTester tester,
     bool tv = false,
     double width = 800,
     double textScale = 1,
+    Locale locale = const Locale('en'),
     Brightness brightness = Brightness.light,
     VoidCallback? onSettings}) async {
   tester.view.physicalSize = Size(width, 800);
@@ -43,14 +59,21 @@ Future<ProviderContainer> _pumpHeader(WidgetTester tester,
   await tester.pumpWidget(UncontrolledProviderScope(
     container: container,
     child: MaterialApp(
+      locale: locale,
+      supportedLocales: AppLocalizations.delegate.supportedLocales,
       navigatorKey: globalState.navigatorKey,
       theme: ThemeData(
         brightness: brightness,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      localizationsDelegates: const [AppLocalizations.delegate],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: CommonScaffold(
-        title: 'Home',
+        title: locale.languageCode == 'ru' ? 'Главная' : 'Home',
         actions: [DashboardHeaderActions(onSettings: onSettings ?? () {})],
         body: const SizedBox(),
       ),
@@ -65,6 +88,13 @@ Future<ProviderContainer> _pumpHeader(WidgetTester tester,
 }
 
 void main() {
+  late _RecordingUrlLauncher launcher;
+  setUp(() {
+    final previous = UrlLauncherPlatform.instance;
+    launcher = _RecordingUrlLauncher();
+    UrlLauncherPlatform.instance = launcher;
+    addTearDown(() => UrlLauncherPlatform.instance = previous);
+  });
   // Resolve the shared platform future outside individual tests' fake async zones.
   setUpAll(() async {
     await system.isAndroidTV;
@@ -133,13 +163,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(MenuItemButton), findsNothing);
       expect(find.byType(AdaptiveSheetScaffold), findsNothing);
-      final link = tester.widget<SelectableText>(find.byType(SelectableText));
-      expect(
-          link.textSpan!.toPlainText(),
-          contacts.containsKey('support-url')
-              ? 'https://example.com/help'
-              : 'mailto:help@example.com');
-      globalState.navigatorKey.currentState!.pop(false);
+      if (contacts.containsKey('support-url')) {
+        final link = tester.widget<SelectableText>(find.byType(SelectableText));
+        expect(link.textSpan!.toPlainText(), 'https://example.com/help');
+        expect(launcher.urls, isEmpty);
+        globalState.navigatorKey.currentState!.pop(false);
+      } else {
+        expect(find.byType(SelectableText), findsNothing);
+        expect(launcher.urls, ['mailto:help@example.com']);
+      }
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
@@ -160,17 +192,43 @@ void main() {
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pumpAndSettle();
       expect(find.byType(MenuItemButton), findsNothing);
-      final link = tester.widget<SelectableText>(find.byType(SelectableText));
-      expect(
-          link.textSpan!.toPlainText(),
-          method == 'Website'
-              ? 'https://example.com/help'
-              : 'mailto:help@example.com');
-      globalState.navigatorKey.currentState!.pop(false);
+      if (method == 'Website') {
+        final link = tester.widget<SelectableText>(find.byType(SelectableText));
+        expect(link.textSpan!.toPlainText(), 'https://example.com/help');
+        expect(launcher.urls, isEmpty);
+        globalState.navigatorKey.currentState!.pop(false);
+      } else {
+        expect(find.byType(SelectableText), findsNothing);
+        expect(launcher.urls, ['mailto:help@example.com']);
+      }
       await tester.pumpAndSettle();
     }
     expect(tester.takeException(), isNull);
   });
+
+  for (final locale in [const Locale('en'), const Locale('ru')]) {
+    for (final width in [320.0, 360.0, 390.0]) {
+      testWidgets('mobile header shows support label ($locale, $width)',
+          (tester) async {
+        var settingsOpened = false;
+        await _pumpHeader(tester,
+            width: width,
+            locale: locale,
+            headers: {'support-url': 'https://example.com'},
+            onSettings: () => settingsOpened = true);
+        final label =
+            find.text(locale.languageCode == 'ru' ? 'Поддержка' : 'Support');
+        expect(label, findsOneWidget);
+        expect(find.byType(FilledButton), findsOneWidget);
+        final button = tester.getRect(find.byType(FilledButton));
+        expect(button.left, greaterThanOrEqualTo(0));
+        expect(button.right, lessThanOrEqualTo(width));
+        await tester.tap(find.byIcon(Icons.settings_rounded));
+        expect(settingsOpened, isTrue);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
 
   testWidgets('narrow header with large text uses accessible icon buttons',
       (tester) async {

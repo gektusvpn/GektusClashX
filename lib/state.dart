@@ -387,24 +387,26 @@ class GlobalState {
       showNotifier(appLocalizations.openLinkFailed);
       return;
     }
-    final isAndroidTV = await system.isAndroidTV;
-    if (isAndroidTV) {
-      final context = navigatorKey.currentContext;
-      if (context == null || !context.mounted) return;
-      await showDialog<void>(
-        context: context,
-        barrierColor: Colors.black54,
-        builder: (_) => TVExternalLinkDialog(uri: uri),
+    if (uri.scheme != 'mailto') {
+      final isAndroidTV = await system.isAndroidTV;
+      if (isAndroidTV) {
+        final context = navigatorKey.currentContext;
+        if (context == null || !context.mounted) return;
+        await showDialog<void>(
+          context: context,
+          barrierColor: Colors.black54,
+          builder: (_) => TVExternalLinkDialog(uri: uri),
+        );
+        return;
+      }
+      final res = await showMessage(
+        message: TextSpan(text: url),
+        title: appLocalizations.externalLink,
+        confirmText: appLocalizations.go,
       );
-      return;
-    }
-    final res = await showMessage(
-      message: TextSpan(text: url),
-      title: appLocalizations.externalLink,
-      confirmText: appLocalizations.go,
-    );
-    if (res != true) {
-      return;
+      if (res != true) {
+        return;
+      }
     }
     try {
       final launched = await launchUrl(

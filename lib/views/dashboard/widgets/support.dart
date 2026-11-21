@@ -53,7 +53,7 @@ class _DashboardHeaderActionsState
           ? constraints.maxWidth
           : MediaQuery.sizeOf(context).width;
       final showLabel =
-          available >= label.width + 24 + 8 + 32 + 8 + 48 + 4 + 168;
+          available >= label.width + 24 + 8 + 32 + 8 + 48 + 4 + 64;
       label.dispose();
       Widget supportButton(VoidCallback onPressed,
               {WidgetStatesController? statesController}) =>
