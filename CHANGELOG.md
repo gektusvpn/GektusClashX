@@ -1,3 +1,23 @@
+## v0.5.7
+
+- Improved Windows window restoration across monitors with different DPI,
+  disconnected displays, and changed work areas. Added startup diagnostics.
+- Show the Windows interface while the VPN core initializes, preserving silent
+  launch and preventing connection changes until startup state is ready.
+- Added Stable and Testing update channels in About, with correct prerelease
+  version ordering and protection against stale update requests.
+- Preserve the existing subscription when a provider requires a newer core or
+  reports a device limit; show actionable compatibility and support messages.
+- Improved keyboard and remote focus in popup menus and marked selected actions.
+- Expand proxy groups during latency tests and normalize server descriptions.
+- Moved provider support to dashboard header actions and aligned news,
+  subscription, and links card spacing and outlines.
+- Show the Support button label on mobile screens, retaining the compact icon
+  when space is limited or text is enlarged.
+- Open email links directly in the mail application without an external-link
+  confirmation dialog.
+- Copy subscription links to the clipboard when sharing from desktop.
+
 ## v0.5.7-pre.3
 
 - Keep Android builds on JDK 17 without invoking the Flutter-generated Gradle
